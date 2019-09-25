@@ -11,7 +11,7 @@ protected:
     void doLoop();
     CRGB getModeSignatureColor();
 private:
-
+    uint8_t getColorComponent(int8_t axisReading);
 
 };
 

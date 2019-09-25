@@ -12,6 +12,19 @@ void Accelerometer::begin(uint8_t pinXAxes, uint8_t pinYAxes, uint8_t pinZAxes)
     pinMode(pinZAxes, INPUT);
 }
 
+void Accelerometer::loop()
+{
+    if (millis() - this->movingAverageSampleTime > 100)
+    {
+        this->movingAverageSampleTime = millis();
+
+        for (int ix = 0; ix < 3; ix++)
+        {
+            this->averagedAxis[ix] = ((float)this->averagedAxis[ix] * 0.9) + this->getAxis(ix) * 0.1;
+        }
+    }
+}
+
 int16_t Accelerometer::getX()
 {
     return this->getAxis(X_AXIS);
@@ -25,6 +38,21 @@ int16_t Accelerometer::getY()
 int16_t Accelerometer::getZ()
 {
     return this->getAxis(Z_AXIS);
+}
+
+int16_t Accelerometer::getAveragedX()
+{
+    return this->averagedAxis[X_AXIS];
+}
+
+int16_t Accelerometer::getAveragedY()
+{
+    return this->averagedAxis[Y_AXIS];
+}
+
+int16_t Accelerometer::getAveragedZ()
+{
+    return this->averagedAxis[Z_AXIS];
 }
 
 int16_t Accelerometer::getAxis(uint8_t axis)

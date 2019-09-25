@@ -70,19 +70,14 @@ void setup()
 
 void loop()
 {
-
-    //  Serial.println(accelerometer.getX());
-    // Serial.println(accelerometer.getY());
-    // Serial.println(accelerometer.getZ());
-    // Serial.println("--");
-
+    accelerometer.loop();
     controlButton.loop();
-    
+
     for (int ix = 0; ix < 2; ix++)
     {
         modeExecutors[ix]->loop();
     }
 
-    ledBarController.loop();    
+    ledBarController.loop();
     floodLight.loop();
 }

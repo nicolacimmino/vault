@@ -6,7 +6,7 @@ void FourByFourModeExecutor::doLoop()
     uint32_t timePhase = (millis() / 1000) % 5;
 
     this->ledBarController->setDim();
-    if (this->accelerometer->getY() < -100)
+    if (this->accelerometer->getAveragedY() < -90)
     {
         this->ledBarController->setFullBrightness();
     }

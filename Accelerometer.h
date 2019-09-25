@@ -14,6 +14,11 @@ public:
     int16_t getX();
     int16_t getY();
     int16_t getZ();
+    void loop();
+    int16_t getAveragedX();
+    int16_t getAveragedY();
+    int16_t getAveragedZ();
+
 private:
     uint8_t pinAxes[3];
     int16_t getAxis(uint8_t axis);
@@ -22,6 +27,8 @@ private:
         300, 790, // Y min, max
         190, 680  // Z min, max
     };
+    int16_t averagedAxis[3] = {0, 0, 0};
+    unsigned long movingAverageSampleTime = 0;
 };
 
 #endif
