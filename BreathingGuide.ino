@@ -19,9 +19,10 @@
 #include "Accelerometer.h"
 #include "LEDBarController.h"
 #include "ControlButton.h"
+#include "ModeExecutor.h"
 #include "FloodLight.h"
-
-#include <FastLED.h>
+#include "FourByFourModeExecutor.h"
+#include "RainbowModeExecutor.h"
 
 Accelerometer accelerometer;
 LEDBarController ledBarController;
@@ -29,12 +30,13 @@ ControlButton controlButton;
 FloodLight floodLight;
 
 uint8_t mode = 0;
-uint32_t modeChangeTime;
+ModeExecutor *modeExecutors[] = {new FourByFourModeExecutor(), new RainbowModeExecutor()};
 
 void onClick()
 {
+    modeExecutors[mode]->exitMode();
     mode = (mode + 1) % 2;
-    modeChangeTime = millis();
+    modeExecutors[mode]->enterMode();
 }
 
 void onLongPress()
@@ -58,6 +60,12 @@ void setup()
     floodLight.setBrightness(digitalRead(PIN_BTN_S) == LOW ? 15 : 255);
 
     accelerometer.begin(PIN_ACC_X, PIN_ACC_Y, PIN_ACC_Z);
+
+    for (int ix = 0; ix < 2; ix++)
+    {
+        modeExecutors[ix]->begin(&floodLight, &ledBarController, &accelerometer);
+    }
+    modeExecutors[0]->enterMode();
 }
 
 void loop()
@@ -68,41 +76,13 @@ void loop()
     // Serial.println(accelerometer.getZ());
     // Serial.println("--");
 
-    ledBarController.loop();
     controlButton.loop();
+    
+    for (int ix = 0; ix < 2; ix++)
+    {
+        modeExecutors[ix]->loop();
+    }
+
+    ledBarController.loop();    
     floodLight.loop();
-
-    if (millis() - modeChangeTime < 1000)
-    {
-        floodLight.setColor(CRGB::Red, mode == 0 ? CRGB::Blue : CRGB::Green);
-        floodLight.setFade(255);
-        return;
-    }
-
-    if (mode == 1)
-    {
-        ledBarController.setDim();
-        ledBarController.showBar(0);
-
-        floodLight.setColor(CRGB::CRGB(accelerometer.getX() + 127, accelerometer.getY() + 127, accelerometer.getZ() + 127));
-        floodLight.setFade(255);
-    }
-
-    if (mode == 0)
-    {
-        uint32_t timePhase = (millis() / 1000) % 5;
-
-        ledBarController.setDim();
-        if (accelerometer.getY() < -100)
-        {
-            ledBarController.setFullBrightness();
-        }
-
-        ledBarController.showBar(timePhase);
-
-        float val = (exp(sin(millis() / 4000.0 * PI)) - 0.36787944) * 108.0;
-
-        floodLight.setColor(CRGB::DarkGreen);
-        floodLight.setFade(val);
-    }
 }
