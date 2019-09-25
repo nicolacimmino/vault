@@ -1,0 +1,104 @@
+
+//  Copyright (C) 2019 Nicola Cimmino
+//
+//    This program is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+//
+//   This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with this program.  If not, see http://www.gnu.org/licenses/.
+//
+
+#include "hardware.h"
+#include "Accelerometer.h"
+#include "LEDBarController.h"
+#include <FastLED.h>
+
+#define NUM_LEDS 2
+CRGB leds[NUM_LEDS];
+Accelerometer accelerometer;
+LEDBarController ledBarController;
+uint8_t mode = 0;
+
+void setup()
+{
+    pinMode(PIN_BTN_C, OUTPUT);
+    digitalWrite(PIN_BTN_C, LOW);
+    pinMode(PIN_BTN_S, INPUT_PULLUP);
+
+    uint8_t ledPins[] = {PIN_LED_G0, PIN_LED_G1, PIN_LED_G2, PIN_LED_G3};
+    ledBarController.begin(ledPins);
+
+    FastLED.addLeds<WS2812B, 4, GRB>(leds, NUM_LEDS);
+
+    FastLED.setBrightness(digitalRead(PIN_BTN_S) == LOW ? 15 : 255);
+
+    Serial.begin(115200);
+
+    accelerometer.begin(PIN_ACC_X, PIN_ACC_Y, PIN_ACC_Z);
+}
+
+void loop()
+{
+    ledBarController.loop();
+
+    if (digitalRead(PIN_BTN_S) == LOW)
+    {
+        mode = (mode + 1) % 2;
+        leds[0] = CRGB::Red;
+        leds[1] = mode == 0 ? CRGB::Blue : CRGB::Green;
+        FastLED.show();
+
+        delay(500);
+        while (digitalRead(PIN_BTN_S) == LOW)
+        {
+            delay(1);
+        }
+    }
+
+    if (mode == 1)
+    {
+        ledBarController.setDim();
+        ledBarController.showBar(0);
+
+        for (int ix = 0; ix < NUM_LEDS; ix++)
+        {
+            //leds[ix] = (accZ < 500) ? CRGB::Red : CRGB::Green;
+            //leds[ix].fadeToBlackBy(random(120) + 135);
+            leds[ix] = CRGB::CRGB(accelerometer.getX() + 127, accelerometer.getY() + 127, accelerometer.getZ() + 127);
+        }
+        FastLED.show();
+    }
+
+    if (mode == 0)
+    {
+        uint32_t timePhase = (millis() / 1000) % 5;
+
+        ledBarController.setDim();
+        if(accelerometer.getY() < -100) {
+            ledBarController.setFullBrightness();
+        }
+
+        ledBarController.showBar(timePhase);
+
+        float val = (exp(sin(millis() / 4000.0 * PI)) - 0.36787944) * 108.0;
+
+        leds[0] = CRGB::DarkGreen;
+        leds[0].fadeToBlackBy(255 - val);
+
+        leds[1] = CRGB::DarkGreen;
+        leds[1].fadeToBlackBy(255 - val);
+
+        FastLED.show();
+    }
+    // Serial.println(accelerometer.getX());
+    // Serial.println(accelerometer.getY());
+    // Serial.println(accelerometer.getZ());
+    // Serial.println("--");
+}
