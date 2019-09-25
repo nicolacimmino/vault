@@ -18,48 +18,65 @@
 #include "hardware.h"
 #include "Accelerometer.h"
 #include "LEDBarController.h"
+#include "ControlButton.h"
+#include "FloodLight.h"
+
 #include <FastLED.h>
 
-#define NUM_LEDS 2
-CRGB leds[NUM_LEDS];
 Accelerometer accelerometer;
 LEDBarController ledBarController;
+ControlButton controlButton;
+FloodLight floodLight;
+
 uint8_t mode = 0;
+uint32_t modeChangeTime;
+
+void onClick()
+{
+    mode = (mode + 1) % 2;
+    modeChangeTime = millis();
+}
+
+void onLongPress()
+{
+}
 
 void setup()
 {
+
+    Serial.begin(115200);
+
     pinMode(PIN_BTN_C, OUTPUT);
     digitalWrite(PIN_BTN_C, LOW);
-    pinMode(PIN_BTN_S, INPUT_PULLUP);
+
+    controlButton.begin(PIN_BTN_S, &onClick, &onLongPress);
 
     uint8_t ledPins[] = {PIN_LED_G0, PIN_LED_G1, PIN_LED_G2, PIN_LED_G3};
     ledBarController.begin(ledPins);
 
-    FastLED.addLeds<WS2812B, 4, GRB>(leds, NUM_LEDS);
-
-    FastLED.setBrightness(digitalRead(PIN_BTN_S) == LOW ? 15 : 255);
-
-    Serial.begin(115200);
+    floodLight.begin();
+    floodLight.setBrightness(digitalRead(PIN_BTN_S) == LOW ? 15 : 255);
 
     accelerometer.begin(PIN_ACC_X, PIN_ACC_Y, PIN_ACC_Z);
 }
 
 void loop()
 {
+
+    //  Serial.println(accelerometer.getX());
+    // Serial.println(accelerometer.getY());
+    // Serial.println(accelerometer.getZ());
+    // Serial.println("--");
+
     ledBarController.loop();
+    controlButton.loop();
+    floodLight.loop();
 
-    if (digitalRead(PIN_BTN_S) == LOW)
+    if (millis() - modeChangeTime < 1000)
     {
-        mode = (mode + 1) % 2;
-        leds[0] = CRGB::Red;
-        leds[1] = mode == 0 ? CRGB::Blue : CRGB::Green;
-        FastLED.show();
-
-        delay(500);
-        while (digitalRead(PIN_BTN_S) == LOW)
-        {
-            delay(1);
-        }
+        floodLight.setColor(CRGB::Red, mode == 0 ? CRGB::Blue : CRGB::Green);
+        floodLight.setFade(255);
+        return;
     }
 
     if (mode == 1)
@@ -67,13 +84,8 @@ void loop()
         ledBarController.setDim();
         ledBarController.showBar(0);
 
-        for (int ix = 0; ix < NUM_LEDS; ix++)
-        {
-            //leds[ix] = (accZ < 500) ? CRGB::Red : CRGB::Green;
-            //leds[ix].fadeToBlackBy(random(120) + 135);
-            leds[ix] = CRGB::CRGB(accelerometer.getX() + 127, accelerometer.getY() + 127, accelerometer.getZ() + 127);
-        }
-        FastLED.show();
+        floodLight.setColor(CRGB::CRGB(accelerometer.getX() + 127, accelerometer.getY() + 127, accelerometer.getZ() + 127));
+        floodLight.setFade(255);
     }
 
     if (mode == 0)
@@ -81,7 +93,8 @@ void loop()
         uint32_t timePhase = (millis() / 1000) % 5;
 
         ledBarController.setDim();
-        if(accelerometer.getY() < -100) {
+        if (accelerometer.getY() < -100)
+        {
             ledBarController.setFullBrightness();
         }
 
@@ -89,16 +102,7 @@ void loop()
 
         float val = (exp(sin(millis() / 4000.0 * PI)) - 0.36787944) * 108.0;
 
-        leds[0] = CRGB::DarkGreen;
-        leds[0].fadeToBlackBy(255 - val);
-
-        leds[1] = CRGB::DarkGreen;
-        leds[1].fadeToBlackBy(255 - val);
-
-        FastLED.show();
+        floodLight.setColor(CRGB::DarkGreen);
+        floodLight.setFade(val);
     }
-    // Serial.println(accelerometer.getX());
-    // Serial.println(accelerometer.getY());
-    // Serial.println(accelerometer.getZ());
-    // Serial.println("--");
 }

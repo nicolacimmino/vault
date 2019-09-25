@@ -1,7 +1,7 @@
 #ifndef __ACCELEROMETER_H__
 #define __ACCELEROMETER_H__
 
-#include "Arduino.h"
+#include <Arduino.h>
 
 #define X_AXIS 0
 #define Y_AXIS 1
