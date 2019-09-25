@@ -7,12 +7,12 @@ void RainbowModeExecutor::doLoop()
     this->ledBarController->showBar(0);
 
     this->floodLight->setColor(CRGB::CRGB(this->getColorComponent(this->accelerometer->getAveragedX()), this->getColorComponent(this->accelerometer->getAveragedY()), this->getColorComponent(this->accelerometer->getAveragedZ())));
-    this->floodLight->setFade(255);
+    this->floodLight->setFade(255);    
 }
 
 uint8_t RainbowModeExecutor::getColorComponent(int8_t axisReading)
-{
-    return axisReading + 127;
+{    
+    return abs(axisReading) * 2;
 }
 
 CRGB RainbowModeExecutor::getModeSignatureColor()
