@@ -15,13 +15,11 @@ protected:
     void doExitMode();
     CRGB getModeSignatureColor();
 
-private:
-    void updateElapsedTimeBar();
+private:    
     void breatheFloodLight();
     unsigned long getEffectiveSideDuration();
-    uint32_t sideDuration = 4000;
-    bool exerciseEnded = false;
-    
+    uint32_t sideDuration = 4000;    
+
 };
 
 #endif

@@ -22,10 +22,12 @@ protected:
     virtual CRGB getModeSignatureColor();
     uint32_t getTimeSinceModeChange();
     void inhibitLoopFor(uint32_t milliseconds);
+    void updateElapsedTimeBar(uint32_t dotDurationmS);
     FloodLight *floodLight;
     LEDBarController *ledBarController;
     Accelerometer *accelerometer;
-
+    bool exerciseEnded = false;
+    
 private:
     uint32_t modeChangeTime;
     bool modeActive = false;

@@ -21,9 +21,10 @@
 #include "ControlButton.h"
 #include "FloodLight.h"
 
-#define EXECUTORS_COUNT 3
+#define EXECUTORS_COUNT 4
 #include "ModeExecutor.h"
 #include "SquareBreathModeExecutor.h"
+#include "AlternateNostrilBreathModeExecutor.h"
 #include "RainbowModeExecutor.h"
 #include "PomodoroModeExecutor.h"
 
@@ -33,7 +34,7 @@ ControlButton controlButton;
 FloodLight floodLight;
 
 uint8_t mode = 0;
-ModeExecutor *modeExecutors[] = {new SquareBreathModeExecutor(), new RainbowModeExecutor(), new PomodoroModeExecutor()};
+ModeExecutor *modeExecutors[] = {new SquareBreathModeExecutor(), new AlternateNostrilBreathModeExecutor(), new RainbowModeExecutor(), new PomodoroModeExecutor()};
 
 void onClick()
 {

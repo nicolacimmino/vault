@@ -15,7 +15,7 @@ void SquareBreathModeExecutor::doLoop()
         return;
     }
 
-    this->updateElapsedTimeBar();
+    this->updateElapsedTimeBar(300000 /* 5min */);
     this->breatheFloodLight();
 }
 
@@ -54,25 +54,6 @@ unsigned long SquareBreathModeExecutor::getEffectiveSideDuration()
 {
     // Slow down by one second every 5 minutes, but never above 7s.
     return min(7000, this->sideDuration + this->getTimeSinceModeChange() / (5 * 60));
-}
-
-void SquareBreathModeExecutor::updateElapsedTimeBar()
-{
-    uint8_t elapsedFiveMinutesBlocks = this->getTimeSinceModeChange() / (300000 /* 5 min */);
-
-    if (elapsedFiveMinutesBlocks > 4)
-    {
-        this->exerciseEnded = true;
-        return;
-    }
-
-    this->ledBarController->setDim();
-    if (this->accelerometer->getAveragedY() < -90)
-    {
-        this->ledBarController->setFullBrightness();
-    }
-
-    this->ledBarController->showBar(elapsedFiveMinutesBlocks);
 }
 
 void SquareBreathModeExecutor::doEnterMode()
