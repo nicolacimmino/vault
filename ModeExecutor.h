@@ -13,6 +13,7 @@ public:
     void loop();
     void enterMode();
     void exitMode();
+    virtual void onTiltX(bool positive);
 
 protected:
     virtual void doLoop();
@@ -20,6 +21,7 @@ protected:
     virtual void doExitMode();
     virtual CRGB getModeSignatureColor();
     uint32_t getTimeSinceModeChange();
+    void inhibitLoopFor(uint32_t milliseconds);
     FloodLight *floodLight;
     LEDBarController *ledBarController;
     Accelerometer *accelerometer;
@@ -27,7 +29,7 @@ protected:
 private:
     uint32_t modeChangeTime;
     bool modeActive = false;
-
+    uint32_t inhibitLoopUntil = 0;
 };
 
 #endif

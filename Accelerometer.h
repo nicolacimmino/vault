@@ -6,11 +6,14 @@
 #define X_AXIS 0
 #define Y_AXIS 1
 #define Z_AXIS 2
+#define AXIS_LEVEL 0
+#define AXIS_POSITIVE_TILT 1
+#define AXIS_NEGATIVE_TILT 2
 
 class Accelerometer
 {
 public:
-    void begin(uint8_t pinXAxes, uint8_t pinYAxes, uint8_t pinZAxes);
+    void begin(uint8_t pinXAxes, uint8_t pinYAxes, uint8_t pinZAxes, void (*onTiltX)(bool positive) = NULL, void (*onTiltY)(bool positive) = NULL, void (*onTiltZ)(bool positive) = NULL);
     int16_t getX();
     int16_t getY();
     int16_t getZ();
@@ -21,6 +24,7 @@ public:
 
 private:
     uint8_t pinAxes[3];
+    uint8_t axesStatus[3];
     int16_t getAxis(uint8_t axis);
     int16_t calibationTable[6] = {
         250, 730, // X min, max
@@ -29,6 +33,8 @@ private:
     };
     int16_t averagedAxis[3] = {0, 0, 0};
     unsigned long movingAverageSampleTime = 0;
+    void senseAxisTiltMotion(uint8_t axis, int8_t axisTilt);
+    void (*onTilt[3])(bool positive);    
 };
 
 #endif

@@ -24,11 +24,13 @@ void ModeExecutor::exitMode()
 
 void ModeExecutor::loop()
 {
-    if (!this->modeActive)
+    if (!this->modeActive || this->getTimeSinceModeChange() < this->inhibitLoopUntil)
     {
         return;
     }
 
+    this->inhibitLoopUntil = 0;
+    
     if (this->getTimeSinceModeChange() < 1000)
     {
         this->floodLight->setFade(0);
@@ -43,4 +45,15 @@ void ModeExecutor::loop()
 uint32_t ModeExecutor::getTimeSinceModeChange()
 {
     return millis() - this->modeChangeTime;
+}
+
+void ModeExecutor::inhibitLoopFor(uint32_t milliseconds)
+{
+    this->inhibitLoopUntil = this->getTimeSinceModeChange() + milliseconds;
+}
+
+void ModeExecutor::onTiltX(bool positive)
+{
+    // Default behavior do not react to tilt. 
+    // Override on executors that need this.
 }

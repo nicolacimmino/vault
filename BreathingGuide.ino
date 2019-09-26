@@ -46,6 +46,14 @@ void onLongPress()
 {
 }
 
+void onTiltX(bool positive)
+{
+    for (int ix = 0; ix < EXECUTORS_COUNT; ix++)
+    {
+        modeExecutors[ix]->onTiltX(positive);
+    }
+}
+
 void setup()
 {
 
@@ -62,7 +70,7 @@ void setup()
     floodLight.begin();
     floodLight.setBrightness(digitalRead(PIN_BTN_S) == LOW ? 15 : 255);
 
-    accelerometer.begin(PIN_ACC_X, PIN_ACC_Y, PIN_ACC_Z);
+    accelerometer.begin(PIN_ACC_X, PIN_ACC_Y, PIN_ACC_Z, onTiltX);
 
     for (int ix = 0; ix < EXECUTORS_COUNT; ix++)
     {
@@ -83,4 +91,9 @@ void loop()
 
     ledBarController.loop();
     floodLight.loop();
+
+    // Serial.println(accelerometer.getX());
+    // Serial.println(accelerometer.getY());
+    // Serial.println(accelerometer.getZ());
+    // Serial.println("--");
 }
