@@ -8,7 +8,7 @@ void SquareBreathModeExecutor::doLoop()
         if (this->getTimeSinceModeChange() % 2000 < 300)
         {
             this->floodLight->setColor(CRGB::Gold);
-            this->floodLight->setFade(128);
+            this->floodLight->setFade(190);
             return;
         }
         this->floodLight->setColor(CRGB::Black);
@@ -58,7 +58,7 @@ unsigned long SquareBreathModeExecutor::getEffectiveSideDuration()
 
 void SquareBreathModeExecutor::updateElapsedTimeBar()
 {
-    uint8_t elapsedFiveMinutesBlocks = floor(this->getTimeSinceModeChange() / (5 * 60 * 1000));
+    uint8_t elapsedFiveMinutesBlocks = this->getTimeSinceModeChange() / (300000 /* 5 min */);
 
     if (elapsedFiveMinutesBlocks > 4)
     {
