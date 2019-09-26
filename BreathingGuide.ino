@@ -19,9 +19,11 @@
 #include "Accelerometer.h"
 #include "LEDBarController.h"
 #include "ControlButton.h"
-#include "ModeExecutor.h"
 #include "FloodLight.h"
-#include "FourByFourModeExecutor.h"
+
+#define EXECUTORS_COUNT 3
+#include "ModeExecutor.h"
+#include "SquareBreathModeExecutor.h"
 #include "RainbowModeExecutor.h"
 #include "PomodoroModeExecutor.h"
 
@@ -31,12 +33,12 @@ ControlButton controlButton;
 FloodLight floodLight;
 
 uint8_t mode = 0;
-ModeExecutor *modeExecutors[] = {new FourByFourModeExecutor(), new RainbowModeExecutor(), new PomodoroModeExecutor()};
+ModeExecutor *modeExecutors[] = {new SquareBreathModeExecutor(), new RainbowModeExecutor(), new PomodoroModeExecutor()};
 
 void onClick()
 {
     modeExecutors[mode]->exitMode();
-    mode = (mode + 1) % 3;
+    mode = (mode + 1) % EXECUTORS_COUNT;
     modeExecutors[mode]->enterMode();
 }
 
@@ -62,7 +64,7 @@ void setup()
 
     accelerometer.begin(PIN_ACC_X, PIN_ACC_Y, PIN_ACC_Z);
 
-    for (int ix = 0; ix < 3; ix++)
+    for (int ix = 0; ix < EXECUTORS_COUNT; ix++)
     {
         modeExecutors[ix]->begin(&floodLight, &ledBarController, &accelerometer);
     }
@@ -74,7 +76,7 @@ void loop()
     accelerometer.loop();
     controlButton.loop();
 
-    for (int ix = 0; ix < 3; ix++)
+    for (int ix = 0; ix < EXECUTORS_COUNT; ix++)
     {
         modeExecutors[ix]->loop();
     }
