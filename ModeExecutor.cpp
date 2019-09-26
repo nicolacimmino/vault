@@ -26,8 +26,9 @@ void ModeExecutor::loop()
 
     if (this->getTimeSinceModeChange() < 1000)
     {
+        this->floodLight->setFade(0);
         this->floodLight->setColor(CRGB::Red, this->getModeSignatureColor());
-        this->floodLight->setFade(255);
+                
         return;
     }
 

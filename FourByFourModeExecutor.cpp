@@ -13,10 +13,10 @@ void FourByFourModeExecutor::doLoop()
 
     this->ledBarController->showBar(timePhase);
 
-    float val = (exp(sin(millis() / 4000.0 * PI)) - 0.36787944) * 108.0;
+    float fade = 255-(exp(sin(millis() / 4000.0 * PI)) - 0.36787944) * 108.0;
 
-    this->floodLight->setColor(CRGB::DarkGreen);
-    this->floodLight->setFade(val);
+    this->floodLight->setFade(fade);
+    this->floodLight->setColor(CRGB::DarkGreen);    
 }
 
 CRGB FourByFourModeExecutor::getModeSignatureColor()
