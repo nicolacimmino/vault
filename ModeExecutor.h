@@ -16,6 +16,8 @@ public:
 
 protected:
     virtual void doLoop();
+    virtual void doEnterMode();
+    virtual void doExitMode();
     virtual CRGB getModeSignatureColor();
     uint32_t getTimeSinceModeChange();
     FloodLight *floodLight;

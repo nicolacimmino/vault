@@ -3,16 +3,22 @@
 
 void PomodoroModeExecutor::doLoop()
 {
-    this->ledBarController->setDim();
-    this->ledBarController->showBar(0);
-
     unsigned long pomodoroTime = (this->getTimeSinceModeChange() / 50) % 255;
 
     CRGB color = CRGB::DarkRed;
-    CRGB color2 = CRGB::White;
+    CRGB color2 = pomodoroTime < 127 ? CRGB::White : CRGB::DarkRed;
 
-    this->floodLight->setFade(255 - pomodoroTime, 250);
+    this->floodLight->setFade(255 - pomodoroTime, 255 - (pomodoroTime < 127 ? 0 : (pomodoroTime - 127)));
     this->floodLight->setColor(color, color2);
+}
+
+void PomodoroModeExecutor::doEnterMode()
+{
+}
+
+void PomodoroModeExecutor::doExitMode()
+{
+    this->floodLight->setColor(CRGB::Black);    
 }
 
 CRGB PomodoroModeExecutor::getModeSignatureColor()

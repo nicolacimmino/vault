@@ -11,16 +11,21 @@ void ModeExecutor::enterMode()
 {
     this->modeChangeTime = millis();
     this->modeActive = true;
+
+    this->doEnterMode();
 }
 
 void ModeExecutor::exitMode()
 {
+    this->doExitMode();
+
     this->modeActive = false;
 }
 
 void ModeExecutor::loop()
 {
-    if(!this->modeActive) {
+    if (!this->modeActive)
+    {
         return;
     }
 
@@ -28,7 +33,7 @@ void ModeExecutor::loop()
     {
         this->floodLight->setFade(0);
         this->floodLight->setColor(CRGB::Red, this->getModeSignatureColor());
-                
+
         return;
     }
 
