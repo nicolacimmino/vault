@@ -11,7 +11,8 @@ void ModeExecutor::enterMode()
 {
     this->modeChangeTime = millis();
     this->modeActive = true;
-
+    this->inhibitLoopUntil = 0;
+    
     this->doEnterMode();
 }
 
@@ -30,7 +31,7 @@ void ModeExecutor::loop()
     }
 
     this->inhibitLoopUntil = 0;
-    
+
     if (this->getTimeSinceModeChange() < 1000)
     {
         this->floodLight->setFade(0);
