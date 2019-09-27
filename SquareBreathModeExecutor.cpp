@@ -74,7 +74,7 @@ CRGB SquareBreathModeExecutor::getModeSignatureColor()
     return CRGB::DarkGreen;
 }
 
-void SquareBreathModeExecutor::onTiltX(bool positive)
+void SquareBreathModeExecutor::doOnTiltX(bool positive)
 {
     this->inhibitLoopFor(300);
 

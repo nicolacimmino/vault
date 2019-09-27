@@ -7,19 +7,17 @@ class SquareBreathModeExecutor : public ModeExecutor
 {
 
 public:
-    void onTiltX(bool positive);
-
 protected:
     void doLoop();
     void doEnterMode();
     void doExitMode();
+    void doOnTiltX(bool positive);
     CRGB getModeSignatureColor();
 
-private:    
+private:
     void breatheFloodLight();
     unsigned long getEffectiveSideDuration();
-    uint32_t sideDuration = 4000;    
-
+    uint32_t sideDuration = 4000;
 };
 
 #endif

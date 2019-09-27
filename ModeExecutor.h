@@ -13,12 +13,13 @@ public:
     void loop();
     void enterMode();
     void exitMode();
-    virtual void onTiltX(bool positive);
+    void onTiltX(bool positive);
 
 protected:
     virtual void doLoop();
     virtual void doEnterMode();
     virtual void doExitMode();
+    virtual void doOnTiltX(bool positive);
     virtual CRGB getModeSignatureColor();
     uint32_t getTimeSinceModeChange();
     void inhibitLoopFor(uint32_t milliseconds);

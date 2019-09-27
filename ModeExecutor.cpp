@@ -53,12 +53,6 @@ void ModeExecutor::inhibitLoopFor(uint32_t milliseconds)
     this->inhibitLoopUntil = this->getTimeSinceModeChange() + milliseconds;
 }
 
-void ModeExecutor::onTiltX(bool positive)
-{
-    // Default behavior do not react to tilt. 
-    // Override on executors that need this.
-}
-
 void ModeExecutor::updateElapsedTimeBar(uint32_t dotDurationmS)
 {
     uint8_t elapsedBlocks = this->getTimeSinceModeChange() / (dotDurationmS);
@@ -76,4 +70,21 @@ void ModeExecutor::updateElapsedTimeBar(uint32_t dotDurationmS)
     }
 
     this->ledBarController->showBar(elapsedBlocks);
+}
+
+void ModeExecutor::onTiltX(bool positive)
+{
+    if (!this->modeActive)
+    {
+        return;
+    }
+
+    this->doOnTiltX(positive);
+}
+
+void ModeExecutor::doOnTiltX(bool positive)
+{
+    // Default behavior do not react to tilt.
+    // Override on executors that need this.
+    return;
 }
