@@ -29,27 +29,20 @@ void AlternateNostrilBreathModeExecutor::breatheFloodLight()
 
     if (cycleTime < phaseDuration)
     {
-        fade = 255.0 * ((cycleTime - phaseDuration) / phaseDuration);        
+        fade = (255.0 * cycleTime) / phaseDuration;                        
     }
-    else if (cycleTime < phaseDuration * 2)
+    else
     {
-        fade = (255.0 * (phaseDuration - cycleTime)) / phaseDuration;
+        fade = (255.0 * ((2 * phaseDuration) - cycleTime)) / phaseDuration;
     }
 
     fade = min(250, fade);
 
-    //CRGB color =  (cycleTime % phaseDuration < 300) ? CRGB::DarkOrange : CRGB::Green;
-    CRGB color = CRGB::Green;
-
+    CRGB color =  (cycleTime % phaseDuration < 300 && fade < 10) ? CRGB::DarkOrange : CRGB::Green;
+    
     this->leftNostril =  (this->getTimeSinceModeChange() % (phaseDuration * 4) < (phaseDuration * 2));    
-
-    if(this->leftNostril) {
-      this->floodLight->setColor(color , CRGB::Black);  
-    } else {
-        this->floodLight->setColor(CRGB::Black, color);  
-    }
-
-    //this->floodLight->setColor((this->leftNostril ? color : CRGB::Black), ((!this->leftNostril) ? CRGB::Black : color));
+    
+    this->floodLight->setColor(this->leftNostril ? CRGB::Black : color, !this->leftNostril ? CRGB::Black : color);    
     this->floodLight->setFade(fade);
 
     
