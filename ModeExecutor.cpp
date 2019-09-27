@@ -88,3 +88,20 @@ void ModeExecutor::doOnTiltX(bool positive)
     // Override on executors that need this.
     return;
 }
+
+void ModeExecutor::onShake()
+{
+    if (!this->modeActive)
+    {
+        return;
+    }
+
+    this->doOnShake();
+}
+
+void ModeExecutor::doOnShake()
+{
+    // Default behavior do not react to shake.
+    // Override on executors that need this.
+    return;
+}

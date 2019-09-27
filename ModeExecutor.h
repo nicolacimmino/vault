@@ -14,12 +14,14 @@ public:
     void enterMode();
     void exitMode();
     void onTiltX(bool positive);
-
+    void onShake();
+        
 protected:
     virtual void doLoop();
     virtual void doEnterMode();
     virtual void doExitMode();
     virtual void doOnTiltX(bool positive);
+    virtual void doOnShake();    
     virtual CRGB getModeSignatureColor();
     uint32_t getTimeSinceModeChange();
     void inhibitLoopFor(uint32_t milliseconds);
@@ -28,7 +30,7 @@ protected:
     LEDBarController *ledBarController;
     Accelerometer *accelerometer;
     bool exerciseEnded = false;
-    
+        
 private:
     uint32_t modeChangeTime;
     bool modeActive = false;

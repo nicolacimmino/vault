@@ -13,7 +13,9 @@
 class Accelerometer
 {
 public:
-    void begin(uint8_t pinXAxes, uint8_t pinYAxes, uint8_t pinZAxes, void (*onTiltX)(bool positive) = NULL, void (*onTiltY)(bool positive) = NULL, void (*onTiltZ)(bool positive) = NULL);
+    void begin(uint8_t pinXAxes, uint8_t pinYAxes, uint8_t pinZAxes,
+               void (*onTiltX)(bool positive) = NULL, void (*onTiltY)(bool positive) = NULL, void (*onTiltZ)(bool positive) = NULL,
+               void (*onShake)() = NULL);
     int16_t getX();
     int16_t getY();
     int16_t getZ();
@@ -31,10 +33,18 @@ private:
         300, 790, // Y min, max
         190, 680  // Z min, max
     };
+    int16_t calibationTableAxisShake[6] = {
+        80, 1000, // X min, max
+        80, 1000, // Y min, max
+        80, 1000  // Z min, max
+    };
     int16_t averagedAxis[3] = {0, 0, 0};
     unsigned long movingAverageSampleTime = 0;
+    unsigned long lastShakeTime = 0;
     void senseAxisTiltMotion(uint8_t axis, int16_t axisTilt);
-    void (*onTilt[3])(bool positive);    
+    void senseAxisShakeMotion(uint8_t axis);
+    void (*onTilt[3])(bool positive);
+    void (*onShake)();
 };
 
 #endif

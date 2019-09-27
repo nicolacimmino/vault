@@ -21,12 +21,13 @@
 #include "ControlButton.h"
 #include "FloodLight.h"
 
-#define EXECUTORS_COUNT 4
+#define EXECUTORS_COUNT 5
 #include "ModeExecutor.h"
 #include "SquareBreathModeExecutor.h"
 #include "AlternateNostrilBreathModeExecutor.h"
 #include "RainbowModeExecutor.h"
 #include "PomodoroModeExecutor.h"
+#include "NightlightModeExecutor.h"
 
 Accelerometer accelerometer;
 LEDBarController ledBarController;
@@ -34,7 +35,7 @@ ControlButton controlButton;
 FloodLight floodLight;
 
 uint8_t mode = 0;
-ModeExecutor *modeExecutors[] = {new SquareBreathModeExecutor(), new AlternateNostrilBreathModeExecutor(), new RainbowModeExecutor(), new PomodoroModeExecutor()};
+ModeExecutor *modeExecutors[] = {new SquareBreathModeExecutor(), new AlternateNostrilBreathModeExecutor(), new RainbowModeExecutor(), new PomodoroModeExecutor(), new NighlightModeExecutor()};
 
 void onClick()
 {
@@ -55,6 +56,14 @@ void onTiltX(bool positive)
     }
 }
 
+void onShake()
+{
+    for (int ix = 0; ix < EXECUTORS_COUNT; ix++)
+    {
+        modeExecutors[ix]->onShake();
+    }
+}
+
 void setup()
 {
 
@@ -71,7 +80,7 @@ void setup()
     floodLight.begin();
     floodLight.setBrightness(digitalRead(PIN_BTN_S) == LOW ? 15 : 255);
 
-    accelerometer.begin(PIN_ACC_X, PIN_ACC_Y, PIN_ACC_Z, onTiltX);
+    accelerometer.begin(PIN_ACC_X, PIN_ACC_Y, PIN_ACC_Z, onTiltX, NULL, NULL, onShake);
 
     for (int ix = 0; ix < EXECUTORS_COUNT; ix++)
     {

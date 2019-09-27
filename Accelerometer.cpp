@@ -1,7 +1,9 @@
 
 #include "Accelerometer.h"
 
-void Accelerometer::begin(uint8_t pinXAxes, uint8_t pinYAxes, uint8_t pinZAxes, void (*onTiltX)(bool positive) = NULL, void (*onTiltY)(bool positive) = NULL, void (*onTiltZ)(bool positive) = NULL)
+void Accelerometer::begin(uint8_t pinXAxes, uint8_t pinYAxes, uint8_t pinZAxes,
+                          void (*onTiltX)(bool positive) = NULL, void (*onTiltY)(bool positive) = NULL, void (*onTiltZ)(bool positive) = NULL,
+                          void (*onShake)() = NULL)
 {
     this->pinAxes[X_AXIS] = pinXAxes;
     this->pinAxes[Y_AXIS] = pinYAxes;
@@ -14,6 +16,8 @@ void Accelerometer::begin(uint8_t pinXAxes, uint8_t pinYAxes, uint8_t pinZAxes, 
     this->onTilt[X_AXIS] = onTiltX;
     this->onTilt[Y_AXIS] = onTiltY;
     this->onTilt[Z_AXIS] = onTiltZ;
+
+    this->onShake= onShake;    
 }
 
 void Accelerometer::loop()
@@ -29,6 +33,7 @@ void Accelerometer::loop()
             this->averagedAxis[ix] = ((float)this->averagedAxis[ix] * 0.9) + axisTilt * 0.1;
 
             this->senseAxisTiltMotion(ix, axisTilt);
+            this->senseAxisShakeMotion(ix);
         }
     }
 }
@@ -53,6 +58,22 @@ void Accelerometer::senseAxisTiltMotion(uint8_t axis, int16_t axisTilt)
     else if (axisTilt < 32 && axisTilt > -32 && this->axesStatus[axis] != AXIS_LEVEL)
     {
         this->axesStatus[axis] = AXIS_LEVEL;
+    }
+}
+
+void Accelerometer::senseAxisShakeMotion(uint8_t axis)
+{
+    if (this->onShake == NULL)
+    {
+        return;
+    }
+
+    int16_t acc = analogRead(this->pinAxes[axis]);
+
+    if ((acc < this->calibationTableAxisShake[axis * 2] || acc > this->calibationTableAxisShake[1 + (axis * 2)]) && millis() > this->lastShakeTime + 500)
+    {
+        this->onShake();
+        this->lastShakeTime = millis();
     }
 }
 
