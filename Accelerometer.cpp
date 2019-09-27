@@ -24,7 +24,7 @@ void Accelerometer::loop()
 
         for (int ix = 0; ix < 3; ix++)
         {
-            uint8_t axisTilt = this->getAxis(ix);
+            int16_t axisTilt = this->getAxis(ix);
 
             this->averagedAxis[ix] = ((float)this->averagedAxis[ix] * 0.9) + axisTilt * 0.1;
 
@@ -33,7 +33,7 @@ void Accelerometer::loop()
     }
 }
 
-void Accelerometer::senseAxisTiltMotion(uint8_t axis, int8_t axisTilt)
+void Accelerometer::senseAxisTiltMotion(uint8_t axis, int16_t axisTilt)
 {
     if (this->onTilt[axis] == NULL)
     {

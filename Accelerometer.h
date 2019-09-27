@@ -33,7 +33,7 @@ private:
     };
     int16_t averagedAxis[3] = {0, 0, 0};
     unsigned long movingAverageSampleTime = 0;
-    void senseAxisTiltMotion(uint8_t axis, int8_t axisTilt);
+    void senseAxisTiltMotion(uint8_t axis, int16_t axisTilt);
     void (*onTilt[3])(bool positive);    
 };
 
