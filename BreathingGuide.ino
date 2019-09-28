@@ -20,6 +20,7 @@
 #include "LEDBarController.h"
 #include "ControlButton.h"
 #include "FloodLight.h"
+#include "BatteryMonitor.h"
 
 #define EXECUTORS_COUNT 5
 #include "ModeExecutor.h"
@@ -29,10 +30,15 @@
 #include "PomodoroModeExecutor.h"
 #include "NightlightModeExecutor.h"
 
+#include <avr/sleep.h>
+
 Accelerometer accelerometer;
 LEDBarController ledBarController;
 ControlButton controlButton;
 FloodLight floodLight;
+BatteryMonitor BatteryMonitor;
+
+uint32_t flashLowBatteryUntil = millis();
 
 uint8_t mode = 0;
 ModeExecutor *modeExecutors[] = {new SquareBreathModeExecutor(), new AlternateNostrilBreathModeExecutor(), new RainbowModeExecutor(), new PomodoroModeExecutor(), new NighlightModeExecutor()};
@@ -64,6 +70,28 @@ void onShake()
     }
 }
 
+void onLowBattery()
+{
+    flashLowBatteryUntil = millis() + 300;
+}
+
+void onBatteryCritical()
+{
+    ledBarController.showBar(0);
+
+    for (int ix = 0; ix < 8; ix++)
+    {
+        floodLight.setColor(ix % 2 == 0 ? CRGB::Red : CRGB::Black);
+        floodLight.loop();
+        delay(200);
+    }
+
+    set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+    sleep_enable();
+    sleep_mode();
+    sleep_disable();
+}
+
 void setup()
 {
 
@@ -87,6 +115,8 @@ void setup()
         modeExecutors[ix]->begin(&floodLight, &ledBarController, &accelerometer);
     }
     modeExecutors[0]->enterMode();
+
+    BatteryMonitor.begin(onLowBattery, onBatteryCritical);
 }
 
 void loop()
@@ -100,6 +130,14 @@ void loop()
     }
 
     ledBarController.loop();
+
+    BatteryMonitor.loop();
+
+    if (flashLowBatteryUntil > millis())
+    {
+        floodLight.setColor(CRGB::Red);
+    }
+
     floodLight.loop();
 
     // Serial.println(accelerometer.getX());

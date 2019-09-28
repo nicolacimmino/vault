@@ -14,7 +14,7 @@ void NighlightModeExecutor::doLoop()
 
     if (this->activeUntil < this->getTimeSinceModeChange())
     {
-        this->floodLight->setColor(CRGB::Black);
+  //      this->floodLight->setColor(CRGB::Black);
     }
 
     this->lastX = this->accelerometer->getAveragedX();
