@@ -8,7 +8,7 @@ void BatteryMonitor::begin(void (*onLowBattery)(), void (*onBatteryCritical)())
 
 void BatteryMonitor::loop()
 {
-    if (millis() - this->lastCheckTime < 5000)
+    if (millis() - this->lastCheckTime < 3000)
     {
         return;
     }

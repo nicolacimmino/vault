@@ -14,6 +14,8 @@ void ModeExecutor::enterMode()
     this->inhibitLoopUntil = 0;
 
     this->doEnterMode();
+
+    this->floodLight->override(1000, CRGB::Red, 0, this->getModeSignatureColor(), 0);
 }
 
 void ModeExecutor::exitMode()
@@ -31,14 +33,6 @@ void ModeExecutor::loop()
     }
 
     this->inhibitLoopUntil = 0;
-
-    if (this->getTimeSinceModeChange() < 1000)
-    {
-        this->floodLight->setFade(0);
-        this->floodLight->setColor(CRGB::Red, this->getModeSignatureColor());
-
-        return;
-    }
 
     doLoop();
 }

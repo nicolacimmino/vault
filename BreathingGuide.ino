@@ -38,8 +38,6 @@ ControlButton controlButton;
 FloodLight floodLight;
 BatteryMonitor BatteryMonitor;
 
-uint32_t flashLowBatteryUntil = millis();
-
 uint8_t mode = 0;
 ModeExecutor *modeExecutors[] = {new SquareBreathModeExecutor(), new AlternateNostrilBreathModeExecutor(), new RainbowModeExecutor(), new PomodoroModeExecutor(), new NighlightModeExecutor()};
 
@@ -72,7 +70,7 @@ void onShake()
 
 void onLowBattery()
 {
-    flashLowBatteryUntil = millis() + 300;
+    floodLight.override(300, CRGB::Red, 0);
 }
 
 void onBatteryCritical()
@@ -130,14 +128,7 @@ void loop()
     }
 
     ledBarController.loop();
-
     BatteryMonitor.loop();
-
-    if (flashLowBatteryUntil > millis())
-    {
-        floodLight.setColor(CRGB::Red);
-    }
-
     floodLight.loop();
 
     // Serial.println(accelerometer.getX());
