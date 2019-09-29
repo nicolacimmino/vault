@@ -3,34 +3,71 @@
 
 void PomodoroModeExecutor::doLoop()
 {
-    if (this->getPomodoroTimeSeconds() > this->pomodoroDurationSeconds)
+    switch (this->pomodoroState)
     {
+    case POMODORO_GOTOWORK:
+        this->goToWorkPattern();
+        break;
+    case POMODORO_BREAK:
         this->breakPattern();
-        return;
+        break;
+    case POMODORO_WORKDONE:
+        this->workDonePattern();
+        break;
+    default:
+        this->workPattern();
     }
+}
 
-    this->timerPattern();
+void PomodoroModeExecutor::goToWorkPattern()
+{
+    this->floodLight->setColor(CRGB::DarkRed, CRGB::Green);
+    this->floodLight->setFade(this->getTimeSinceModeChange() % 1000 < 200 ? 0 : 255);
+}
+
+void PomodoroModeExecutor::workDonePattern()
+{
+    this->floodLight->setColor(CRGB::Yellow, CRGB::Green);
+    this->floodLight->setFade(this->getTimeSinceModeChange() % 1000 < 200 ? 0 : 255);
 }
 
 void PomodoroModeExecutor::breakPattern()
 {
+    if (this->getPomodoroBreakTimeSeconds() > this->pomodoroBreakDurationSeconds)
+    {
+        this->pomodoroState = POMODORO_GOTOWORK;
+        return;
+    }
+
     // Keep breathing! See Sean Voisen great post from which I grabbed the formula.
     // https://sean.voisen.org/blog/2011/10/breathing-led-with-arduino/
     float val = (exp(sin(millis() / 3000.0 * PI)) - 0.36787944) * 108.0;
-    this->floodLight->setColor(CRGB::DarkRed, CRGB::Green);
+    this->floodLight->setColor(CRGB::Yellow, CRGB::Green);
     this->floodLight->setFade(val, 255 - val);
 }
 
-void PomodoroModeExecutor::timerPattern()
+void PomodoroModeExecutor::workPattern()
 {
+    if (this->getPomodoroTimeSeconds() > this->pomodoroDurationSeconds)
+    {
+        this->pomodoroState = POMODORO_WORKDONE;
+
+        return;
+    }
+
     uint8_t val = 255 * (this->getPomodoroTimeSeconds() / (float)this->pomodoroDurationSeconds);
-    this->floodLight->setColor(CRGB::DarkRed, CRGB::White);
+    this->floodLight->setColor(CRGB::DarkRed, CRGB::Green);
     this->floodLight->setFade(255 - val, max(val, 127));
 }
 
 uint16_t PomodoroModeExecutor::getPomodoroTimeSeconds()
 {
     return (this->getTimeSinceModeChange() / 1000);
+}
+
+uint16_t PomodoroModeExecutor::getPomodoroBreakTimeSeconds()
+{
+    return (millis() - this->breakStartTime) / 1000;
 }
 
 void PomodoroModeExecutor::doEnterMode()
@@ -44,10 +81,26 @@ void PomodoroModeExecutor::doExitMode()
 
 ColorsTuple PomodoroModeExecutor::getModeSignatureColor()
 {
-    return {CRGB::Orange, CRGB::Yellow};
+    return {CRGB::Red, CRGB::Green};
 }
 
 void PomodoroModeExecutor::doOnShake()
 {
+    this->pomodoroState = POMODORO_WORK;
     this->resetModeChangeTime();
+}
+
+void PomodoroModeExecutor::doOnTilt(uint8_t axis, bool positive)
+{
+    if (this->pomodoroState == POMODORO_WORKDONE && axis == Z_AXIS)
+    {
+        this->breakStartTime = millis();
+        this->pomodoroState = POMODORO_BREAK;
+    }
+
+    if (this->pomodoroState == POMODORO_GOTOWORK && axis == Y_AXIS)
+    {
+        this->pomodoroState = POMODORO_WORK;
+        this->resetModeChangeTime();
+    }
 }
