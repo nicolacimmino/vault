@@ -10,11 +10,13 @@
 #define AXIS_POSITIVE_TILT 1
 #define AXIS_NEGATIVE_TILT 2
 
+#define ROLL_PATTERN_BUFFER_SIZE 8
+
 class Accelerometer
 {
 public:
     void begin(uint8_t pinXAxes, uint8_t pinYAxes, uint8_t pinZAxes,
-               void (*onTilt)(uint8_t axis, bool positive) = NULL, void (*onShake)() = NULL);
+               void (*onTilt)(uint8_t axis, bool positive) = NULL, void (*onShake)() = NULL, bool (*onRoll)(char *pattern) = NULL);
     int16_t getX();
     int16_t getY();
     int16_t getZ();
@@ -44,6 +46,9 @@ private:
     void senseAxisShakeMotion(uint8_t axis);
     void (*onTilt)(uint8_t axis, bool positive);
     void (*onShake)();
+    bool (*onRoll)(char *pattern);
+    char rollPattern[ROLL_PATTERN_BUFFER_SIZE+1] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+    uint32_t lastRollTime = 0;
 };
 
 #endif

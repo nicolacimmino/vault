@@ -67,6 +67,17 @@ void onShake()
     modeExecutors[modesChanger.getSelectedMode()]->onShake();
 }
 
+bool onRoll(char *pattern)
+{
+    if (strstr(pattern, "ZXZXZYZY") == pattern)
+    {
+        floodLight.animateSync(CRGB::Red, CRGB::Yellow, 200, 10);
+        return true;
+    }
+
+    return false;
+}
+
 void onLowBattery()
 {
     floodLight.override(300, CRGB::Red, 0);
@@ -101,7 +112,7 @@ void setup()
     floodLight.setBrightness(digitalRead(PIN_BTN_S) == LOW ? 15 : 255);
     floodLight.animateSync(CRGB::Green, CRGB::Yellow, 200, 10);
 
-    accelerometer.begin(PIN_ACC_X, PIN_ACC_Y, PIN_ACC_Z, onTilt, onShake);
+    accelerometer.begin(PIN_ACC_X, PIN_ACC_Y, PIN_ACC_Z, onTilt, onShake, onRoll);
 
     for (int ix = 0; ix < EXECUTORS_COUNT; ix++)
     {

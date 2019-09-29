@@ -2,7 +2,7 @@
 #include "Accelerometer.h"
 
 void Accelerometer::begin(uint8_t pinXAxes, uint8_t pinYAxes, uint8_t pinZAxes,
-                          void (*onTilt)(uint8_t axis, bool positive) = NULL, void (*onShake)() = NULL)
+                          void (*onTilt)(uint8_t axis, bool positive) = NULL, void (*onShake)() = NULL, bool (*onRoll)(char *pattern) = NULL)
 {
     this->pinAxes[X_AXIS] = pinXAxes;
     this->pinAxes[Y_AXIS] = pinYAxes;
@@ -13,8 +13,8 @@ void Accelerometer::begin(uint8_t pinXAxes, uint8_t pinYAxes, uint8_t pinZAxes,
     pinMode(pinZAxes, INPUT);
 
     this->onTilt = onTilt;
-
     this->onShake = onShake;
+    this->onRoll = onRoll;
 }
 
 void Accelerometer::loop()
@@ -42,15 +42,33 @@ void Accelerometer::senseAxisTiltMotion(uint8_t axis, int16_t axisTilt)
         return;
     }
 
-    if (axisTilt < -96 && this->axesStatus[axis] == AXIS_LEVEL)
+    if (abs(axisTilt) > 96 && this->axesStatus[axis] == AXIS_LEVEL)
     {
-        this->axesStatus[axis] = AXIS_NEGATIVE_TILT;
-        this->onTilt(axis, false);
-    }
-    else if (axisTilt > 96 && this->axesStatus[axis] == AXIS_LEVEL)
-    {
-        this->axesStatus[axis] = AXIS_POSITIVE_TILT;
-        this->onTilt(axis, true);
+        this->axesStatus[axis] = axisTilt > 0 ? AXIS_POSITIVE_TILT : AXIS_NEGATIVE_TILT;
+        this->onTilt(axis, axisTilt > 0);
+
+        if (millis() - this->lastRollTime > 2000)
+        {
+            memset(this->rollPattern, 0, ROLL_PATTERN_BUFFER_SIZE);
+        }
+
+        for (int ix = ROLL_PATTERN_BUFFER_SIZE - 1; ix > 0; ix--)
+        {
+            this->rollPattern[ix] = this->rollPattern[ix - 1];
+        }
+
+        this->rollPattern[0] = "XYZ"[axis];
+        this->lastRollTime = millis();
+
+        if (strlen(this->rollPattern) > 4)
+        {
+            bool patternRecognised = this->onRoll(this->rollPattern);
+
+            if (patternRecognised)
+            {
+                memset(this->rollPattern, 0, ROLL_PATTERN_BUFFER_SIZE);
+            }
+        }
     }
     else if (axisTilt < 32 && axisTilt > -32 && this->axesStatus[axis] != AXIS_LEVEL)
     {
