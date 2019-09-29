@@ -12,7 +12,7 @@ protected:
     void doLoop();
     void doEnterMode();
     void doExitMode();
-    CRGB getModeSignatureColor();
+    struct ModeExecutor::ColorsTuple getModeSignatureColor();
 
 private:    
     void breatheFloodLight();        

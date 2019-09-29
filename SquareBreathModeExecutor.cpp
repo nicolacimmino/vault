@@ -69,9 +69,9 @@ void SquareBreathModeExecutor::doExitMode()
     this->floodLight->setColor(CRGB::Black);
 }
 
-CRGB SquareBreathModeExecutor::getModeSignatureColor()
+ModeExecutor::ColorsTuple SquareBreathModeExecutor::getModeSignatureColor()
 {
-    return CRGB::DarkGreen;
+    return {CRGB::DarkGreen, CRGB::Yellow };    
 }
 
 void SquareBreathModeExecutor::doOnTiltX(bool positive)

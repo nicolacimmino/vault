@@ -2,9 +2,8 @@
 #include "RainbowModeExecutor.h"
 
 void RainbowModeExecutor::doLoop()
-{        
+{
     this->floodLight->setColor(CRGB::CRGB(this->getColorComponent(this->accelerometer->getAveragedX()), this->getColorComponent(this->accelerometer->getAveragedY()), this->getColorComponent(this->accelerometer->getAveragedZ())));
-    
 }
 
 void RainbowModeExecutor::doEnterMode()
@@ -23,7 +22,7 @@ uint8_t RainbowModeExecutor::getColorComponent(int8_t axisReading)
     return abs(axisReading) * 2;
 }
 
-CRGB RainbowModeExecutor::getModeSignatureColor()
+ModeExecutor::ColorsTuple RainbowModeExecutor::getModeSignatureColor()
 {
-    return CRGB::Blue;
+    return {CRGB::Blue, CRGB::Yellow};
 }

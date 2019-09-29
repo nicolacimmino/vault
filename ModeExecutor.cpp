@@ -15,7 +15,7 @@ void ModeExecutor::enterMode()
 
     this->doEnterMode();
 
-    this->floodLight->override(1000, CRGB::Red, 0, this->getModeSignatureColor(), 0);
+    this->floodLight->override(1000, this->getModeSignatureColor().color0, 0, this->getModeSignatureColor().color1, 0);
 }
 
 void ModeExecutor::exitMode()

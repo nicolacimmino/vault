@@ -34,9 +34,9 @@ void NighlightModeExecutor::doExitMode()
     this->floodLight->setFade(255);
 }
 
-CRGB NighlightModeExecutor::getModeSignatureColor()
+ModeExecutor::ColorsTuple NighlightModeExecutor::getModeSignatureColor()
 {
-    return CRGB::NavajoWhite;
+    return {CRGB::NavajoWhite, CRGB::Yellow};
 }
 
 void NighlightModeExecutor::doOnShake()

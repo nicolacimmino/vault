@@ -11,10 +11,10 @@ protected:
     void doLoop();
     void doEnterMode();
     void doExitMode();
-    CRGB getModeSignatureColor();
+    ModeExecutor::ColorsTuple getModeSignatureColor();
+
 private:
     uint8_t getColorComponent(int8_t axisReading);
-
 };
 
 #endif

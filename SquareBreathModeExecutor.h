@@ -12,7 +12,7 @@ protected:
     void doEnterMode();
     void doExitMode();
     void doOnTiltX(bool positive);
-    CRGB getModeSignatureColor();
+    ModeExecutor::ColorsTuple getModeSignatureColor();
 
 private:
     void breatheFloodLight();

@@ -18,10 +18,10 @@ void PomodoroModeExecutor::doEnterMode()
 
 void PomodoroModeExecutor::doExitMode()
 {
-    this->floodLight->setColor(CRGB::Black);    
+    this->floodLight->setColor(CRGB::Black);
 }
 
-CRGB PomodoroModeExecutor::getModeSignatureColor()
+ModeExecutor::ColorsTuple PomodoroModeExecutor::getModeSignatureColor()
 {
-    return CRGB::Orange;
+    return {CRGB::Orange, CRGB::Yellow};
 }

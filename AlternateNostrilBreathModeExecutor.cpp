@@ -59,7 +59,7 @@ void AlternateNostrilBreathModeExecutor::doExitMode()
     this->floodLight->setColor(CRGB::Black);
 }
 
-CRGB AlternateNostrilBreathModeExecutor::getModeSignatureColor()
+struct ModeExecutor::ColorsTuple AlternateNostrilBreathModeExecutor::getModeSignatureColor()
 {
-    return CRGB::Cyan;
+    return {CRGB::Cyan, CRGB::Yellow};
 }

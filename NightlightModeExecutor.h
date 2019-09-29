@@ -11,7 +11,7 @@ protected:
     void doLoop();
     void doEnterMode();
     void doExitMode();
-    CRGB getModeSignatureColor();
+    ModeExecutor::ColorsTuple getModeSignatureColor();
     void doOnShake();
 
 private:
