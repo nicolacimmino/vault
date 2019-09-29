@@ -61,5 +61,5 @@ void AlternateNostrilBreathModeExecutor::doExitMode()
 
 struct ColorsTuple AlternateNostrilBreathModeExecutor::getModeSignatureColor()
 {
-    return {CRGB::Cyan, CRGB::Yellow};
+    return {CRGB::DarkGreen, CRGB::Black};
 }

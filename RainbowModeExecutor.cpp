@@ -32,9 +32,10 @@ uint8_t RainbowModeExecutor::getColorComponent(int8_t axisReading)
 void RainbowModeExecutor::doOnShake()
 {
     this->autoMode = !this->autoMode;
+    this->floodLight->override(300, CRGB::Black, 0);
 }
 
 ColorsTuple RainbowModeExecutor::getModeSignatureColor()
 {
-    return {CRGB::Blue, CRGB::Yellow};
+    return {CRGB::Blue, CRGB::DarkRed};
 }
