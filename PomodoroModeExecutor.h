@@ -28,6 +28,7 @@ private:
     void workDonePattern();
     uint16_t pomodoroDurationSeconds = 10;
     uint16_t pomodoroBreakDurationSeconds = 10;
+    uint16_t pomodoroWarningSecondsPerLight = 1;
     uint16_t getPomodoroTimeSeconds();
     uint16_t getPomodoroBreakTimeSeconds();
     uint8_t pomodoroState = POMODORO_GOTOWORK;

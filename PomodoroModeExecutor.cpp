@@ -51,6 +51,7 @@ void PomodoroModeExecutor::workPattern()
     if (this->getPomodoroTimeSeconds() > this->pomodoroDurationSeconds)
     {
         this->pomodoroState = POMODORO_WORKDONE;
+        this->ledBarController->showBar(0);
 
         return;
     }
@@ -58,6 +59,10 @@ void PomodoroModeExecutor::workPattern()
     uint8_t val = 255 * (this->getPomodoroTimeSeconds() / (float)this->pomodoroDurationSeconds);
     this->floodLight->setColor(CRGB::DarkRed, CRGB::Green);
     this->floodLight->setFade(255 - val, max(val, 127));
+
+    if(this->pomodoroDurationSeconds - this->getPomodoroTimeSeconds() < this->pomodoroWarningSecondsPerLight * 4) {
+        this->ledBarController->showBar(1 + ((this->pomodoroDurationSeconds - this->getPomodoroTimeSeconds()) / this->pomodoroWarningSecondsPerLight));
+    }
 }
 
 uint16_t PomodoroModeExecutor::getPomodoroTimeSeconds()
@@ -92,7 +97,7 @@ void PomodoroModeExecutor::doOnShake()
     }
 
     this->shakeCount++;
-Serial.println(this->shakeCount);
+
     if (this->shakeCount == 3)
     {
         this->shakeCount = 0;
