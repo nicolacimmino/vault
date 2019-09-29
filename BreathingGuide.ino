@@ -76,14 +76,9 @@ void onLowBattery()
 void onBatteryCritical()
 {
     ledBarController.showBar(0);
-
-    for (int ix = 0; ix < 8; ix++)
-    {
-        floodLight.setColor(ix % 2 == 0 ? CRGB::Red : CRGB::Black);
-        floodLight.loop();
-        delay(200);
-    }
-
+    floodLight.animateSync(CRGB::Red, CRGB::Black, 200, 10);
+    floodLight.shutdown();
+            
     set_sleep_mode(SLEEP_MODE_PWR_DOWN);
     sleep_enable();
     sleep_mode();
@@ -105,7 +100,8 @@ void setup()
 
     floodLight.begin();
     floodLight.setBrightness(digitalRead(PIN_BTN_S) == LOW ? 15 : 255);
-
+    floodLight.animateSync(CRGB::Green, CRGB::Yellow, 200, 10);
+    
     accelerometer.begin(PIN_ACC_X, PIN_ACC_Y, PIN_ACC_Z, onTiltX, NULL, NULL, onShake);
 
     for (int ix = 0; ix < EXECUTORS_COUNT; ix++)

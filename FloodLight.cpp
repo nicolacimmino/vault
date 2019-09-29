@@ -60,3 +60,20 @@ void FloodLight::override(uint16_t timeMilliseconds, CRGB color0, uint8_t fade0,
     this->overrideFade[1] = fade1;
     this->overrideUntil = millis() + timeMilliseconds;
 }
+
+void FloodLight::animateSync(CRGB color0, CRGB color1, uint16_t interval, uint8_t iterations)
+{
+    for (int ix = 0; ix < iterations; ix++)
+    {
+        this->override(interval, ix % 2 == 0 ? color0 : color1, 0, ix % 2 == 1 ? color0 : color1, 0);
+        this->loop();
+        delay(interval);
+    }
+}
+
+void FloodLight::shutdown()
+{
+    this->overrideUntil = 0;
+    this->setColor(CRGB::Black);
+    this->loop();
+}

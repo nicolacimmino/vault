@@ -16,6 +16,8 @@ public:
     void setFade(uint8_t fade0, uint8_t fade1);
     void override(uint16_t timeMilliseconds, CRGB color0, uint8_t fade0, CRGB color1, uint8_t fade1);
     void override(uint16_t timeMilliseconds, CRGB color0, uint8_t fade0);
+    void animateSync(CRGB color0, CRGB color1, uint16_t interval, uint8_t iterations);
+    void shutdown();
 
 private:
     CRGB leds[2];
