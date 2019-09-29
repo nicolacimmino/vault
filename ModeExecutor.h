@@ -30,7 +30,8 @@ protected:
     LEDBarController *ledBarController;
     Accelerometer *accelerometer;
     bool exerciseEnded = false;
-
+    void resetModeChangeTime();
+    
 private:
     uint32_t modeChangeTime;
     bool modeActive = false;

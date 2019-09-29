@@ -97,3 +97,8 @@ void ModeExecutor::doOnShake()
     // Override on executors that need this.
     return;
 }
+
+void ModeExecutor::resetModeChangeTime()
+{
+    this->modeChangeTime = mills();
+}
