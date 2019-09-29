@@ -13,9 +13,11 @@ protected:
     void doLoop();
     void doEnterMode();
     void doExitMode();
+    void doOnShake();
 
 private:
     uint8_t getColorComponent(int8_t axisReading);
+    bool autoMode = false;
 };
 
 #endif

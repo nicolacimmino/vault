@@ -3,6 +3,13 @@
 
 void RainbowModeExecutor::doLoop()
 {
+    if (this->autoMode)
+    {
+        this->floodLight->setColor(CRGB::CRGB(CHSV::CHSV(255 * ((this->getTimeSinceModeChange() % 10000) / 10000.0), 180, 255)));
+
+        return;
+    }
+
     this->floodLight->setColor(CRGB::CRGB(this->getColorComponent(this->accelerometer->getAveragedX()), this->getColorComponent(this->accelerometer->getAveragedY()), this->getColorComponent(this->accelerometer->getAveragedZ())));
 }
 
@@ -20,6 +27,11 @@ void RainbowModeExecutor::doExitMode()
 uint8_t RainbowModeExecutor::getColorComponent(int8_t axisReading)
 {
     return abs(axisReading) * 2;
+}
+
+void RainbowModeExecutor::doOnShake()
+{
+    this->autoMode = !this->autoMode;
 }
 
 ColorsTuple RainbowModeExecutor::getModeSignatureColor()
