@@ -102,3 +102,8 @@ void ModeExecutor::resetModeChangeTime()
 {
     this->modeChangeTime = millis();
 }
+
+void ModeExecutor::enterDemoMode()
+{
+    // Default behaviour is not to do anything special in demo mode.
+}

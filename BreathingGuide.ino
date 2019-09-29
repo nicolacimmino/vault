@@ -72,6 +72,9 @@ bool onRoll(char *pattern)
     if (strstr(pattern, "ZXZXZYZY") == pattern)
     {
         floodLight.animateSync(CRGB::Red, CRGB::Yellow, 200, 10);
+
+        modeExecutors[modesChanger.getSelectedMode()]->enterDemoMode();
+
         return true;
     }
 

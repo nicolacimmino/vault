@@ -60,7 +60,8 @@ void PomodoroModeExecutor::workPattern()
     this->floodLight->setColor(CRGB::DarkRed, CRGB::Green);
     this->floodLight->setFade(255 - val, max(val, 127));
 
-    if(this->pomodoroDurationSeconds - this->getPomodoroTimeSeconds() < this->pomodoroWarningSecondsPerLight * 4) {
+    if (this->pomodoroDurationSeconds - this->getPomodoroTimeSeconds() < this->pomodoroWarningSecondsPerLight * 4)
+    {
         this->ledBarController->showBar(1 + ((this->pomodoroDurationSeconds - this->getPomodoroTimeSeconds()) / this->pomodoroWarningSecondsPerLight));
     }
 }
@@ -77,6 +78,22 @@ uint16_t PomodoroModeExecutor::getPomodoroBreakTimeSeconds()
 
 void PomodoroModeExecutor::doEnterMode()
 {
+    this->pomodoroDurationSeconds = 1500;     // 25 min
+    this->pomodoroBreakDurationSeconds = 300; // 5 min
+    this->pomodoroWarningSecondsPerLight = 60;
+
+    this->resetModeChangeTime();
+    this->pomodoroState = POMODORO_GOTOWORK;
+}
+
+void PomodoroModeExecutor::enterDemoMode()
+{
+    this->pomodoroDurationSeconds = 30;
+    this->pomodoroBreakDurationSeconds = 10;
+    this->pomodoroWarningSecondsPerLight = 1;
+
+    this->resetModeChangeTime();
+    this->pomodoroState = POMODORO_GOTOWORK;
 }
 
 void PomodoroModeExecutor::doExitMode()

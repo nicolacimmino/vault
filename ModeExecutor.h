@@ -10,9 +10,10 @@ class ModeExecutor
 {
 public:
     void begin(FloodLight *floodLight, LEDBarController *ledBarController, Accelerometer *accelerometer);
-    void loop();
+    void loop();    
     void enterMode();
     void exitMode();
+    virtual void enterDemoMode();
     void onTilt(uint8_t axis, bool positive);
     void onShake();
     virtual struct ColorsTuple getModeSignatureColor();

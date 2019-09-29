@@ -20,7 +20,8 @@ protected:
     void doExitMode();
     void doOnShake();
     void doOnTilt(uint8_t axis, bool positive);
-
+    void enterDemoMode();
+    
 private:
     void goToWorkPattern();
     void breakPattern();

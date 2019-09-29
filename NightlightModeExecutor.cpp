@@ -36,7 +36,7 @@ void NighlightModeExecutor::doExitMode()
 
 ColorsTuple NighlightModeExecutor::getModeSignatureColor()
 {
-    return {CRGB::NavajoWhite, CRGB::Yellow};
+    return {CRGB::NavajoWhite, CRGB::DarkSlateGray };
 }
 
 void NighlightModeExecutor::doOnShake()
