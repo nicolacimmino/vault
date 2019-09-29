@@ -39,6 +39,7 @@ void ModesChanger::onLongPress()
         this->activeUntil = millis() + this->timeout;
         this->mode = this->selectedMode;
 
+        this->floodLight->animateSync(CRGB::Black, CRGB::Black, 200, 1);
         this->floodLight->override(this->timeout, this->modeExecutors[this->mode]->getModeSignatureColor().color0, 0, this->modeExecutors[this->mode]->getModeSignatureColor().color1, 0);
 
         return;
@@ -47,9 +48,8 @@ void ModesChanger::onLongPress()
     this->modeExecutors[this->selectedMode]->exitMode();
     this->modeExecutors[this->mode]->enterMode();
     this->selectedMode = this->mode;
-
-    this->floodLight->animateSync(CRGB::Green, CRGB::Yellow, 200, 5);
-    this->floodLight->override(0, CRGB::Black, 0);
+    
+    this->floodLight->override(200, CRGB::Black, 0);
 
     this->activeUntil = 0;
 }
