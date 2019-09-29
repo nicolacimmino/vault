@@ -13,9 +13,7 @@ void ModeExecutor::enterMode()
     this->modeActive = true;
     this->inhibitLoopUntil = 0;
 
-    this->doEnterMode();
-
-    this->floodLight->override(1000, this->getModeSignatureColor().color0, 0, this->getModeSignatureColor().color1, 0);
+    this->doEnterMode();    
 }
 
 void ModeExecutor::exitMode()

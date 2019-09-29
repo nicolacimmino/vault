@@ -7,15 +7,15 @@ class AlternateNostrilBreathModeExecutor : public ModeExecutor
 {
 
 public:
-    
+    struct ColorsTuple getModeSignatureColor();
+
 protected:
     void doLoop();
     void doEnterMode();
     void doExitMode();
-    struct ModeExecutor::ColorsTuple getModeSignatureColor();
 
-private:    
-    void breatheFloodLight();        
+private:
+    void breatheFloodLight();
     bool leftNostril = true;
 };
 

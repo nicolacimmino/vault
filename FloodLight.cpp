@@ -59,6 +59,7 @@ void FloodLight::override(uint16_t timeMilliseconds, CRGB color0, uint8_t fade0,
     this->overrideFade[0] = fade0;
     this->overrideFade[1] = fade1;
     this->overrideUntil = millis() + timeMilliseconds;
+    this->loop();
 }
 
 void FloodLight::animateSync(CRGB color0, CRGB color1, uint16_t interval, uint8_t iterations)

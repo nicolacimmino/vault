@@ -15,12 +15,7 @@ public:
     void exitMode();
     void onTiltX(bool positive);
     void onShake();
-
-    struct ColorsTuple
-    {
-        CRGB color0;
-        CRGB color1;
-    };
+    virtual struct ColorsTuple getModeSignatureColor();
 
 protected:
     virtual void doLoop();
@@ -28,7 +23,6 @@ protected:
     virtual void doExitMode();
     virtual void doOnTiltX(bool positive);
     virtual void doOnShake();
-    virtual struct ColorsTuple getModeSignatureColor();
     uint32_t getTimeSinceModeChange();
     void inhibitLoopFor(uint32_t milliseconds);
     void updateElapsedTimeBar(uint32_t dotDurationmS);
@@ -41,6 +35,12 @@ private:
     uint32_t modeChangeTime;
     bool modeActive = false;
     uint32_t inhibitLoopUntil = 0;
+};
+
+struct ColorsTuple
+{
+    CRGB color0;
+    CRGB color1;
 };
 
 #endif

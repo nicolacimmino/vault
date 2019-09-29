@@ -7,13 +7,14 @@ class PomodoroModeExecutor : public ModeExecutor
 {
 
 public:
+    ColorsTuple getModeSignatureColor();
+
 protected:
     void doLoop();
     void doEnterMode();
     void doExitMode();
-    ModeExecutor::ColorsTuple getModeSignatureColor();
-private:
 
+private:
 };
 
 #endif

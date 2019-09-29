@@ -7,12 +7,13 @@ class SquareBreathModeExecutor : public ModeExecutor
 {
 
 public:
+    ColorsTuple getModeSignatureColor();
+
 protected:
     void doLoop();
     void doEnterMode();
     void doExitMode();
     void doOnTiltX(bool positive);
-    ModeExecutor::ColorsTuple getModeSignatureColor();
 
 private:
     void breatheFloodLight();

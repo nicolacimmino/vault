@@ -21,7 +21,7 @@ void PomodoroModeExecutor::doExitMode()
     this->floodLight->setColor(CRGB::Black);
 }
 
-ModeExecutor::ColorsTuple PomodoroModeExecutor::getModeSignatureColor()
+ColorsTuple PomodoroModeExecutor::getModeSignatureColor()
 {
     return {CRGB::Orange, CRGB::Yellow};
 }

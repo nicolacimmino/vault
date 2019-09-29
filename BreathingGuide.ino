@@ -29,6 +29,7 @@
 #include "RainbowModeExecutor.h"
 #include "PomodoroModeExecutor.h"
 #include "NightlightModeExecutor.h"
+#include "ModesChanger.h"
 
 #include <avr/sleep.h>
 
@@ -41,15 +42,19 @@ BatteryMonitor BatteryMonitor;
 uint8_t mode = 0;
 ModeExecutor *modeExecutors[] = {new SquareBreathModeExecutor(), new AlternateNostrilBreathModeExecutor(), new RainbowModeExecutor(), new PomodoroModeExecutor(), new NighlightModeExecutor()};
 
+ModesChanger modesChanger;
+
 void onClick()
 {
-    modeExecutors[mode]->exitMode();
-    mode = (mode + 1) % EXECUTORS_COUNT;
-    modeExecutors[mode]->enterMode();
+    if (modesChanger.isActive())
+    {
+        modesChanger.onClick();
+    }
 }
 
 void onLongPress()
 {
+    modesChanger.onLongPress();
 }
 
 void onTiltX(bool positive)
@@ -78,7 +83,7 @@ void onBatteryCritical()
     ledBarController.showBar(0);
     floodLight.animateSync(CRGB::Red, CRGB::Black, 200, 10);
     floodLight.shutdown();
-            
+
     set_sleep_mode(SLEEP_MODE_PWR_DOWN);
     sleep_enable();
     sleep_mode();
@@ -101,7 +106,7 @@ void setup()
     floodLight.begin();
     floodLight.setBrightness(digitalRead(PIN_BTN_S) == LOW ? 15 : 255);
     floodLight.animateSync(CRGB::Green, CRGB::Yellow, 200, 10);
-    
+
     accelerometer.begin(PIN_ACC_X, PIN_ACC_Y, PIN_ACC_Z, onTiltX, NULL, NULL, onShake);
 
     for (int ix = 0; ix < EXECUTORS_COUNT; ix++)
@@ -111,24 +116,25 @@ void setup()
     modeExecutors[0]->enterMode();
 
     BatteryMonitor.begin(onLowBattery, onBatteryCritical);
+
+    modesChanger.begin(modeExecutors, EXECUTORS_COUNT, &floodLight);
 }
 
 void loop()
 {
     accelerometer.loop();
     controlButton.loop();
+    modesChanger.loop();
 
-    for (int ix = 0; ix < EXECUTORS_COUNT; ix++)
+    if (!modesChanger.isActive())
     {
-        modeExecutors[ix]->loop();
+        for (int ix = 0; ix < EXECUTORS_COUNT; ix++)
+        {
+            modeExecutors[ix]->loop();
+        }
     }
 
     ledBarController.loop();
     BatteryMonitor.loop();
-    floodLight.loop();
-
-    // Serial.println(accelerometer.getX());
-    // Serial.println(accelerometer.getY());
-    // Serial.println(accelerometer.getZ());
-    // Serial.println("--");
+    floodLight.loop();    
 }

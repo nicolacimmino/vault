@@ -7,11 +7,12 @@ class NighlightModeExecutor : public ModeExecutor
 {
 
 public:
+    ColorsTuple getModeSignatureColor();
+
 protected:
     void doLoop();
     void doEnterMode();
     void doExitMode();
-    ModeExecutor::ColorsTuple getModeSignatureColor();
     void doOnShake();
 
 private:

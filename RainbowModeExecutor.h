@@ -7,11 +7,12 @@ class RainbowModeExecutor : public ModeExecutor
 {
 
 public:
+    ColorsTuple getModeSignatureColor();
+
 protected:
     void doLoop();
     void doEnterMode();
     void doExitMode();
-    ModeExecutor::ColorsTuple getModeSignatureColor();
 
 private:
     uint8_t getColorComponent(int8_t axisReading);

@@ -22,7 +22,7 @@ uint8_t RainbowModeExecutor::getColorComponent(int8_t axisReading)
     return abs(axisReading) * 2;
 }
 
-ModeExecutor::ColorsTuple RainbowModeExecutor::getModeSignatureColor()
+ColorsTuple RainbowModeExecutor::getModeSignatureColor()
 {
     return {CRGB::Blue, CRGB::Yellow};
 }
