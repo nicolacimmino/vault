@@ -107,3 +107,13 @@ void ModeExecutor::enterDemoMode()
 {
     // Default behaviour is not to do anything special in demo mode.
 }
+
+void ModeExecutor::onClick()
+{
+    this->doOnClick();
+}
+
+void ModeExecutor::doOnClick()
+{
+    // Default behaviour, ignore clicks.
+}

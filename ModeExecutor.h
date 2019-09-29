@@ -16,6 +16,7 @@ public:
     virtual void enterDemoMode();
     void onTilt(uint8_t axis, bool positive);
     void onShake();
+    void onClick();
     virtual struct ColorsTuple getModeSignatureColor();
 
 protected:
@@ -24,6 +25,7 @@ protected:
     virtual void doExitMode();
     virtual void doOnTilt(uint8_t axis, bool positive);
     virtual void doOnShake();
+    virtual void doOnClick();
     uint32_t getTimeSinceModeChange();
     void inhibitLoopFor(uint32_t milliseconds);
     void updateElapsedTimeBar(uint32_t dotDurationmS);

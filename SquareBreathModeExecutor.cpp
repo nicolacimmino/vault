@@ -71,26 +71,25 @@ void SquareBreathModeExecutor::doExitMode()
 
 ColorsTuple SquareBreathModeExecutor::getModeSignatureColor()
 {
-    return {CRGB::DarkGreen, CRGB::Yellow };    
+    return {CRGB::DarkGreen, CRGB::Yellow};
 }
 
-void SquareBreathModeExecutor::doOnTilt(uint8_t axis, bool positive)
+void SquareBreathModeExecutor::doOnClick()
 {
-    if(axis != X_AXIS) {
+    if (abs(this->accelerometer->getX()) < 96)
+    {
         return;
     }
-    
-    this->inhibitLoopFor(300);
+
+    bool positive = this->accelerometer->getX() > 0;
 
     if ((this->sideDuration <= 2000 && positive) || (this->sideDuration >= 7000 && !positive))
-    {
-        this->floodLight->setColor(CRGB::DarkRed);
-        this->floodLight->setFade(127);
+    {        
+        this->floodLight->override(300, !positive ? CRGB::Black : CRGB::DarkRed, 127, positive ? CRGB::Black : CRGB::DarkRed, 127);
         return;
     }
 
     this->sideDuration += positive ? -1000 : 1000;
 
-    this->floodLight->setColor(!positive ? CRGB::White : CRGB::DarkGreen, positive ? CRGB::White : CRGB::DarkGreen);
-    this->floodLight->setFade(127);
+    this->floodLight->override(300, !positive ? CRGB::Black : CRGB::DarkGreen, 127, positive ? CRGB::Black : CRGB::DarkGreen, 127);
 }

@@ -12,8 +12,8 @@ public:
 protected:
     void doLoop();
     void doEnterMode();
-    void doExitMode();
-    void doOnTilt(uint8_t axis, bool positive);
+    void doExitMode();    
+    void doOnClick();
 
 private:
     void breatheFloodLight();

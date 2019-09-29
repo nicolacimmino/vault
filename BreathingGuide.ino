@@ -49,7 +49,10 @@ void onClick()
     if (modesChanger.isActive())
     {
         modesChanger.onClick();
+        return;
     }
+
+    modeExecutors[modesChanger.getSelectedMode()]->onClick();
 }
 
 void onLongPress()
