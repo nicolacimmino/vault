@@ -2,8 +2,7 @@
 #include "Accelerometer.h"
 
 void Accelerometer::begin(uint8_t pinXAxes, uint8_t pinYAxes, uint8_t pinZAxes,
-                          void (*onTiltX)(bool positive) = NULL, void (*onTiltY)(bool positive) = NULL, void (*onTiltZ)(bool positive) = NULL,
-                          void (*onShake)() = NULL)
+                          void (*onTilt)(uint8_t axis, bool positive) = NULL, void (*onShake)() = NULL)
 {
     this->pinAxes[X_AXIS] = pinXAxes;
     this->pinAxes[Y_AXIS] = pinYAxes;
@@ -13,11 +12,9 @@ void Accelerometer::begin(uint8_t pinXAxes, uint8_t pinYAxes, uint8_t pinZAxes,
     pinMode(pinYAxes, INPUT);
     pinMode(pinZAxes, INPUT);
 
-    this->onTilt[X_AXIS] = onTiltX;
-    this->onTilt[Y_AXIS] = onTiltY;
-    this->onTilt[Z_AXIS] = onTiltZ;
-
-    this->onShake= onShake;    
+    this->onTilt = onTilt;
+    
+    this->onShake = onShake;
 }
 
 void Accelerometer::loop()
@@ -48,12 +45,12 @@ void Accelerometer::senseAxisTiltMotion(uint8_t axis, int16_t axisTilt)
     if (axisTilt < -96 && this->axesStatus[axis] == AXIS_LEVEL)
     {
         this->axesStatus[axis] = AXIS_NEGATIVE_TILT;
-        this->onTilt[axis](false);
+        this->onTilt(axis, false);
     }
     else if (axisTilt > 96 && this->axesStatus[axis] == AXIS_LEVEL)
     {
         this->axesStatus[axis] = AXIS_POSITIVE_TILT;
-        this->onTilt[axis](true);
+        this->onTilt(axis, true);
     }
     else if (axisTilt < 32 && axisTilt > -32 && this->axesStatus[axis] != AXIS_LEVEL)
     {

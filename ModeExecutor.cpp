@@ -13,7 +13,7 @@ void ModeExecutor::enterMode()
     this->modeActive = true;
     this->inhibitLoopUntil = 0;
 
-    this->doEnterMode();    
+    this->doEnterMode();
 }
 
 void ModeExecutor::exitMode()
@@ -64,17 +64,17 @@ void ModeExecutor::updateElapsedTimeBar(uint32_t dotDurationmS)
     this->ledBarController->showBar(elapsedBlocks);
 }
 
-void ModeExecutor::onTiltX(bool positive)
+void ModeExecutor::onTilt(uint8_t axis, bool positive)
 {
     if (!this->modeActive)
     {
         return;
     }
 
-    this->doOnTiltX(positive);
+    this->doOnTilt(axis, positive);
 }
 
-void ModeExecutor::doOnTiltX(bool positive)
+void ModeExecutor::doOnTilt(uint8_t axis, bool positive)
 {
     // Default behavior do not react to tilt.
     // Override on executors that need this.
@@ -100,5 +100,5 @@ void ModeExecutor::doOnShake()
 
 void ModeExecutor::resetModeChangeTime()
 {
-    this->modeChangeTime = mills();
+    this->modeChangeTime = millis();
 }

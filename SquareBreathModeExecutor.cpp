@@ -74,8 +74,12 @@ ColorsTuple SquareBreathModeExecutor::getModeSignatureColor()
     return {CRGB::DarkGreen, CRGB::Yellow };    
 }
 
-void SquareBreathModeExecutor::doOnTiltX(bool positive)
+void SquareBreathModeExecutor::doOnTilt(uint8_t axis, bool positive)
 {
+    if(axis != X_AXIS) {
+        return;
+    }
+    
     this->inhibitLoopFor(300);
 
     if ((this->sideDuration <= 2000 && positive) || (this->sideDuration >= 7000 && !positive))

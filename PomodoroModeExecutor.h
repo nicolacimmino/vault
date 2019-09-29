@@ -14,11 +14,11 @@ protected:
     void doEnterMode();
     void doExitMode();
     void doOnShake();
-    
+
 private:
     void breakPattern();
     void timerPattern();
-    uint16_t pomodoroDurationSeconds = 30;
+    uint16_t pomodoroDurationSeconds = 10;
     uint16_t getPomodoroTimeSeconds();
 };
 

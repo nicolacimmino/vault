@@ -13,7 +13,7 @@ public:
     void loop();
     void enterMode();
     void exitMode();
-    void onTiltX(bool positive);
+    void onTilt(uint8_t axis, bool positive);
     void onShake();
     virtual struct ColorsTuple getModeSignatureColor();
 
@@ -21,7 +21,7 @@ protected:
     virtual void doLoop();
     virtual void doEnterMode();
     virtual void doExitMode();
-    virtual void doOnTiltX(bool positive);
+    virtual void doOnTilt(uint8_t axis, bool positive);
     virtual void doOnShake();
     uint32_t getTimeSinceModeChange();
     void inhibitLoopFor(uint32_t milliseconds);
@@ -31,7 +31,7 @@ protected:
     Accelerometer *accelerometer;
     bool exerciseEnded = false;
     void resetModeChangeTime();
-    
+
 private:
     uint32_t modeChangeTime;
     bool modeActive = false;

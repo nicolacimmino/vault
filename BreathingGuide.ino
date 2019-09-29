@@ -57,19 +57,16 @@ void onLongPress()
     modesChanger.onLongPress();
 }
 
-void onTiltX(bool positive)
+void onTilt(uint8_t axis, bool positive)
 {
-    for (int ix = 0; ix < EXECUTORS_COUNT; ix++)
-    {
-        modeExecutors[ix]->onTiltX(positive);
-    }
+    modeExecutors[modesChanger.getSelectedMode()]->onTilt(axis, positive);
 }
 
 void onShake()
 {
     for (int ix = 0; ix < EXECUTORS_COUNT; ix++)
     {
-        modeExecutors[ix]->onShake();
+        modeExecutors[modesChanger.getSelectedMode()]-> onShake();
     }
 }
 
@@ -107,7 +104,7 @@ void setup()
     floodLight.setBrightness(digitalRead(PIN_BTN_S) == LOW ? 15 : 255);
     floodLight.animateSync(CRGB::Green, CRGB::Yellow, 200, 10);
 
-    accelerometer.begin(PIN_ACC_X, PIN_ACC_Y, PIN_ACC_Z, onTiltX, NULL, NULL, onShake);
+    accelerometer.begin(PIN_ACC_X, PIN_ACC_Y, PIN_ACC_Z, onTilt, onShake);
 
     for (int ix = 0; ix < EXECUTORS_COUNT; ix++)
     {

@@ -47,7 +47,7 @@ ColorsTuple PomodoroModeExecutor::getModeSignatureColor()
     return {CRGB::Orange, CRGB::Yellow};
 }
 
-void PomodoroMode::doOnShake()
+void PomodoroModeExecutor::doOnShake()
 {
-    
+    this->resetModeChangeTime();
 }

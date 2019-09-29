@@ -13,7 +13,7 @@ protected:
     void doLoop();
     void doEnterMode();
     void doExitMode();
-    void doOnTiltX(bool positive);
+    void doOnTilt(uint8_t axis, bool positive);
 
 private:
     void breatheFloodLight();
