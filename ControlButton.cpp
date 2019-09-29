@@ -12,6 +12,13 @@ void ControlButton::begin(uint8_t pinButton, void (*onClick)(), void (*onLongPre
 
 void ControlButton::loop()
 {
+    if (this->inhibitUntilReleased && digitalRead(this->pinButton) == 0)
+    {
+        return;
+    }
+
+    this->inhibitUntilReleased = false;
+
     this->scanButton();
 }
 
@@ -42,6 +49,7 @@ void ControlButton::scanButton()
         if (this->onLongPress != NULL)
         {
             this->onLongPress();
+            this->inhibitUntilReleased = true;
         }
     }
     else
@@ -50,10 +58,5 @@ void ControlButton::scanButton()
         {
             this->onClick();
         }
-    }
-
-    while (digitalRead(this->pinButton) == 0)
-    {
-        delay(1);
     }
 }

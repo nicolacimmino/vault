@@ -136,5 +136,5 @@ void loop()
 
     ledBarController.loop();
     BatteryMonitor.loop();
-    floodLight.loop();    
+    floodLight.loop();
 }

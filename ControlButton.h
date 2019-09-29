@@ -14,6 +14,7 @@ private:
     void (*onClick)();
     void (*onLongPress)();
     void scanButton();
+    bool inhibitUntilReleased = false;
 };
 
 #endif

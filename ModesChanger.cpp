@@ -5,7 +5,7 @@ void ModesChanger::begin(ModeExecutor **modeExecutors, uint8_t modesCount, Flood
 {
     this->modeExecutors = modeExecutors;
     this->modesCount = modesCount;
-    this->floodLight = floodLight;    
+    this->floodLight = floodLight;
 }
 
 void ModesChanger::loop()
@@ -50,7 +50,7 @@ void ModesChanger::onLongPress()
 
     this->floodLight->animateSync(CRGB::Green, CRGB::Yellow, 200, 5);
     this->floodLight->override(0, CRGB::Black, 0);
-    
+
     this->activeUntil = 0;
 }
 
