@@ -38,8 +38,8 @@ private:
         80, 1000  // Z min, max
     };
     int16_t averagedAxis[3] = {0, 0, 0};
-    unsigned long movingAverageSampleTime = 0;
-    unsigned long lastShakeTime = 0;
+    uint32_t movingAverageSampleTime = 0;
+    uint32_t lastShakeTime = 0;
     void senseAxisTiltMotion(uint8_t axis, int16_t axisTilt);
     void senseAxisShakeMotion(uint8_t axis);
     void (*onTilt)(uint8_t axis, bool positive);

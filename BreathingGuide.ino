@@ -64,10 +64,7 @@ void onTilt(uint8_t axis, bool positive)
 
 void onShake()
 {
-    for (int ix = 0; ix < EXECUTORS_COUNT; ix++)
-    {
-        modeExecutors[modesChanger.getSelectedMode()]-> onShake();
-    }
+    modeExecutors[modesChanger.getSelectedMode()]->onShake();
 }
 
 void onLowBattery()

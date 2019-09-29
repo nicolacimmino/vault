@@ -13,7 +13,7 @@ void Accelerometer::begin(uint8_t pinXAxes, uint8_t pinYAxes, uint8_t pinZAxes,
     pinMode(pinZAxes, INPUT);
 
     this->onTilt = onTilt;
-    
+
     this->onShake = onShake;
 }
 
@@ -60,14 +60,14 @@ void Accelerometer::senseAxisTiltMotion(uint8_t axis, int16_t axisTilt)
 
 void Accelerometer::senseAxisShakeMotion(uint8_t axis)
 {
-    if (this->onShake == NULL)
+    if (this->onShake == NULL || millis() - this->lastShakeTime < 500)
     {
         return;
     }
 
     int16_t acc = analogRead(this->pinAxes[axis]);
 
-    if ((acc < this->calibationTableAxisShake[axis * 2] || acc > this->calibationTableAxisShake[1 + (axis * 2)]) && millis() > this->lastShakeTime + 500)
+    if ((acc < this->calibationTableAxisShake[axis * 2] || acc > this->calibationTableAxisShake[1 + (axis * 2)]))
     {
         this->onShake();
         this->lastShakeTime = millis();

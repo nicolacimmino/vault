@@ -86,8 +86,21 @@ ColorsTuple PomodoroModeExecutor::getModeSignatureColor()
 
 void PomodoroModeExecutor::doOnShake()
 {
-    this->pomodoroState = POMODORO_WORK;
-    this->resetModeChangeTime();
+    if (millis() - this->lastShakeTime > 3000)
+    {
+        this->shakeCount = 0;
+    }
+
+    this->shakeCount++;
+Serial.println(this->shakeCount);
+    if (this->shakeCount == 3)
+    {
+        this->shakeCount = 0;
+        this->pomodoroState = POMODORO_WORK;
+        this->resetModeChangeTime();
+    }
+
+    this->lastShakeTime = millis();
 }
 
 void PomodoroModeExecutor::doOnTilt(uint8_t axis, bool positive)

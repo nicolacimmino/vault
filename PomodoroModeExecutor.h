@@ -32,7 +32,8 @@ private:
     uint16_t getPomodoroBreakTimeSeconds();
     uint8_t pomodoroState = POMODORO_GOTOWORK;
     uint32_t breakStartTime = 0;
-
+    uint32_t lastShakeTime = 0;
+    uint8_t shakeCount = 0;
 };
 
 #endif
