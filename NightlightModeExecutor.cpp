@@ -12,7 +12,7 @@ void NighlightModeExecutor::doLoop()
 
     this->floodLight->setFade(this->fade);
 
-    if (this->activeUntil < this->getTimeSinceModeChange())
+    if (!this->latched && this->activeUntil < this->getTimeSinceModeChange())
     {
         this->floodLight->setColor(CRGB::Black);
     }
@@ -36,10 +36,24 @@ void NighlightModeExecutor::doExitMode()
 
 ColorsTuple NighlightModeExecutor::getModeSignatureColor()
 {
-    return {CRGB::NavajoWhite, CRGB::DarkSlateGray };
+    return {CRGB::NavajoWhite, CRGB::DarkSlateGray};
 }
 
 void NighlightModeExecutor::doOnShake()
 {
     this->fade = this->fade == 250 ? 50 : 250;
+}
+
+void NighlightModeExecutor::doOnClick()
+{
+    if (abs(this->accelerometer->getX()) < 96)
+    {
+        return;
+    }
+
+    if (this->accelerometer->getX() > 0)
+    {
+        this->latched = !this->latched;
+        this->ledBarController->showBar(this->latched ? 1 : 0);
+    }
 }

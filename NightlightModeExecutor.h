@@ -14,6 +14,7 @@ protected:
     void doEnterMode();
     void doExitMode();
     void doOnShake();
+    void doOnClick();
 
 private:
     int8_t lastX;
@@ -21,6 +22,7 @@ private:
     int8_t lastZ;
     uint32_t activeUntil = 0;
     uint8_t fade = 250;
+    bool latched = false;
 };
 
 #endif
