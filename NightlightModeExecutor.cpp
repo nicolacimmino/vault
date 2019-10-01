@@ -7,7 +7,7 @@ void NighlightModeExecutor::doLoop()
     {
         this->activeUntil = this->getTimeSinceModeChange() + 5000;
 
-        this->floodLight->setColor(CRGB::NavajoWhite);
+        this->floodLight->setColor(this->lightColor);
     }
 
     this->floodLight->setFade(this->fade);
@@ -24,7 +24,7 @@ void NighlightModeExecutor::doLoop()
 
 void NighlightModeExecutor::doEnterMode()
 {
-    this->floodLight->setColor(CRGB::NavajoWhite);
+    this->floodLight->setColor(this->lightColor);
     this->fade = 250;
 }
 
@@ -36,11 +36,15 @@ void NighlightModeExecutor::doExitMode()
 
 ColorsTuple NighlightModeExecutor::getModeSignatureColor()
 {
-    return {CRGB::NavajoWhite, CRGB::DarkSlateGray};
+    return {this->lightColor, CRGB::DarkSlateGray};
 }
 
 void NighlightModeExecutor::doOnShake()
 {
+    if(this->latched) {
+        return;
+    }
+    
     this->fade = this->fade == 250 ? 50 : 250;
 }
 
