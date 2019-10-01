@@ -60,3 +60,8 @@ void ControlButton::scanButton()
         }
     }
 }
+
+bool ControlButton::isButtonPressed()
+{
+    return digitalRead(this->pinButton) == LOW;
+}

@@ -31,6 +31,7 @@
 #include "NightlightModeExecutor.h"
 #include "ModesChanger.h"
 #include "MemoryController.h"
+#include "BrightnessChanger.h"
 
 #include <avr/sleep.h>
 
@@ -45,6 +46,7 @@ uint8_t mode = 0;
 ModeExecutor *modeExecutors[] = {new SquareBreathModeExecutor(), new AlternateNostrilBreathModeExecutor(), new RainbowModeExecutor(), new PomodoroModeExecutor(), new NighlightModeExecutor()};
 
 ModesChanger modesChanger;
+BrightnessChanger brightnessChanger;
 
 void onClick()
 {
@@ -54,11 +56,23 @@ void onClick()
         return;
     }
 
+    if (brightnessChanger.isActive())
+    {
+        brightnessChanger.onClick();
+        return;
+    }
+
     modeExecutors[modesChanger.getSelectedMode()]->onClick();
 }
 
 void onLongPress()
 {
+    if (brightnessChanger.isActive())
+    {
+        brightnessChanger.onLongPress();
+        return;
+    }
+
     modesChanger.onLongPress();
 }
 
@@ -117,9 +131,8 @@ void setup()
     ledBarController.begin(ledPins);
 
     floodLight.begin();
-    floodLight.setBrightness(digitalRead(PIN_BTN_S) == LOW ? 15 : 255);
-    floodLight.animateSync(CRGB::Green, CRGB::Yellow, 200, 10);
-
+    floodLight.setBrightness(controlButton.isButtonPressed() ? 50 : memoryController.getByte(MEMORY_GLOBAL_BRIGHTNESS_CAP));
+    
     accelerometer.begin(PIN_ACC_X, PIN_ACC_Y, PIN_ACC_Z, onTilt, onShake, onRoll);
 
     for (int ix = 0; ix < EXECUTORS_COUNT; ix++)
@@ -131,6 +144,15 @@ void setup()
     BatteryMonitor.begin(onLowBattery, onBatteryCritical);
 
     modesChanger.begin(modeExecutors, EXECUTORS_COUNT, &floodLight);
+
+    if (controlButton.isButtonPressed())
+    {        
+        brightnessChanger.begin(&floodLight, &memoryController);
+        while (controlButton.isButtonPressed())
+        {
+            //
+        }
+    }    
 }
 
 void loop()
@@ -138,8 +160,9 @@ void loop()
     accelerometer.loop();
     controlButton.loop();
     modesChanger.loop();
+    brightnessChanger.loop();
 
-    if (!modesChanger.isActive())
+    if (!modesChanger.isActive() && !brightnessChanger.isActive())
     {
         for (int ix = 0; ix < EXECUTORS_COUNT; ix++)
         {

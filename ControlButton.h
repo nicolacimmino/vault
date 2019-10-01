@@ -8,7 +8,8 @@ class ControlButton
 public:
     void begin(uint8_t pinButton, void (*onClick)(), void (*onLongPress)());
     void loop();
-
+    bool isButtonPressed();
+    
 private:
     uint8_t pinButton;
     void (*onClick)();
