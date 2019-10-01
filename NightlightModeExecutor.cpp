@@ -5,9 +5,9 @@ void NighlightModeExecutor::doLoop()
 {
     if (abs(this->lastX - this->accelerometer->getX()) > 64 || abs(this->lastY - this->accelerometer->getY()) > 64 || abs(this->lastZ - this->accelerometer->getZ()) > 64)
     {
-        this->activeUntil = this->getTimeSinceModeChange() + 5000;
+        this->refreshActiveUntil();
 
-        this->floodLight->setColor(this->lightColor);
+        this->floodLight->setColor(this->getCurrentColor());
     }
 
     this->floodLight->setFade(this->fade);
@@ -24,7 +24,7 @@ void NighlightModeExecutor::doLoop()
 
 void NighlightModeExecutor::doEnterMode()
 {
-    this->floodLight->setColor(this->lightColor);
+    this->floodLight->setColor(this->getCurrentColor());
     this->fade = 250;
 }
 
@@ -36,15 +36,16 @@ void NighlightModeExecutor::doExitMode()
 
 ColorsTuple NighlightModeExecutor::getModeSignatureColor()
 {
-    return {this->lightColor, CRGB::DarkSlateGray};
+    return {this->getCurrentColor(), CRGB::DarkSlateGray};
 }
 
 void NighlightModeExecutor::doOnShake()
 {
-    if(this->latched) {
+    if (this->latched)
+    {
         return;
     }
-    
+
     this->fade = this->fade == 250 ? 50 : 250;
 }
 
@@ -59,5 +60,26 @@ void NighlightModeExecutor::doOnClick()
     {
         this->latched = !this->latched;
         this->ledBarController->showBar(this->latched ? 1 : 0);
+
+        return;
     }
+
+    if (this->latched)
+    {
+        return;
+    }
+
+    this->currentColorIndex = (this->currentColorIndex + 1) % NIGHTLIGHT_COLORS_COUNT;
+    this->floodLight->setColor(this->getCurrentColor());
+    this->refreshActiveUntil();
+}
+
+CRGB NighlightModeExecutor::getCurrentColor()
+{
+    return this->lightColors[this->currentColorIndex];
+}
+
+void NighlightModeExecutor::refreshActiveUntil()
+{
+    this->activeUntil = this->getTimeSinceModeChange() + 5000;
 }
