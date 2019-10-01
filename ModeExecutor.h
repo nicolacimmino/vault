@@ -5,12 +5,13 @@
 #include "FloodLight.h"
 #include "LEDBarController.h"
 #include "Accelerometer.h"
+#include "MemoryController.h"
 
 class ModeExecutor
 {
 public:
-    void begin(FloodLight *floodLight, LEDBarController *ledBarController, Accelerometer *accelerometer);
-    void loop();    
+    void begin(FloodLight *floodLight, LEDBarController *ledBarController, Accelerometer *accelerometer, MemoryController *memoryController);
+    void loop();
     void enterMode();
     void exitMode();
     virtual void enterDemoMode();
@@ -32,6 +33,7 @@ protected:
     FloodLight *floodLight;
     LEDBarController *ledBarController;
     Accelerometer *accelerometer;
+    MemoryController *memoryController;
     bool exerciseEnded = false;
     void resetModeChangeTime();
 

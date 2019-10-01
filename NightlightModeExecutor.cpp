@@ -24,6 +24,8 @@ void NighlightModeExecutor::doLoop()
 
 void NighlightModeExecutor::doEnterMode()
 {
+    this->currentColorIndex = this->memoryController->getByte(MEMORY_NIGHTLIGHT_LAST_USED_COLOR_INDEX) % NIGHTLIGHT_COLORS_COUNT;
+
     this->floodLight->setColor(this->getCurrentColor());
     this->fade = 250;
 }
@@ -36,7 +38,7 @@ void NighlightModeExecutor::doExitMode()
 
 ColorsTuple NighlightModeExecutor::getModeSignatureColor()
 {
-    return {this->getCurrentColor(), CRGB::DarkSlateGray};
+    return {CRGB::White, CRGB::DarkSlateGray};
 }
 
 void NighlightModeExecutor::doOnShake()
@@ -72,6 +74,8 @@ void NighlightModeExecutor::doOnClick()
     this->currentColorIndex = (this->currentColorIndex + 1) % NIGHTLIGHT_COLORS_COUNT;
     this->floodLight->setColor(this->getCurrentColor());
     this->refreshActiveUntil();
+
+    this->memoryController->setByte(MEMORY_NIGHTLIGHT_LAST_USED_COLOR_INDEX, this->currentColorIndex);
 }
 
 CRGB NighlightModeExecutor::getCurrentColor()

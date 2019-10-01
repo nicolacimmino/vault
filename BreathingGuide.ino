@@ -30,6 +30,7 @@
 #include "PomodoroModeExecutor.h"
 #include "NightlightModeExecutor.h"
 #include "ModesChanger.h"
+#include "MemoryController.h"
 
 #include <avr/sleep.h>
 
@@ -38,6 +39,7 @@ LEDBarController ledBarController;
 ControlButton controlButton;
 FloodLight floodLight;
 BatteryMonitor BatteryMonitor;
+MemoryController memoryController;
 
 uint8_t mode = 0;
 ModeExecutor *modeExecutors[] = {new SquareBreathModeExecutor(), new AlternateNostrilBreathModeExecutor(), new RainbowModeExecutor(), new PomodoroModeExecutor(), new NighlightModeExecutor()};
@@ -122,7 +124,7 @@ void setup()
 
     for (int ix = 0; ix < EXECUTORS_COUNT; ix++)
     {
-        modeExecutors[ix]->begin(&floodLight, &ledBarController, &accelerometer);
+        modeExecutors[ix]->begin(&floodLight, &ledBarController, &accelerometer, &memoryController);
     }
     modeExecutors[0]->enterMode();
 

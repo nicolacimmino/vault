@@ -1,10 +1,11 @@
 #include "ModeExecutor.h"
 
-void ModeExecutor::begin(FloodLight *floodLight, LEDBarController *ledBarController, Accelerometer *accelerometer)
+void ModeExecutor::begin(FloodLight *floodLight, LEDBarController *ledBarController, Accelerometer *accelerometer, MemoryController *memoryController)
 {
     this->floodLight = floodLight;
     this->ledBarController = ledBarController;
     this->accelerometer = accelerometer;
+    this->memoryController = memoryController;
 }
 
 void ModeExecutor::enterMode()
