@@ -29,11 +29,11 @@ private:
     CRGB getCurrentColor();
     CRGB lightColors[NIGHTLIGHT_COLORS_COUNT] = {
         CRGB::CRGB(CHSV::CHSV(42, 200, 255)),  // Yellow
-        CRGB::CRGB(CHSV::CHSV(85, 200, 255)),  // Green
-        CRGB::CRGB(CHSV::CHSV(128, 200, 255)), // Aqua
+        CRGB::CRGB(CHSV::CHSV(85, 255, 255)),  // Green
+        CRGB::CRGB(CHSV::CHSV(128, 255, 255)), // Aqua
         CRGB::CRGB(CHSV::CHSV(171, 200, 255)), // Blue
         CRGB::CRGB(CHSV::CHSV(213, 200, 255)), // Purple
-        CRGB::CRGB(CHSV::CHSV(0, 200, 255))    // Red
+        CRGB::CRGB(CHSV::CHSV(0, 255, 255))    // Red
     };
     uint8_t currentColorIndex = 0;
 };
