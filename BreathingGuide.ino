@@ -147,7 +147,7 @@ void setup()
 
     if (controlButton.isButtonPressed())
     {        
-        brightnessChanger.begin(&floodLight, &memoryController);
+        brightnessChanger.begin(&floodLight, &memoryController, &accelerometer);
         while (controlButton.isButtonPressed())
         {
             //

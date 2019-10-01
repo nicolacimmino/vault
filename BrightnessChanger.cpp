@@ -1,8 +1,9 @@
 #include "BrightnessChanger.h"
 
-void BrightnessChanger::begin(FloodLight *floodLight, MemoryController *memoryController)
+void BrightnessChanger::begin(FloodLight *floodLight, MemoryController *memoryController, Accelerometer *accelerometer)
 {
     this->memoryController = memoryController;
+    this->accelerometer  =accelerometer;
 
     if (this->memoryController->getByte(MEMORY_GLOBAL_BRIGHTNESS_CAP) > 0)
     {
@@ -33,9 +34,22 @@ void BrightnessChanger::loop()
 
 void BrightnessChanger::onClick()
 {
-    this->brightness = max(10, (this->brightness + 50) % 250);
-    this->floodLight->setBrightness(this->brightness);
     this->activeUntil = millis() + this->timeout;
+
+    if (abs(this->accelerometer->getX()) < 96)
+    {
+        return;
+    }
+
+    int8_t change = 50 * (this->accelerometer->getX() > 0 ? -1 : 1);
+
+    if((change < 0 && this->brightness <= 50) ||  (change > 0 && this->brightness > 200)) {
+        this->floodLight->override(200, CRGB::Red, 200);
+        return;            
+    }
+
+    this->brightness = this->brightness + change;
+    this->floodLight->setBrightness(this->brightness);    
 }
 
 void BrightnessChanger::onLongPress()

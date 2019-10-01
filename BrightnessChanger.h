@@ -4,11 +4,12 @@
 #include <Arduino.h>
 #include "FloodLight.h"
 #include "MemoryController.h"
+#include "Accelerometer.h"
 
 class BrightnessChanger
 {
 public:
-    void begin(FloodLight *floodLight, MemoryController *memoryController);
+    void begin(FloodLight *floodLight, MemoryController *memoryController, Accelerometer *accelerometer);
     void loop();
     void onClick();
     void onLongPress();
@@ -18,8 +19,9 @@ private:
     FloodLight *floodLight;
     uint8_t brightness = 50;
     uint32_t activeUntil = 0;
-    uint16_t timeout = 4000;
+    uint16_t timeout = 5000;
     MemoryController *memoryController;
+    Accelerometer *accelerometer;
 };
 
 #endif
