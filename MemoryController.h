@@ -18,6 +18,7 @@ public:
     void setByte(uint8_t address, uint8_t value);
 
 private:
+    bool isInEEPROMAddressSpace(uint8_t address);
 };
 
 #endif
