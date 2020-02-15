@@ -15,8 +15,8 @@
 //    along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-#include "AES.h"
-#include "./printf.h"
+#include <AES.h>
+//#include "./printf.h"
 #include "NoiseSource.h"
 #include "EncryptedStore.h"
 
@@ -24,7 +24,7 @@ AES aes;
 
 byte *key = (unsigned char *)"0123456789010123";
 
-byte plain[] = "Add NodeAdd NodeAdd NodeAdd NodeAdd Node";
+byte plain[] = "A Test string";
 int plainLength = sizeof(plain) - 1; // don't count the trailing /0 of the string !
 int padedLength = plainLength + N_BLOCK - plainLength % N_BLOCK;
 
@@ -38,19 +38,31 @@ void setup()
     {
         ; // wait for serial port to connect. Needed for Leonardo only
     }
-    printf_begin();
+    //printf_begin();
     delay(500);
-    printf("\n===testing mode\n");
+    //printf("\n===testing mode\n");
 
     //  otfly_test () ;
-    //  otfly_test256 () ;    
+    //  otfly_test256 () ;
 }
 
 EncryptedStore encryptedStore;
 
 void loop()
 {
-    encryptedStore.set(0,0, NULL);
+    byte key[] = {
+        0,0,0,0,
+        0,0,0,0,
+        0,0,0,0,
+        0,0,0,0
+    };
+    encryptedStore.init(key);
+    encryptedStore.set(0, plainLength, plain);
+
+    char decrypted[100];
+
+    encryptedStore.get(0, decrypted);
+    Serial.println(decrypted);
 
     return;
     if (NoiseSource::instance()->isRandomNumberReady())
@@ -80,15 +92,15 @@ void prekey(int bits)
     aes.do_aes_decrypt(cipher, padedLength, check, key, bits, iv);
     Serial.print("Decryption took: ");
     Serial.println(micros() - ms);
-    printf("\n\nPLAIN :");
+    //printf("\n\nPLAIN :");
     aes.printArray(plain, (bool)true);
-    printf("\nCIPHER:");
+    //printf("\nCIPHER:");
     aes.printArray(cipher, (bool)false);
-    printf("\nCHECK :");
+    ///printf("\nCHECK :");
     aes.printArray(check, (bool)true);
-    printf("\nIV    :");
+    //printf("\nIV    :");
     aes.printArray(iv, 16);
-    printf("\n============================================================\n");
+    //printf("\n============================================================\n");
 }
 
 void prekey_test()
