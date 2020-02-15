@@ -41,9 +41,9 @@ NoiseSource *NoiseSource::instance()
 
 /**
  * If your project is using the ISR you will get compilation errors.
- * Define __TRNG_ISR_GLOBAL_DEFINED__ and copy the body below into your global ISR function.
+ * Define __ISR_GLOBAL_DEFINED__ and copy the body below into your global ISR function.
  */
-#ifndef __TRNG_ISR_GLOBAL_DEFINED__
+#ifndef __ISR_GLOBAL_DEFINED__
 
 /**
  * This is the Arduino Interrupt Service Routine, which will be 
@@ -62,23 +62,25 @@ ISR(WDT_vect)
  * counter. The jitter of the interrupt process makes this random. 
  */
 void NoiseSource::collectNoise()
-{
-    static uint32_t noiseBuffer = 0;
+{    
+    static uint64_t noiseBuffer = 0;
     static uint8_t collectedBits = 0;
 
     noiseBuffer = (noiseBuffer << 1) | (TCNT1L & 1);
     collectedBits++;
 
-    if (collectedBits == 32)
+    if (collectedBits == 64)
     {
         /**
           * We pass here the collected 32 bits into a CRC-32, note that this
           * CRC-32 is forever running so it acts as randomness extrector and
           * de-bias of the input source.
         */
-        this->crc.update(noiseBuffer);
-
+        this->crc.update(noiseBuffer & 0xFFFFFFFF);
         this->randomNumber = this->crc.finalize();
+
+        this->crc.update((noiseBuffer >> 32) & 0xFFFFFFFF);
+        this->randomNumber = this->randomNumber << 32 | this->crc.finalize();
 
         this->randomNumberReady = true;
         collectedBits = 0;
@@ -90,7 +92,7 @@ bool NoiseSource::isRandomNumberReady()
     return this->randomNumberReady;
 }
 
-uint32_t NoiseSource::getRandomNumber()
+uint64_t NoiseSource::getRandomNumber()
 {
     this->randomNumberReady = false;
 

@@ -49,7 +49,8 @@ void setup()
 EncryptedStore encryptedStore;
 
 void loop()
-{
+{    
+ 
     byte key[] = {
         0,0,0,0,
         0,0,0,0,
@@ -65,10 +66,10 @@ void loop()
     Serial.println(decrypted);
 
     return;
-    if (NoiseSource::instance()->isRandomNumberReady())
-    {
-        Serial.println(NoiseSource::instance()->getRandomNumber(), HEX);
-    }
+    // if (NoiseSource::instance()->isRandomNumberReady())
+    // {
+    //     Serial.println(NoiseSource::instance()->getRandomNumber(), HEX);
+    // }
     //prekey_test () ;
     //delay(2000);
 }

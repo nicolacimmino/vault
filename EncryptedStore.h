@@ -4,6 +4,7 @@
 #include "Arduino.h"
 #include <AES.h>
 #include "NoiseSource.h"
+#include <EEPROM.h>
 
 #define ENCRYPTED_STORE_AES_SIZE 128
 
@@ -11,11 +12,16 @@ class EncryptedStore
 {
 private:
     byte *key;
-    void generateIV();
+    uint64_t setIV(uint64_t ivSeed = 0);
     byte iv[N_BLOCK];
-    byte cipher[255];
-    byte paddedCipherTextLength;
     AES aes;
+
+    struct EncryptedEntry
+    {
+        byte cipher[255];
+        byte paddedCipherTextLength;
+        uint64_t ivSeed;
+    };
 
 public:
     void init(byte *key);

@@ -7,40 +7,44 @@ void EncryptedStore::init(byte *key)
 
 void EncryptedStore::get(byte index, char *plainText)
 {
-    byte iv[N_BLOCK];
-    this->aes.set_IV(this->iv);
-    this->aes.get_IV(iv);
-    this->aes.set_IV(this->iv);
-    this->aes.do_aes_decrypt(this->cipher, this->paddedCipherTextLength, plainText, this->key, ENCRYPTED_STORE_AES_SIZE, iv);
+    EncryptedEntry encryptedEntry;
+
+    for (uint32_t ix = 0; ix < sizeof(encryptedEntry); ix++)
+    {
+        *(((unsigned char *)&encryptedEntry) + 1) = EEPROM.read(ix);
+    }
+
+    this->setIV(encryptedEntry.ivSeed);
+    this->aes.do_aes_decrypt(encryptedEntry.cipher, encryptedEntry.paddedCipherTextLength, plainText, this->key, ENCRYPTED_STORE_AES_SIZE, this->iv);
 }
 
 void EncryptedStore::set(byte index, byte plainTextLength, char *plainText)
 {
-    byte iv[N_BLOCK];
-    this->generateIV();
-    this->aes.set_IV(this->iv);
-    this->aes.get_IV(iv);
-    this->aes.do_aes_encrypt(plainText, plainTextLength, this->cipher, this->key, ENCRYPTED_STORE_AES_SIZE, iv);
-    this->paddedCipherTextLength = plainTextLength + N_BLOCK - plainTextLength % N_BLOCK;
+    EncryptedEntry encryptedEntry;
+
+    encryptedEntry.ivSeed = this->setIV();
+    this->aes.do_aes_encrypt(plainText, plainTextLength, encryptedEntry.cipher, this->key, ENCRYPTED_STORE_AES_SIZE, this->iv);
+    encryptedEntry.paddedCipherTextLength = plainTextLength + N_BLOCK - plainTextLength % N_BLOCK;
+
+    for (uint32_t ix = 0; ix < sizeof(encryptedEntry); ix++)
+    {
+        EEPROM.write(ix, *(((unsigned char *)&encryptedEntry) + 1));
+    }
 }
 
-void EncryptedStore::generateIV()
+uint64_t EncryptedStore::setIV(uint64_t ivSeed = 0)
 {
-    byte ix = 0;
-    while (ix < N_BLOCK)
+    if (ivSeed == 0)
     {
         while (!NoiseSource::instance()->isRandomNumberReady())
         {
             delay(1);
         }
-
-        uint32_t randomNumber = NoiseSource::instance()->getRandomNumber();
-
-        for (byte i = 0; i < 4; i++)
-        {
-            this->iv[ix] = randomNumber & 0xFF;
-            randomNumber = randomNumber >> 8;
-            ix++;
-        }
+        ivSeed = NoiseSource::instance()->getRandomNumber();
     }
+
+    this->aes.set_IV(ivSeed);
+    this->aes.get_IV(this->iv);
+
+    return ivSeed;
 }
