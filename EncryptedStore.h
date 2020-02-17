@@ -2,31 +2,31 @@
 #define __PGEN__ENCRYPTED_STORE_H__
 
 #include "Arduino.h"
-#include <AES.h>
+#include "aes256_ctr.h"
 #include "NoiseSource.h"
 #include <EEPROM.h>
 
-#define ENCRYPTED_STORE_AES_SIZE 128
+#define ENCRYPTED_STORE_KEY_SIZE 32
+#define ENCRYPTED_STORE_IV_SIZE 16
+#define ENCRYPTED_STORE_DATA_SIZE 64
 
 class EncryptedStore
 {
 private:
-    byte *key;
-    uint64_t setIV(uint64_t ivSeed = 0);
-    byte iv[N_BLOCK];
-    AES aes;
-
+    byte key[ENCRYPTED_STORE_KEY_SIZE];
+    byte iv[ENCRYPTED_STORE_IV_SIZE];
+    void generateIV();    
+    
     struct EncryptedEntry
     {
-        byte cipher[255];
-        byte paddedCipherTextLength;
-        uint64_t ivSeed;
+        byte iv[ENCRYPTED_STORE_IV_SIZE];
+        byte cipher[ENCRYPTED_STORE_DATA_SIZE];        
     };
 
 public:
     void init(byte *key);
     void get(byte index, char *plainText);
-    void set(byte index, byte plainTextLength, char *plainText);
+    void set(byte index, char *plainText);
 };
 
 #endif

@@ -1,4 +1,0 @@
-AES Library from:
-https://github.com/spaniakos/AES
-
-Install as an Arduino library.

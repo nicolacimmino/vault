@@ -63,25 +63,22 @@ ISR(WDT_vect)
  */
 void NoiseSource::collectNoise()
 {    
-    static uint64_t noiseBuffer = 0;
-    static uint8_t collectedBits = 0;
+    static byte noiseBuffer = 0;
+    static byte collectedBits = 0;
 
     noiseBuffer = (noiseBuffer << 1) | (TCNT1L & 1);
     collectedBits++;
 
-    if (collectedBits == 64)
+    if (collectedBits == 8)
     {
         /**
-          * We pass here the collected 32 bits into a CRC-32, note that this
+          * We pass here the collected 8 bits into a CRC-32, note that this
           * CRC-32 is forever running so it acts as randomness extrector and
           * de-bias of the input source.
         */
-        this->crc.update(noiseBuffer & 0xFFFFFFFF);
-        this->randomNumber = this->crc.finalize();
-
-        this->crc.update((noiseBuffer >> 32) & 0xFFFFFFFF);
-        this->randomNumber = this->randomNumber << 32 | this->crc.finalize();
-
+        this->crc.update(noiseBuffer & 0xFF);
+        this->randomNumber = this->crc.finalize() && 0xFF;
+        
         this->randomNumberReady = true;
         collectedBits = 0;
     }
@@ -92,7 +89,7 @@ bool NoiseSource::isRandomNumberReady()
     return this->randomNumberReady;
 }
 
-uint64_t NoiseSource::getRandomNumber()
+byte NoiseSource::getRandomNumber()
 {
     this->randomNumberReady = false;
 

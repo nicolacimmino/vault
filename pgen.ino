@@ -15,21 +15,7 @@
 //    along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-#include <AES.h>
-//#include "./printf.h"
-#include "NoiseSource.h"
 #include "EncryptedStore.h"
-
-AES aes;
-
-byte *key = (unsigned char *)"0123456789010123";
-
-byte plain[] = "A Test string";
-int plainLength = sizeof(plain) - 1; // don't count the trailing /0 of the string !
-int padedLength = plainLength + N_BLOCK - plainLength % N_BLOCK;
-
-//real iv = iv x2 ex: 01234567 = 0123456701234567
-unsigned long long int my_iv = 36753562;
 
 void setup()
 {
@@ -38,126 +24,31 @@ void setup()
     {
         ; // wait for serial port to connect. Needed for Leonardo only
     }
-    //printf_begin();
     delay(500);
-    //printf("\n===testing mode\n");
-
-    //  otfly_test () ;
-    //  otfly_test256 () ;
 }
+
+static uint8_t key[32] = {0x60, 0x3d, 0xeb, 0x10, 0x15, 0xca, 0x71, 0xbe, 0x2b,
+                          0x73, 0xae, 0xf0, 0x85, 0x7d, 0x77, 0x81, 0x1f, 0x35, 0x2c, 0x07, 0x3b,
+                          0x61, 0x08, 0xd7, 0x2d, 0x98, 0x10, 0xa3, 0x09, 0x14, 0xdf, 0xf4};
+
+static uint8_t iv[16] = {0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7, 0xf8,
+                         0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff};
 
 EncryptedStore encryptedStore;
 
 void loop()
-{    
- 
-    byte key[] = {
-        0,0,0,0,
-        0,0,0,0,
-        0,0,0,0,
-        0,0,0,0
-    };
+{
+    char text[32] = "              ";
+
     encryptedStore.init(key);
-    encryptedStore.set(0, plainLength, plain);
-
-    char decrypted[100];
-
-    encryptedStore.get(0, decrypted);
-    Serial.println(decrypted);
-
-    return;
-    // if (NoiseSource::instance()->isRandomNumberReady())
-    // {
-    //     Serial.println(NoiseSource::instance()->getRandomNumber(), HEX);
-    // }
-    //prekey_test () ;
-    //delay(2000);
-}
-
-void prekey(int bits)
-{
-    aes.iv_inc();
-    byte iv[N_BLOCK];
-    byte plain_p[padedLength];
-    byte cipher[padedLength];
-    byte check[padedLength];
-    unsigned long ms = micros();
-    aes.set_IV(my_iv);
-    aes.get_IV(iv);
-    aes.do_aes_encrypt(plain, plainLength, cipher, key, bits, iv);
-    Serial.print("Encryption took: ");
-    Serial.println(micros() - ms);
-    ms = micros();
-    aes.set_IV(my_iv);
-    aes.get_IV(iv);
-    aes.do_aes_decrypt(cipher, padedLength, check, key, bits, iv);
-    Serial.print("Decryption took: ");
-    Serial.println(micros() - ms);
-    //printf("\n\nPLAIN :");
-    aes.printArray(plain, (bool)true);
-    //printf("\nCIPHER:");
-    aes.printArray(cipher, (bool)false);
-    ///printf("\nCHECK :");
-    aes.printArray(check, (bool)true);
-    //printf("\nIV    :");
-    aes.printArray(iv, 16);
-    //printf("\n============================================================\n");
-}
-
-void prekey_test()
-{
-    prekey(128);
-}
-
-/*
-#include <VT100.h>
-#include "messages.h";
-
-void setup()
-{
-    Serial.begin(9600);
-    VT100.begin(Serial);
-    VT100.cursorSave();
-}
-
-char buffer[255];
-
-void printMessage(uint8_t messageId)
-{
-    strcpy_P(buffer, (char *)pgm_read_word(&(messages[messageId])));
-    Serial.print(buffer);
-}
-
-void loop()
-{
-    while(Serial.available()) {
-        Serial.println((byte)Serial.read());
-    }
-    return;
-    if (Serial.available())
+    //encryptedStore.set(0, text);
+    encryptedStore.get(0, text);
+    
+    for (int ix = 0; ix < 32; ix++)
     {
-        char c = Serial.read();
-
-        if (c == '0')
-        {
-            VT100.setBackgroundColor(VT_BLACK);
-            VT100.clearScreen();
-
-            VT100.setBackgroundColor(VT_BLACK);
-            VT100.setTextColor(VT_GREEN);
-            VT100.setCursor(1, 1);
-
-            printMessage(0);
-
-            VT100.setCursor(9, 1);
-
-            printMessage(1);
-        }
-
-        if (c == '1')
-        {
-            VT100.setCursor(9, 1);
-            printMessage(2);
-        }
+        Serial.print(text[ix]);
     }
-}*/
+    Serial.println("");
+
+    delay(1000);
+}

@@ -28,13 +28,13 @@ public:
     static NoiseSource* instance();    
     void collectNoise();
     bool isRandomNumberReady();
-    uint64_t getRandomNumber();        
+    byte getRandomNumber();        
 private:
     NoiseSource();
     static NoiseSource* theInstance;        
     CRC32 crc;    
     bool randomNumberReady = false;
-    uint64_t randomNumber;
+    byte randomNumber;
 };
 
 #endif

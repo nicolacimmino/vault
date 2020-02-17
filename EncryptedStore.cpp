@@ -2,49 +2,51 @@
 
 void EncryptedStore::init(byte *key)
 {
-    this->key = key;
+    memcpy(this->key, key, 32);
 }
 
 void EncryptedStore::get(byte index, char *plainText)
 {
     EncryptedEntry encryptedEntry;
-
-    for (uint32_t ix = 0; ix < sizeof(encryptedEntry); ix++)
+    for (byte ix = 0; ix < sizeof(encryptedEntry); ix++)
     {
-        *(((unsigned char *)&encryptedEntry) + 1) = EEPROM.read(ix);
+        *(((unsigned char *)&encryptedEntry) + ix) = EEPROM.read(ix);
     }
 
-    this->setIV(encryptedEntry.ivSeed);
-    this->aes.do_aes_decrypt(encryptedEntry.cipher, encryptedEntry.paddedCipherTextLength, plainText, this->key, ENCRYPTED_STORE_AES_SIZE, this->iv);
+    memcpy(this->iv, encryptedEntry.iv, ENCRYPTED_STORE_IV_SIZE);
+    memcpy(plainText, encryptedEntry.cipher, 16);
+
+    aes256CtrCtx_t ctx;   
+    aes256CtrInit(&ctx, this->key, this->iv, ENCRYPTED_STORE_IV_SIZE);
+	aes256CtrDecrypt(&ctx, plainText, 16);
 }
 
-void EncryptedStore::set(byte index, byte plainTextLength, char *plainText)
+void EncryptedStore::set(byte index, char *plainText)
 {
+    this->generateIV();
+
     EncryptedEntry encryptedEntry;
+    memcpy(encryptedEntry.iv, this->iv, ENCRYPTED_STORE_IV_SIZE);
+    memcpy(encryptedEntry.cipher, plainText, strlen(plainText));
 
-    encryptedEntry.ivSeed = this->setIV();
-    this->aes.do_aes_encrypt(plainText, plainTextLength, encryptedEntry.cipher, this->key, ENCRYPTED_STORE_AES_SIZE, this->iv);
-    encryptedEntry.paddedCipherTextLength = plainTextLength + N_BLOCK - plainTextLength % N_BLOCK;
+    aes256CtrCtx_t ctx;   
+    aes256CtrInit(&ctx, this->key, this->iv, ENCRYPTED_STORE_IV_SIZE);
+	aes256CtrEncrypt(&ctx, encryptedEntry.cipher, strlen(encryptedEntry.cipher));
 
-    for (uint32_t ix = 0; ix < sizeof(encryptedEntry); ix++)
+    for (byte ix = 0; ix < sizeof(encryptedEntry); ix++)
     {
-        EEPROM.write(ix, *(((unsigned char *)&encryptedEntry) + 1));
+        EEPROM.write(ix, *(((unsigned char *)&encryptedEntry) + ix));
     }
 }
 
-uint64_t EncryptedStore::setIV(uint64_t ivSeed = 0)
+void EncryptedStore::generateIV()
 {
-    if (ivSeed == 0)
+    for (byte ix = 0; ix < ENCRYPTED_STORE_IV_SIZE; ix++)
     {
         while (!NoiseSource::instance()->isRandomNumberReady())
         {
             delay(1);
         }
-        ivSeed = NoiseSource::instance()->getRandomNumber();
+        this->iv[ix] = NoiseSource::instance()->getRandomNumber();
     }
-
-    this->aes.set_IV(ivSeed);
-    this->aes.get_IV(this->iv);
-
-    return ivSeed;
 }
