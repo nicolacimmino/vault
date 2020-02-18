@@ -41,7 +41,7 @@ void initStoreWithMasterPassword()
     char masterPassword[MASTER_PASSWORD_MAX_SIZE];
     memset(masterPassword, 0, MASTER_PASSWORD_MAX_SIZE);
     terminal.printMasterPasswordPrompt();
-    terminal.readMasterPassword(masterPassword, MASTER_PASSWORD_MAX_SIZE);    
+    terminal.readMasterPassword(masterPassword, MASTER_PASSWORD_MAX_SIZE);
     encryptedStore.init(masterPassword);
     memset(masterPassword, 0, MASTER_PASSWORD_MAX_SIZE);
 }
@@ -54,13 +54,22 @@ void loop()
     initStoreWithMasterPassword();
 
     char text[32];
-    memset(text, 0,32);
-    
+    memset(text, 0, 32);
+
+    terminal.printStatusMessage("Decrypting....");
     //encryptedStore.set(0, text);
+    delay(2000);
+    terminal.printStatusMessage("Done.");
     // //encryptedStore.set(1, text);
 
     encryptedStore.get(0, text);
+
+    VT100.setCursor(8, 1);
+    VT100.clearLineAfter();
+    VT100.setCursor(9, 1);
+    Serial.print("Password:");
     Serial.println(text);
-        
+    VT100.clearLineAfter();
+
     delay(2000);
 }

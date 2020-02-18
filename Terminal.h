@@ -13,6 +13,7 @@ private:
 public:
     void init(Stream *stream);
     void printBanner();
+    void printStatusMessage(char *message);
     void clearScreen();
     void printMasterPasswordPrompt();
     void readMasterPassword(char *masterPassword, byte masterPasswordMaxSize);

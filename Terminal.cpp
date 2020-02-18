@@ -11,12 +11,26 @@ void Terminal::clearScreen()
 {
     VT100.setBackgroundColor(VT_BLACK);
     VT100.clearScreen();
+    this->printStatusMessage("");
 }
 
 void Terminal::printBanner()
 {
     VT100.setCursor(1, 1);
     this->printMessage(0);
+}
+
+void Terminal::printStatusMessage(char *message)
+{
+    VT100.setCursor(12, 1);
+    VT100.setBackgroundColor(VT_YELLOW);
+    VT100.setTextColor(VT_BLACK);
+    this->stream->print(message);
+    VT100.clearLineAfter();
+    VT100.setBackgroundColor(VT_BLACK);
+    VT100.setTextColor(VT_YELLOW);
+    VT100.setCursor(12, 30);
+    VT100.clearLineAfter();
 }
 
 void Terminal::printMasterPasswordPrompt()
@@ -36,7 +50,7 @@ void Terminal::readMasterPassword(char *masterPassword, byte masterPasswordMaxSi
             char nextChar = this->stream->read();
 
             if (nextChar == '\r')
-            {                
+            {
                 masterPassword[ix] = 0;
                 break;
             }
