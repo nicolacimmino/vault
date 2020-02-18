@@ -13,16 +13,17 @@
 class EncryptedStore
 {
 private:
-    byte key[ENCRYPTED_STORE_KEY_SIZE];
-    byte iv[ENCRYPTED_STORE_IV_SIZE];
-    void generateIV();    
-    
     struct EncryptedEntry
     {
         byte iv[ENCRYPTED_STORE_IV_SIZE];
-        byte cipher[ENCRYPTED_STORE_DATA_SIZE];        
+        byte cipher[ENCRYPTED_STORE_DATA_SIZE];
     };
 
+    byte key[ENCRYPTED_STORE_KEY_SIZE];
+    byte iv[ENCRYPTED_STORE_IV_SIZE];
+    void generateIV();
+    uint16_t getEncryptedEntryAddress(byte index);
+    
 public:
     void init(byte *key);
     void get(byte index, char *plainText);

@@ -8,17 +8,13 @@ void EncryptedStore::init(byte *key)
 void EncryptedStore::get(byte index, char *plainText)
 {
     EncryptedEntry encryptedEntry;
-    for (byte ix = 0; ix < sizeof(encryptedEntry); ix++)
-    {
-        *(((unsigned char *)&encryptedEntry) + ix) = EEPROM.read(ix);
-    }
-
-    memcpy(this->iv, encryptedEntry.iv, ENCRYPTED_STORE_IV_SIZE);
+    EEPROM.get(this->getEncryptedEntryAddress(index), encryptedEntry);
+    
     memcpy(plainText, encryptedEntry.cipher, 16);
 
-    aes256CtrCtx_t ctx;   
-    aes256CtrInit(&ctx, this->key, this->iv, ENCRYPTED_STORE_IV_SIZE);
-	aes256CtrDecrypt(&ctx, plainText, 16);
+    aes256CtrCtx_t ctx;
+    aes256CtrInit(&ctx, this->key, encryptedEntry.iv, ENCRYPTED_STORE_IV_SIZE);
+    aes256CtrDecrypt(&ctx, plainText, 16);
 }
 
 void EncryptedStore::set(byte index, char *plainText)
@@ -29,14 +25,11 @@ void EncryptedStore::set(byte index, char *plainText)
     memcpy(encryptedEntry.iv, this->iv, ENCRYPTED_STORE_IV_SIZE);
     memcpy(encryptedEntry.cipher, plainText, strlen(plainText));
 
-    aes256CtrCtx_t ctx;   
+    aes256CtrCtx_t ctx;
     aes256CtrInit(&ctx, this->key, this->iv, ENCRYPTED_STORE_IV_SIZE);
-	aes256CtrEncrypt(&ctx, encryptedEntry.cipher, strlen(encryptedEntry.cipher));
+    aes256CtrEncrypt(&ctx, encryptedEntry.cipher, strlen(encryptedEntry.cipher));
 
-    for (byte ix = 0; ix < sizeof(encryptedEntry); ix++)
-    {
-        EEPROM.write(ix, *(((unsigned char *)&encryptedEntry) + ix));
-    }
+    EEPROM.put(this->getEncryptedEntryAddress(index), encryptedEntry);    
 }
 
 void EncryptedStore::generateIV()
@@ -49,4 +42,9 @@ void EncryptedStore::generateIV()
         }
         this->iv[ix] = NoiseSource::instance()->getRandomNumber();
     }
+}
+
+uint16_t EncryptedStore::getEncryptedEntryAddress(byte index)
+{
+    return index * sizeof(EncryptedEntry);
 }
