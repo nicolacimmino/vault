@@ -1,8 +1,9 @@
 #include "EncryptedStore.h"
 
-void EncryptedStore::init(byte *key)
+void EncryptedStore::init(char *masterPassword)
 {
-    memcpy(this->key, key, 32);
+    this->encryptedStoreKey.setMasterPassword(masterPassword);
+    memcpy(this->key, this->encryptedStoreKey.key, 32);
 }
 
 void EncryptedStore::get(byte index, char *plainText)

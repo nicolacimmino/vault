@@ -33,13 +33,15 @@ void Terminal::readMasterPassword(char *masterPassword, byte masterPasswordMaxSi
     {
         if (Serial.available())
         {
-            if (this->stream->peek() == '\r')
-            {
+            char nextChar = this->stream->read();
+
+            if (nextChar == '\r')
+            {                
                 masterPassword[ix] = 0;
                 break;
             }
 
-            masterPassword[ix] = this->stream->read();
+            masterPassword[ix] = nextChar;
             ix++;
 
             if (ix == masterPasswordMaxSize - 1)
