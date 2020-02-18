@@ -16,34 +16,34 @@
 //
 
 #include "EncryptedStore.h"
+#include "EncryptedStoreKey.h"
+#include "sha256.h"
 
 void setup()
 {
-    Serial.begin(9600);    
-     while (!Serial)
+    Serial.begin(9600);
+    while (!Serial)
     {
         ; // wait for serial port to connect. Needed for Leonardo only
     }
     delay(500);
 }
 
-static uint8_t key[32] = {0x60, 0x3d, 0xeb, 0x10, 0x15, 0xca, 0x71, 0xbe, 0x2b,
-                          0x73, 0xae, 0xf0, 0x85, 0x7d, 0x77, 0x81, 0x1f, 0x35, 0x2c, 0x07, 0x3b,
-                          0x61, 0x08, 0xd7, 0x2d, 0x98, 0x10, 0xa3, 0x09, 0x14, 0xdf, 0xf4};
-
-
 EncryptedStore encryptedStore;
+EncryptedStoreKey encryptedStoreKey;
 
 void loop()
 {
-    char text[32] = "myonepassword                                   ";
+    encryptedStoreKey.setMasterPassword("mysecuremasterpassword");
 
-    encryptedStore.init(key);
+    char text[32] = "myzeropassword                                   ";
+
+    encryptedStore.init(encryptedStoreKey.key);
     //encryptedStore.set(0, text);
     //encryptedStore.set(1, text);
 
     encryptedStore.get(0, text);
-    
+
     for (int ix = 0; ix < 32; ix++)
     {
         Serial.print(text[ix]);
