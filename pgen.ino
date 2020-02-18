@@ -15,9 +15,14 @@
 //    along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
+#include "Terminal.h"
 #include "EncryptedStore.h"
 #include "EncryptedStoreKey.h"
 #include "sha256.h"
+
+Terminal terminal;
+EncryptedStore encryptedStore;
+EncryptedStoreKey encryptedStoreKey;
 
 void setup()
 {
@@ -27,20 +32,33 @@ void setup()
         ; // wait for serial port to connect. Needed for Leonardo only
     }
     delay(500);
+    terminal.init(&Serial);
 }
 
-EncryptedStore encryptedStore;
-EncryptedStoreKey encryptedStoreKey;
+#define MASTER_PASSWORD_MAX_SIZE 64
+
+void initStoreWithMasterPassword()
+{
+    char masterPassword[MASTER_PASSWORD_MAX_SIZE];
+    memset(masterPassword, 0, MASTER_PASSWORD_MAX_SIZE);
+    terminal.printMasterPasswordPrompt();
+    terminal.readMasterPassword(masterPassword, MASTER_PASSWORD_MAX_SIZE);
+    encryptedStoreKey.setMasterPassword(masterPassword);
+    memset(masterPassword, 0, MASTER_PASSWORD_MAX_SIZE);
+}
 
 void loop()
 {
-    encryptedStoreKey.setMasterPassword("mysecuremasterpassword");
+    terminal.clearScreen();
+    terminal.printBanner();
 
-    char text[32] = "myzeropassword                                   ";
+    initStoreWithMasterPassword();
+
+    char text[32] = "zzzzzzzzzzz                                   ";
 
     encryptedStore.init(encryptedStoreKey.key);
     //encryptedStore.set(0, text);
-    //encryptedStore.set(1, text);
+    // //encryptedStore.set(1, text);
 
     encryptedStore.get(0, text);
 
@@ -50,13 +68,19 @@ void loop()
     }
     Serial.println(" ");
 
-    encryptedStore.get(1, text);
+    // encryptedStore.get(1, text);
 
-    for (int ix = 0; ix < 32; ix++)
+    // for (int ix = 0; ix < 32; ix++)
+    // {
+    //     Serial.print(text[ix]);
+    // }
+    // Serial.println(" ");
+
+    while (!Serial.available())
     {
-        Serial.print(text[ix]);
+        delay(500);
     }
-    Serial.println(" ");
 
-    delay(1000);
+    Serial.read();
+    delay(2000);
 }
