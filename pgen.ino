@@ -67,7 +67,7 @@ void loop()
     VT100.setCursor(8, 1);
     VT100.clearLineAfter();
     VT100.setCursor(9, 1);
-    Serial.print("Password:");
+    Serial.print("Password: ");
     Serial.println(text);
     VT100.clearLineAfter();
 

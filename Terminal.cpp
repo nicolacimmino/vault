@@ -35,13 +35,13 @@ void Terminal::printStatusMessage(char *message)
 
 void Terminal::printMasterPasswordPrompt()
 {
-    VT100.setCursor(8, 1);
+    VT100.setCursor(9, 1);
     this->stream->print("Enter Master Password");
 }
 
 void Terminal::readMasterPassword(char *masterPassword, byte masterPasswordMaxSize)
 {
-    VT100.setCursor(9, 1);
+    VT100.setCursor(10, 1);
     byte ix = 0;
     while (true)
     {
