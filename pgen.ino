@@ -53,9 +53,11 @@ void loop()
 
     initStoreWithMasterPassword();
 
-    char text[32];
-    memset(text, 0, 32);
-
+    char text[ENCRYPTED_STORE_DATA_SIZE];// = {"abcdefghijklmonprstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ"};
+    memset(text, 0, ENCRYPTED_STORE_DATA_SIZE);
+    //*text = "abcdefghijklmonprstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ";
+    //01234567890123456789012345678901234567890123456789
+    //          1         2         3         4
     terminal.printStatusMessage("Decrypting....");
     //encryptedStore.set(0, text);
     delay(2000);
@@ -68,8 +70,8 @@ void loop()
     VT100.clearLineAfter();
     VT100.setCursor(9, 1);
     Serial.print("Password: ");
-    Serial.println(text);
+    Serial.print(text);
     VT100.clearLineAfter();
 
-    delay(2000);
+    delay(20000);
 }
