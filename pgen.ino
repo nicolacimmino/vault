@@ -53,28 +53,32 @@ void loop()
 
     initStoreWithMasterPassword();
 
-    char text[ENCRYPTED_STORE_DATA_SIZE];// =  {"googabcdefghijklmonprstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ"};
-    //memset(text, 0, ENCRYPTED_STORE_DATA_SIZE);
-    
+    char text[ENCRYPTED_STORE_DATA_SIZE]; // = {"goozabcdefghijklmonprstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ"};
+    memset(text, 0, ENCRYPTED_STORE_DATA_SIZE);
+
     terminal.printStatusMessage("Decrypting....");
     //encryptedStore.set(0, text, "google");
     //delay(2000);
     terminal.printStatusMessage("Done.");
     // //encryptedStore.set(1, text);
 
-    
     encryptedStore.getLabel(0, text);
     VT100.setCursor(9, 1);
     Serial.print(text);
-    VT100.clearLineAfter();    
+    VT100.clearLineAfter();
     
-    encryptedStore.getLabel(1, text);
-    VT100.setCursor(10, 1);
-    Serial.println(text);  
-    VT100.clearLineAfter();  
-
     encryptedStore.get(0, text);
+    VT100.setCursor(10, 1);
+    Serial.print(text);
+    VT100.clearLineAfter();
+
+    encryptedStore.getLabel(1, text);
     VT100.setCursor(11, 1);
+    Serial.println(text);
+    VT100.clearLineAfter();
+
+    encryptedStore.get(1, text);
+    VT100.setCursor(12, 1);
     Serial.print(text);
     VT100.clearLineAfter();
 

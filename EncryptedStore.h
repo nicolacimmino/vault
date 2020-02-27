@@ -27,7 +27,8 @@ private:
     void generateIV(byte *iv);
     void deriveKey(char *masterPassword);
     uint16_t getEncryptedEntryAddress(byte index);
-
+    void safeStringCopy(char *destination, char *source, byte destinationSize);
+    
 public:
     void init(char *masterPassword);
     void get(byte index, char *plainText);

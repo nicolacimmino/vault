@@ -45,11 +45,8 @@ void EncryptedStore::set(byte index, char *plainText, char *label)
     aes256CtrCtx_t ctx;
     aes256CtrInit(&ctx, this->key, encryptedEntry.iv, ENCRYPTED_STORE_IV_SIZE);
 
-    memset(encryptedEntry.cipher, 0, ENCRYPTED_STORE_DATA_SIZE);
-    memcpy(encryptedEntry.cipher, plainText, min(strlen(plainText), ENCRYPTED_STORE_DATA_SIZE));
-    
-    memset(encryptedEntry.label, 0, ENCRYPTED_STORE_DATA_SIZE);
-    memcpy(encryptedEntry.label, label, min(strlen(label), ENCRYPTED_STORE_LABEL_SIZE));
+    this->safeStringCopy(encryptedEntry.cipher, plainText, ENCRYPTED_STORE_DATA_SIZE);
+    this->safeStringCopy(encryptedEntry.label, label, ENCRYPTED_STORE_LABEL_SIZE);
 
     for (int ix = 0; ix < ENCRYPTED_STORE_DATA_SIZE; ix += ENCRYPTED_STORE_BLOCK_SIZE)
     {
@@ -58,6 +55,15 @@ void EncryptedStore::set(byte index, char *plainText, char *label)
     }
 
     EEPROM.put(this->getEncryptedEntryAddress(index), encryptedEntry);
+
+    memset(&encryptedEntry, 0, sizeof(encryptedEntry));
+    memset(&ctx, 0, sizeof(ctx));
+}
+
+void EncryptedStore::safeStringCopy(char *destination, char *source, byte destinationSize)
+{
+    memset(destination, 0, destinationSize);
+    memcpy(destination, source, min(strlen(source), destinationSize - 1));
 }
 
 void EncryptedStore::generateIV(byte *iv)
