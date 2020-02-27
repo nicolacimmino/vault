@@ -53,25 +53,37 @@ void loop()
 
     initStoreWithMasterPassword();
 
-    char text[ENCRYPTED_STORE_DATA_SIZE];// = {"abcdefghijklmonprstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ"};
-    memset(text, 0, ENCRYPTED_STORE_DATA_SIZE);
-    //*text = "abcdefghijklmonprstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ";
-    //01234567890123456789012345678901234567890123456789
-    //          1         2         3         4
+    char text[ENCRYPTED_STORE_DATA_SIZE];// =  {"googabcdefghijklmonprstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ"};
+    //memset(text, 0, ENCRYPTED_STORE_DATA_SIZE);
+    
     terminal.printStatusMessage("Decrypting....");
-    //encryptedStore.set(0, text);
-    delay(2000);
+    //encryptedStore.set(0, text, "google");
+    //delay(2000);
     terminal.printStatusMessage("Done.");
     // //encryptedStore.set(1, text);
 
-    encryptedStore.get(0, text);
-
-    VT100.setCursor(8, 1);
-    VT100.clearLineAfter();
+    
+    encryptedStore.getLabel(0, text);
     VT100.setCursor(9, 1);
-    Serial.print("Password: ");
+    Serial.print(text);
+    VT100.clearLineAfter();    
+    
+    encryptedStore.getLabel(1, text);
+    VT100.setCursor(10, 1);
+    Serial.println(text);  
+    VT100.clearLineAfter();  
+
+    encryptedStore.get(0, text);
+    VT100.setCursor(11, 1);
     Serial.print(text);
     VT100.clearLineAfter();
+
+    // VT100.setCursor(8, 1);
+    // VT100.clearLineAfter();
+    // VT100.setCursor(9, 1);
+    // Serial.print("Password: ");
+    // Serial.print(text);
+    // VT100.clearLineAfter();
 
     delay(20000);
 }

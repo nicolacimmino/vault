@@ -2,15 +2,15 @@
 
 void EncryptedStore::init(char *masterPassword)
 {
-    this->setMasterPassword(masterPassword);    
+    this->deriveKey(masterPassword);
 }
 
-void EncryptedStore::setMasterPassword(char *masterPassword)
+void EncryptedStore::deriveKey(char *masterPassword)
 {
     Sha256Class sha256;
     sha256.init();
     sha256.print(masterPassword);
-    memcpy(this->key, sha256.result(), ENCRYPTED_STORE_KEY_SIZE);    
+    memcpy(this->key, sha256.result(), ENCRYPTED_STORE_KEY_SIZE);
 }
 
 void EncryptedStore::get(byte index, char *plainText)
@@ -29,7 +29,15 @@ void EncryptedStore::get(byte index, char *plainText)
     memcpy(plainText, encryptedEntry.cipher, ENCRYPTED_STORE_DATA_SIZE);
 }
 
-void EncryptedStore::set(byte index, char *plainText)
+void EncryptedStore::getLabel(byte index, char *label)
+{
+    EncryptedEntry encryptedEntry;
+    EEPROM.get(this->getEncryptedEntryAddress(index), encryptedEntry);
+
+    memcpy(label, encryptedEntry.label, ENCRYPTED_STORE_LABEL_SIZE);
+}
+
+void EncryptedStore::set(byte index, char *plainText, char *label)
 {
     EncryptedEntry encryptedEntry;
     this->generateIV(encryptedEntry.iv);
@@ -39,6 +47,9 @@ void EncryptedStore::set(byte index, char *plainText)
 
     memset(encryptedEntry.cipher, 0, ENCRYPTED_STORE_DATA_SIZE);
     memcpy(encryptedEntry.cipher, plainText, min(strlen(plainText), ENCRYPTED_STORE_DATA_SIZE));
+    
+    memset(encryptedEntry.label, 0, ENCRYPTED_STORE_DATA_SIZE);
+    memcpy(encryptedEntry.label, label, min(strlen(label), ENCRYPTED_STORE_LABEL_SIZE));
 
     for (int ix = 0; ix < ENCRYPTED_STORE_DATA_SIZE; ix += ENCRYPTED_STORE_BLOCK_SIZE)
     {

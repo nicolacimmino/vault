@@ -22,16 +22,17 @@ private:
         byte cipher[ENCRYPTED_STORE_DATA_SIZE];
         char label[ENCRYPTED_STORE_LABEL_SIZE];
     };
-    
-    byte key[ENCRYPTED_STORE_KEY_SIZE];    
-    void generateIV(byte *iv);    
+
+    byte key[ENCRYPTED_STORE_KEY_SIZE];
+    void generateIV(byte *iv);
     void deriveKey(char *masterPassword);
     uint16_t getEncryptedEntryAddress(byte index);
-    
+
 public:
     void init(char *masterPassword);
     void get(byte index, char *plainText);
-    void set(byte index, char *plainText);
+    void getLabel(byte index, char *label);
+    void set(byte index, char *plainText, char *label);
 };
 
 #endif
