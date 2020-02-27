@@ -2,8 +2,8 @@
 #define __PGEN__ENCRYPTED_STORE_H__
 
 #include "Arduino.h"
-#include "sha256.h"
-#include "aes256_ctr.h"
+#include "vendor/sha256.h"
+#include "vendor/aes256_ctr.h"
 #include "NoiseSource.h"
 #include <EEPROM.h>
 
