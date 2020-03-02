@@ -28,7 +28,8 @@ public:
     static NoiseSource* instance();    
     void collectNoise();
     bool isRandomNumberReady();
-    byte getRandomNumber();        
+    byte getRandomNumber();
+    
 private:
     NoiseSource();
     static NoiseSource* theInstance;        

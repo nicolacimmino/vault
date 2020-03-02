@@ -7,11 +7,14 @@
 #include "NoiseSource.h"
 #include <EEPROM.h>
 
+#define ENCRYPTED_STORE_EEPROM_SIZE 1024
 #define ENCRYPTED_STORE_KEY_SIZE 32
 #define ENCRYPTED_STORE_IV_SIZE 16
 #define ENCRYPTED_STORE_BLOCK_SIZE 16
 #define ENCRYPTED_STORE_DATA_SIZE 64
 #define ENCRYPTED_STORE_LABEL_SIZE 16
+#define ENCRYPTED_STORE_MAX_ENTRIES ENCRYPTED_STORE_EEPROM_SIZE / (ENCRYPTED_STORE_IV_SIZE + ENCRYPTED_STORE_DATA_SIZE + ENCRYPTED_STORE_LABEL_SIZE)
+#define ENCRYPTED_STORE_FULL 255
 
 class EncryptedStore
 {
@@ -28,12 +31,17 @@ private:
     void deriveKey(char *masterPassword);
     uint16_t getEncryptedEntryAddress(byte index);
     void safeStringCopy(char *destination, char *source, byte destinationSize);
-    
+    bool locked = true;
+
 public:
-    void init(char *masterPassword);
+    void unlock(char *masterPassword);
+    void lock();
     void get(byte index, char *plainText);
     void getLabel(byte index, char *label);
     void set(byte index, char *plainText, char *label);
+    void wipe(byte index);
+    byte getFirstFreeSlot();
+    bool isLocked();
 };
 
 #endif
