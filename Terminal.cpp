@@ -18,19 +18,36 @@ void Terminal::setShortcut(byte index, char key, byte contextId)
 
 byte Terminal::waitMenuSelection()
 {
+    bool alt = false;
     while (true)
-    {
+    {        
         if (Serial.available())
         {
             char key = this->stream->read();
 
-            for (byte ix = 0; ix < TERMINAL_MAX_SHORTCUTS; ix++)
+            if (key == (char)27)
             {
-                if (key == this->terminalShortcuts[ix].key)
+                alt = true;
+                continue;
+            }
+
+            if (alt)
+            {
+                for (byte ix = 0; ix < TERMINAL_MAX_SHORTCUTS; ix++)
                 {
-                    return this->terminalShortcuts[ix].contextId;
+                    if (key == this->terminalShortcuts[ix].key)
+                    {
+                        return this->terminalShortcuts[ix].contextId;
+                    }
                 }
             }
+
+            if (!alt && key >= 'a' && key <= 'z')
+            {
+                return TERMINAL_MENU_BASE + (key - 'a');
+            }
+
+            alt = false;
         }
     }
 }

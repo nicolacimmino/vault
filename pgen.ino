@@ -17,7 +17,6 @@
 
 #include "Terminal.h"
 #include "EncryptedStore.h"
-#include "EncryptedStoreKey.h"
 #include "sha256.h"
 
 Terminal terminal;
@@ -88,6 +87,28 @@ void lockStore()
     encryptedStore.lock();
 }
 
+void getPassword(byte index)
+{
+    char label[ENCRYPTED_STORE_LABEL_SIZE];
+    char password[ENCRYPTED_STORE_DATA_SIZE];
+
+    encryptedStore.getLabel(index, label);
+
+    if (strlen(label) == 0)
+    {
+        terminal.printStatusMessage("No password stored here.");
+        delay(2000);
+        return;
+    }
+
+    encryptedStore.get(index, password);
+
+    terminal.clearCanvas();
+    terminal.print("Password: ", TERMINAL_FIRST_CANVAS_LINE + 2, 1);
+    terminal.print(password);
+    delay(2000);
+}
+
 void displayPasswordSelectionMenu()
 {
     char label[ENCRYPTED_STORE_LABEL_SIZE];
@@ -100,18 +121,24 @@ void displayPasswordSelectionMenu()
 
         if (strlen(label) == 0)
         {
-            terminal.printMenuEntry(menuPosition, "[free]");
+            terminal.printMenuEntry(menuPosition, "---");
             continue;
         }
 
         terminal.printMenuEntry(menuPosition, label);
     }
 
-    terminal.setShortcut(0, 'A', 1);
-    terminal.setShortcut(1, 'W', 2);
-    terminal.setShortcut(2, 'L', 3);
-    terminal.printStatusMessage("A Add  -  W Wipe  -  L Lock");
+    terminal.setShortcut(0, 'a', 1);
+    terminal.setShortcut(1, 'w', 2);
+    terminal.setShortcut(2, 'l', 3);
+    terminal.printStatusMessage("ALT+A Add  -  ALT+W Wipe  -  ALT+L Lock");
     byte selection = terminal.waitMenuSelection();
+
+    if (selection >= TERMINAL_MENU_BASE)
+    {
+        getPassword(selection - TERMINAL_MENU_BASE);
+    }
+
     if (selection == 1)
     {
         addPassword();
