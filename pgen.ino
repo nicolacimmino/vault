@@ -57,6 +57,7 @@ void clearScreen()
     terminal.clearScreen();
     printHeader();
     terminal.printBanner();
+    terminal.resetInactivityTimer();
 }
 
 void unlockEncryptedStore()
@@ -210,6 +211,7 @@ void displayPasswordActionMenu()
 void resetTerminal()
 {
     encryptedStore.lock();
+    memset(clipboard, 0, ENCRYPTED_STORE_DATA_SIZE);
 }
 
 void setup()
@@ -234,7 +236,7 @@ void setup()
 
 void loop()
 {
-    if (millis() % 1000 == 0)
+    if (millis() % 300 == 0)
     {
         printHeader();
     }
@@ -243,7 +245,7 @@ void loop()
     {
         clearScreen();
         terminal.printStatusMessage("Locked.");
-        unlockEncryptedStore();
+        unlockEncryptedStore();        
         displayPasswordSelectionMenu();
 
         return;

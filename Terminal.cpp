@@ -5,6 +5,12 @@ void Terminal::init(Stream *stream)
 {
     this->stream = stream;
     VT100.begin(*stream);
+    this->lastActiveTime = millis();
+}
+
+void Terminal::resetInactivityTimer()
+{
+    this->lastActiveTime = millis();
 }
 
 void Terminal::clearHotkeys()
@@ -41,9 +47,11 @@ void Terminal::setResetCallback(void (*resetCallback)())
 void Terminal::loop()
 {
     static bool alt = false;
-
+    
     while (Serial.available())
     {
+        this->lastActiveTime = millis();
+           
         char key = this->stream->read();
 
         if (key == (char)27)
@@ -74,6 +82,10 @@ void Terminal::loop()
         }
 
         alt = false;
+    }
+
+    if(millis() - this->lastActiveTime > TERMINAL_MAX_INACTIVE_TIME_MS && this->resetCallback) {
+        this->resetCallback();
     }
 }
 
@@ -156,7 +168,7 @@ void Terminal::readString(char *string, byte stringMaxSize, char mask = 0)
     while (true)
     {
         if (Serial.available())
-        {
+        {            
             char nextChar = this->stream->read();
 
             if (nextChar == '\r')

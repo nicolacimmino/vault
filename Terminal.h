@@ -18,6 +18,7 @@
 #define TERMINAL_STATUS_LINE_BACKGROUND_COLOR VT_YELLOW
 #define TERMINAL_STATUS_LINE_FOREGROUND_COLOR VT_BLACK
 #define TERMINAL_MENU_BASE 100
+#define TERMINAL_MAX_INACTIVE_TIME_MS 10000
 
 class Terminal
 {
@@ -26,7 +27,7 @@ private:
     void printMessage(uint8_t messageId);
     struct terminalHotkey
     {
-        void (*callback)();        
+        void (*callback)();
         char key;
     };
 
@@ -34,6 +35,7 @@ private:
     byte lastHotkeyIndex = 0;
     void (*menuCallback)(byte selection);
     void (*resetCallback)();
+    uint32_t lastActiveTime;
 
 public:
     void init(Stream *stream);
@@ -49,8 +51,8 @@ public:
     void print(char *text, byte line = NULL, byte column = NULL);
     void printMenuEntry(byte position, char *text);
     void readString(char *string, byte stringMaxSize, char mask = 0);
+    void resetInactivityTimer();
     void loop();
-    
 };
 
 #endif
