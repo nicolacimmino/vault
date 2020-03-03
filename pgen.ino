@@ -29,23 +29,14 @@ EncryptedStore encryptedStore;
 char clipboard[ENCRYPTED_STORE_DATA_SIZE];
 byte selectedPasswordIndex;
 
-void setup()
+/**
+ * See https://playground.arduino.cc/Code/AvailableMemory/
+ **/
+int freeRam()
 {
-    Serial.begin(9600);
-    while (!Serial)
-    {
-        ; // wait for serial port to connect. Needed for Leonardo only
-    }
-    delay(500);
-    terminal.init(&Serial);
-
-    memset(clipboard, 0, ENCRYPTED_STORE_DATA_SIZE);
-
-    pinMode(BUTTON_A_COMMON, OUTPUT);
-    digitalWrite(BUTTON_A_COMMON, LOW);
-    pinMode(BUTTON_A_SENSE, INPUT_PULLUP);
-
-    Keyboard.begin();
+    extern int __heap_start, *__brkval;
+    int v;
+    return (int)&v - (__brkval == 0 ? (int)&__heap_start : (int)__brkval);
 }
 
 void printHeader()
@@ -53,10 +44,11 @@ void printHeader()
     char headerMessage[TERMINAL_WIDTH];
     memset(headerMessage, 0, TERMINAL_WIDTH);
 
-    sprintf(headerMessage, "Vault V0.1 %s %s",
+    sprintf(headerMessage, "Vault V0.1 - %d bytes free %s %s ",
+            freeRam(),
             (strlen(clipboard) > 0) ? "[CLP]" : "",
-        (encryptedStore.isLocked() ? "[LCK]" : "[ULK]"));
-    
+            (encryptedStore.isLocked() ? "[LCK]" : "[ULK]"));
+
     terminal.printHeaderMessage(headerMessage);
 }
 
@@ -134,6 +126,10 @@ void selectPassword(byte index)
         return;
     }
 
+    char message[TERMINAL_WIDTH];
+    sprintf(message, "Selected: %s", label);
+    terminal.printStatusMessage(message);
+
     selectedPasswordIndex = index;
     displayPasswordActionMenu();
 }
@@ -174,6 +170,27 @@ void actOnPassword(byte action)
         terminal.printStatusMessage("Password in clipboard.");
     }
 
+    if (action == 1)
+    {
+        char buffer[TERMINAL_WIDTH];
+        char password[ENCRYPTED_STORE_DATA_SIZE];
+        encryptedStore.get(selectedPasswordIndex, password);
+        memset(clipboard, 0, ENCRYPTED_STORE_DATA_SIZE);
+
+        terminal.clearCanvas();
+        terminal.print("Enter tokens positions: ", TERMINAL_FIRST_CANVAS_LINE + 2, 1);
+        terminal.readString(buffer, TERMINAL_WIDTH);
+        byte ix = 0;
+        char *token = strtok(buffer, ",");
+        while (token != NULL)
+        {
+            int tokenIndex = atoi(token) - 1;
+            clipboard[ix] = password[tokenIndex];
+            token = strtok(NULL, ",");
+            ix++;
+        }
+        terminal.printStatusMessage("Password tokens in clipboard.");
+    }
     delay(2000);
     displayPasswordSelectionMenu();
 }
@@ -182,14 +199,37 @@ void displayPasswordActionMenu()
 {
     char label[ENCRYPTED_STORE_LABEL_SIZE];
 
-    clearScreen();
-
+    terminal.clearCanvas();
     terminal.printMenuEntry(0, "Copy to clipboard");
     terminal.printMenuEntry(1, "Partial copy to clipboard");
 
     terminal.clearHotkeys();
-    terminal.setMenuCallback(actOnPassword);
-    terminal.printStatusMessage("");
+    terminal.setMenuCallback(actOnPassword);    
+}
+
+void resetTerminal()
+{
+    encryptedStore.lock();
+}
+
+void setup()
+{
+    Serial.begin(9600);
+    while (!Serial)
+    {
+        ; // wait for serial port to connect. Needed for Leonardo only
+    }
+    delay(500);
+    terminal.init(&Serial);
+
+    memset(clipboard, 0, ENCRYPTED_STORE_DATA_SIZE);
+
+    pinMode(BUTTON_A_COMMON, OUTPUT);
+    digitalWrite(BUTTON_A_COMMON, LOW);
+    pinMode(BUTTON_A_SENSE, INPUT_PULLUP);
+
+    Keyboard.begin();
+    terminal.setResetCallback(resetTerminal);
 }
 
 void loop()

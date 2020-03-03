@@ -33,6 +33,11 @@ void Terminal::setMenuCallback(void (*menuCallback)(byte selection))
     this->menuCallback = menuCallback;
 }
 
+void Terminal::setResetCallback(void (*resetCallback)())
+{
+    this->resetCallback = resetCallback;
+}
+
 void Terminal::loop()
 {
     static bool alt = false;
@@ -49,6 +54,11 @@ void Terminal::loop()
 
         if (alt)
         {
+            if (key == 'q' && this->resetCallback)
+            {
+                this->resetCallback();
+            }
+
             for (byte ix = 0; ix < this->lastHotkeyIndex; ix++)
             {
                 if (key == this->hotkeys[ix].key)
@@ -134,8 +144,8 @@ void Terminal::printMenuEntry(byte position, char *text)
     byte column = (position < TERMINAL_CANVAS_LINES) ? 2 : 22;
 
     char buffer[TERMINAL_WIDTH];
-    sprintf(buffer, "%c. %s", 'a' + position, text);
-    buffer[(TERMINAL_WIDTH / 2) - 5] = 0;
+    sprintf(buffer, "   %s[%c]%s  %s", VT_FOREGROUND_WHITE, 'A' + position, VT_FOREGROUND_YELLOW, text);
+    buffer[TERMINAL_WIDTH - 1] = 0;
     this->print(buffer, line, column);
 }
 
