@@ -128,32 +128,12 @@ void displayPasswordSelectionMenu()
         terminal.printMenuEntry(menuPosition, label);
     }
 
-    terminal.setShortcut(0, 'a', 1);
-    terminal.setShortcut(1, 'w', 2);
-    terminal.setShortcut(2, 'l', 3);
+    terminal.addHotkey('a', addPassword);
+    terminal.addHotkey('w', wipePassword);
+    terminal.addHotkey('l', lockStore);
+    terminal.setMenuCallback(getPassword);
     terminal.printStatusMessage("ALT+A Add  -  ALT+W Wipe  -  ALT+L Lock");
-    byte selection = terminal.waitMenuSelection();
-
-    if (selection >= TERMINAL_MENU_BASE)
-    {
-        getPassword(selection - TERMINAL_MENU_BASE);
-    }
-
-    if (selection == 1)
-    {
-        addPassword();
-    }
-
-    if (selection == 2)
-    {
-        wipePassword();
-    }
-
-    if (selection == 3)
-    {
-        lockStore();
-    }
-
+    terminal.waitMenuSelection();    
     terminal.clearCanvas();
 }
 

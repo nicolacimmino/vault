@@ -4,7 +4,7 @@
 #include "VT100.h"
 #include "messages.h"
 
-#define TERMINAL_MAX_SHORTCUTS 4
+#define TERMINAL_MAX_HOTKEYS 4
 #define TERMINAL_WIDTH 80
 #define TERMINAL_HEIGTH 24
 #define TERMINAL_FIRST_CANVAS_LINE 10
@@ -21,17 +21,21 @@ class Terminal
 private:
     Stream *stream;
     void printMessage(uint8_t messageId);
-    struct terminalShortcut
+    struct terminalHotkey
     {
-        byte contextId;
+        void (*callback)();
         char key;
     };
 
-    terminalShortcut terminalShortcuts[TERMINAL_MAX_SHORTCUTS];
+    terminalHotkey hotkeys[TERMINAL_MAX_HOTKEYS];
+    byte lastHotkeyIndex = 0;
+    void (*menuCallback)(byte selection);
 
 public:
     void init(Stream *stream);
-    void setShortcut(byte index, char key, byte contextId);
+    void clearHotkeys();
+    void addHotkey(char key, void (*callback)());
+    void setMenuCallback(void (*menuCallback)(byte selection));
     void clearScreen();
     void clearCanvas();
     void printBanner();
@@ -39,7 +43,7 @@ public:
     void print(char *text, byte line = NULL, byte column = NULL);
     void printMenuEntry(byte position, char *text);
     void readString(char *string, byte stringMaxSize, char mask = 0);
-    byte waitMenuSelection();
+    void waitMenuSelection();
     
 };
 

@@ -7,20 +7,37 @@ void Terminal::init(Stream *stream)
     VT100.begin(*stream);
 }
 
-void Terminal::setShortcut(byte index, char key, byte contextId)
+void Terminal::clearHotkeys()
 {
-    terminalShortcut shortCut;
-    shortCut.contextId = contextId;
-    shortCut.key = key;
-
-    this->terminalShortcuts[index] = shortCut;
+    this->lastHotkeyIndex = 0;
 }
 
-byte Terminal::waitMenuSelection()
+void Terminal::addHotkey(char key, void (*callback)())
+{
+    if (this->lastHotkeyIndex == TERMINAL_MAX_HOTKEYS)
+    {
+        return;
+    }
+
+    terminalHotkey hotkey;
+    hotkey.callback = callback;
+    hotkey.key = key;
+
+    this->hotkeys[this->lastHotkeyIndex] = hotkey;
+
+    this->lastHotkeyIndex++;
+}
+
+void Terminal::setMenuCallback(void (*menuCallback)(byte selection))
+{
+    this->menuCallback = menuCallback;
+}
+
+void Terminal::waitMenuSelection()
 {
     bool alt = false;
     while (true)
-    {        
+    {
         if (Serial.available())
         {
             char key = this->stream->read();
@@ -33,18 +50,20 @@ byte Terminal::waitMenuSelection()
 
             if (alt)
             {
-                for (byte ix = 0; ix < TERMINAL_MAX_SHORTCUTS; ix++)
+                for (byte ix = 0; ix < this->lastHotkeyIndex; ix++)
                 {
-                    if (key == this->terminalShortcuts[ix].key)
+                    if (key == this->hotkeys[ix].key)
                     {
-                        return this->terminalShortcuts[ix].contextId;
+                        this->hotkeys[ix].callback();
+                        return;
                     }
                 }
             }
 
-            if (!alt && key >= 'a' && key <= 'z')
+            if (!alt && key >= 'a' && key <= 'z' && this->menuCallback)
             {
-                return TERMINAL_MENU_BASE + (key - 'a');
+                this->menuCallback(key - 'a');
+                return;
             }
 
             alt = false;
