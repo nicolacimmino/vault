@@ -18,9 +18,16 @@
 #include "Terminal.h"
 #include "EncryptedStore.h"
 #include "sha256.h"
+#include <Keyboard.h>
+
+#define BUTTON_A_COMMON 7
+#define BUTTON_A_SENSE 8
+#define MASTER_PASSWORD_MAX_SIZE 64
 
 Terminal terminal;
 EncryptedStore encryptedStore;
+char clipboard[ENCRYPTED_STORE_DATA_SIZE];
+byte selectedPasswordIndex;
 
 void setup()
 {
@@ -31,9 +38,34 @@ void setup()
     }
     delay(500);
     terminal.init(&Serial);
+
+    memset(clipboard, 0, ENCRYPTED_STORE_DATA_SIZE);
+
+    pinMode(BUTTON_A_COMMON, OUTPUT);
+    digitalWrite(BUTTON_A_COMMON, LOW);
+    pinMode(BUTTON_A_SENSE, INPUT_PULLUP);
+
+    Keyboard.begin();
 }
 
-#define MASTER_PASSWORD_MAX_SIZE 64
+void printHeader()
+{
+    char headerMessage[TERMINAL_WIDTH];
+    memset(headerMessage, 0, TERMINAL_WIDTH);
+
+    sprintf(headerMessage, "Vault V0.1 %s %s",
+            (strlen(clipboard) > 0) ? "[CLP]" : "",
+        (encryptedStore.isLocked() ? "[LCK]" : "[ULK]"));
+    
+    terminal.printHeaderMessage(headerMessage);
+}
+
+void clearScreen()
+{
+    terminal.clearScreen();
+    printHeader();
+    terminal.printBanner();
+}
 
 void unlockEncryptedStore()
 {
@@ -68,6 +100,7 @@ void addPassword()
 
     terminal.printStatusMessage("Enctrypting......");
     encryptedStore.set(firstFreeSlot, password, label);
+    displayPasswordSelectionMenu();
 }
 
 void wipePassword()
@@ -87,10 +120,9 @@ void lockStore()
     encryptedStore.lock();
 }
 
-void getPassword(byte index)
+void selectPassword(byte index)
 {
     char label[ENCRYPTED_STORE_LABEL_SIZE];
-    char password[ENCRYPTED_STORE_DATA_SIZE];
 
     encryptedStore.getLabel(index, label);
 
@@ -98,22 +130,19 @@ void getPassword(byte index)
     {
         terminal.printStatusMessage("No password stored here.");
         delay(2000);
+        displayPasswordSelectionMenu();
         return;
     }
 
-    encryptedStore.get(index, password);
-
-    terminal.clearCanvas();
-    terminal.print("Password: ", TERMINAL_FIRST_CANVAS_LINE + 2, 1);
-    terminal.print(password);
-    delay(2000);
+    selectedPasswordIndex = index;
+    displayPasswordActionMenu();
 }
 
 void displayPasswordSelectionMenu()
 {
     char label[ENCRYPTED_STORE_LABEL_SIZE];
 
-    terminal.clearCanvas();
+    clearScreen();
 
     for (byte menuPosition = 0; menuPosition < ENCRYPTED_STORE_MAX_ENTRIES; menuPosition++)
     {
@@ -128,25 +157,63 @@ void displayPasswordSelectionMenu()
         terminal.printMenuEntry(menuPosition, label);
     }
 
+    terminal.clearHotkeys();
     terminal.addHotkey('a', addPassword);
     terminal.addHotkey('w', wipePassword);
     terminal.addHotkey('l', lockStore);
-    terminal.setMenuCallback(getPassword);
+    terminal.setMenuCallback(selectPassword);
     terminal.printStatusMessage("ALT+A Add  -  ALT+W Wipe  -  ALT+L Lock");
-    terminal.waitMenuSelection();    
-    terminal.clearCanvas();
+}
+
+void actOnPassword(byte action)
+{
+    if (action == 0)
+    {
+        encryptedStore.get(selectedPasswordIndex, clipboard);
+        terminal.clearCanvas();
+        terminal.printStatusMessage("Password in clipboard.");
+    }
+
+    delay(2000);
+    displayPasswordSelectionMenu();
+}
+
+void displayPasswordActionMenu()
+{
+    char label[ENCRYPTED_STORE_LABEL_SIZE];
+
+    clearScreen();
+
+    terminal.printMenuEntry(0, "Copy to clipboard");
+    terminal.printMenuEntry(1, "Partial copy to clipboard");
+
+    terminal.clearHotkeys();
+    terminal.setMenuCallback(actOnPassword);
+    terminal.printStatusMessage("");
 }
 
 void loop()
 {
-    terminal.clearScreen();
-    terminal.printBanner();
+    if (millis() % 1000 == 0)
+    {
+        printHeader();
+    }
 
     if (encryptedStore.isLocked())
     {
+        clearScreen();
         terminal.printStatusMessage("Locked.");
         unlockEncryptedStore();
+        displayPasswordSelectionMenu();
+
+        return;
     }
 
-    displayPasswordSelectionMenu();
+    if (digitalRead(BUTTON_A_SENSE) == LOW && strlen(clipboard) > 0)
+    {
+        Keyboard.print(clipboard);
+        memset(clipboard, 0, ENCRYPTED_STORE_DATA_SIZE);
+    }
+
+    terminal.loop();
 }

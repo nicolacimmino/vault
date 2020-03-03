@@ -10,6 +10,8 @@
 #define TERMINAL_FIRST_CANVAS_LINE 10
 #define TERMINAL_CANVAS_LINES 12
 #define TERMINAL_STATUS_LINE 23
+#define TERMINAL_HEADER_LINE 1
+#define TERMINAL_BANNER_LINE 2
 #define TERMINAL_BACKGROUND_COLOR VT_BLACK
 #define TERMINAL_FOREGROUND_COLOR VT_YELLOW
 #define TERMINAL_STATUS_LINE_BACKGROUND_COLOR VT_YELLOW
@@ -39,11 +41,12 @@ public:
     void clearScreen();
     void clearCanvas();
     void printBanner();
+    void printHeaderMessage(char *message);
     void printStatusMessage(char *message);
     void print(char *text, byte line = NULL, byte column = NULL);
     void printMenuEntry(byte position, char *text);
     void readString(char *string, byte stringMaxSize, char mask = 0);
-    void waitMenuSelection();
+    void loop();
     
 };
 

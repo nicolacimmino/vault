@@ -33,41 +33,37 @@ void Terminal::setMenuCallback(void (*menuCallback)(byte selection))
     this->menuCallback = menuCallback;
 }
 
-void Terminal::waitMenuSelection()
+void Terminal::loop()
 {
-    bool alt = false;
-    while (true)
+    static bool alt = false;
+
+    while (Serial.available())
     {
-        if (Serial.available())
+        char key = this->stream->read();
+
+        if (key == (char)27)
         {
-            char key = this->stream->read();
+            alt = true;
+            continue;
+        }
 
-            if (key == (char)27)
+        if (alt)
+        {
+            for (byte ix = 0; ix < this->lastHotkeyIndex; ix++)
             {
-                alt = true;
-                continue;
-            }
-
-            if (alt)
-            {
-                for (byte ix = 0; ix < this->lastHotkeyIndex; ix++)
+                if (key == this->hotkeys[ix].key)
                 {
-                    if (key == this->hotkeys[ix].key)
-                    {
-                        this->hotkeys[ix].callback();
-                        return;
-                    }
+                    this->hotkeys[ix].callback();
                 }
             }
-
-            if (!alt && key >= 'a' && key <= 'z' && this->menuCallback)
-            {
-                this->menuCallback(key - 'a');
-                return;
-            }
-
-            alt = false;
         }
+
+        if (!alt && key >= 'a' && key <= 'z' && this->menuCallback)
+        {
+            this->menuCallback(key - 'a');
+        }
+
+        alt = false;
     }
 }
 
@@ -92,7 +88,7 @@ void Terminal::clearCanvas()
 
 void Terminal::printBanner()
 {
-    VT100.setCursor(1, 1);
+    VT100.setCursor(TERMINAL_BANNER_LINE, 1);
     this->printMessage(0);
 }
 
@@ -104,6 +100,19 @@ void Terminal::printStatusMessage(char *message)
     this->stream->print(message);
     VT100.clearLineAfter();
     VT100.setCursor(TERMINAL_STATUS_LINE, TERMINAL_WIDTH);
+    VT100.setBackgroundColor(TERMINAL_BACKGROUND_COLOR);
+    VT100.setTextColor(TERMINAL_FOREGROUND_COLOR);
+    VT100.clearLineAfter();
+}
+
+void Terminal::printHeaderMessage(char *message)
+{
+    VT100.setCursor(TERMINAL_HEADER_LINE, 1);
+    VT100.setBackgroundColor(TERMINAL_STATUS_LINE_BACKGROUND_COLOR);
+    VT100.setTextColor(TERMINAL_STATUS_LINE_FOREGROUND_COLOR);
+    this->stream->print(message);
+    VT100.clearLineAfter();
+    VT100.setCursor(TERMINAL_HEADER_LINE, TERMINAL_WIDTH);
     VT100.setBackgroundColor(TERMINAL_BACKGROUND_COLOR);
     VT100.setTextColor(TERMINAL_FOREGROUND_COLOR);
     VT100.clearLineAfter();
