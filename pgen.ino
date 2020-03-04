@@ -44,7 +44,7 @@ void printHeader()
     char headerMessage[TERMINAL_WIDTH];
     memset(headerMessage, 0, TERMINAL_WIDTH);
 
-    sprintf(headerMessage, "Vault V0.1 - %d bytes free %s %s ",
+    sprintf(headerMessage, " Vault V0.1 - %d bytes free %s %s ",
             freeRam(),
             (strlen(clipboard) > 0) ? "[CLP]" : "",
             (encryptedStore.isLocked() ? "[LCK]" : "[ULK]"));
@@ -64,7 +64,7 @@ void unlockEncryptedStore()
 {
     char masterPassword[MASTER_PASSWORD_MAX_SIZE];
     memset(masterPassword, 0, MASTER_PASSWORD_MAX_SIZE);
-    terminal.print("Enter master password: ", TERMINAL_FIRST_CANVAS_LINE + 2, 1);
+    terminal.print(" Enter master password: ", TERMINAL_FIRST_CANVAS_LINE + 2, 1);
     terminal.readString(masterPassword, MASTER_PASSWORD_MAX_SIZE, '*');
     encryptedStore.unlock(masterPassword);
     memset(masterPassword, 0, MASTER_PASSWORD_MAX_SIZE);
@@ -78,7 +78,7 @@ void addPassword()
 
     if (firstFreeSlot == ENCRYPTED_STORE_FULL)
     {
-        terminal.printStatusMessage("Store full! Delete something first.");
+        terminal.printStatusMessage(" Store full! Delete something first.");
         delay(2000);
         return;
     }
@@ -86,19 +86,19 @@ void addPassword()
     char label[ENCRYPTED_STORE_LABEL_SIZE];
     char password[ENCRYPTED_STORE_DATA_SIZE];
 
-    terminal.print("Enter label: ", TERMINAL_FIRST_CANVAS_LINE + 2, 1);
+    terminal.print(" Enter label: ", TERMINAL_FIRST_CANVAS_LINE + 2, 1);
     terminal.readString(label, ENCRYPTED_STORE_LABEL_SIZE);
-    terminal.print("Enter password: ", TERMINAL_FIRST_CANVAS_LINE + 3, 1);
+    terminal.print(" Enter password: ", TERMINAL_FIRST_CANVAS_LINE + 3, 1);
     terminal.readString(password, ENCRYPTED_STORE_DATA_SIZE, '*');
 
-    terminal.printStatusMessage("Enctrypting......");
+    terminal.printStatusMessage(" Enctrypting......");
     encryptedStore.set(firstFreeSlot, password, label);
     displayPasswordSelectionMenu();
 }
 
 void wipePassword()
 {
-    terminal.print("   Select position to wipe: ", TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 1, 1);
+    terminal.print(" Select position to wipe: ", TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 1, 1);
 
     char selection[1];
     terminal.readString(selection, 1);
@@ -111,6 +111,7 @@ void wipePassword()
 void lockStore()
 {
     encryptedStore.lock();
+    memset(clipboard, 0, ENCRYPTED_STORE_DATA_SIZE);
 }
 
 void selectPassword(byte index)
@@ -121,14 +122,14 @@ void selectPassword(byte index)
 
     if (strlen(label) == 0)
     {
-        terminal.printStatusMessage("No password stored here.");
+        terminal.printStatusMessage(" No password stored here.");
         delay(2000);
         displayPasswordSelectionMenu();
         return;
     }
 
     char message[TERMINAL_WIDTH];
-    sprintf(message, "Selected: %s", label);
+    sprintf(message, " Selected: %s", label);
     terminal.printStatusMessage(message);
 
     selectedPasswordIndex = index;
@@ -159,7 +160,7 @@ void displayPasswordSelectionMenu()
     terminal.addHotkey('w', wipePassword);
     terminal.addHotkey('l', lockStore);
     terminal.setMenuCallback(selectPassword);
-    terminal.printStatusMessage("ALT+A Add  -  ALT+W Wipe  -  ALT+L Lock");
+    terminal.printStatusMessage(" ALT+A Add  |  ALT+W Wipe  |  ALT+L Lock  |  ALT+Q Reset");
 }
 
 void actOnPassword(byte action)
@@ -168,7 +169,7 @@ void actOnPassword(byte action)
     {
         encryptedStore.get(selectedPasswordIndex, clipboard);
         terminal.clearCanvas();
-        terminal.printStatusMessage("Password in clipboard.");
+        terminal.printStatusMessage(" Password in clipboard.");
     }
 
     if (action == 1)
@@ -179,7 +180,7 @@ void actOnPassword(byte action)
         memset(clipboard, 0, ENCRYPTED_STORE_DATA_SIZE);
 
         terminal.clearCanvas();
-        terminal.print("Enter tokens positions: ", TERMINAL_FIRST_CANVAS_LINE + 2, 1);
+        terminal.print(" Enter tokens positions: ", TERMINAL_FIRST_CANVAS_LINE + 2, 1);
         terminal.readString(buffer, TERMINAL_WIDTH);
         byte ix = 0;
         char *token = strtok(buffer, ",");
@@ -190,9 +191,9 @@ void actOnPassword(byte action)
             token = strtok(NULL, ",");
             ix++;
         }
-        terminal.printStatusMessage("Password tokens in clipboard.");
+        terminal.printStatusMessage(" Password tokens in clipboard.");
     }
-    delay(2000);
+    delay(500);
     displayPasswordSelectionMenu();
 }
 
@@ -251,7 +252,7 @@ void loop()
     if (encryptedStore.isLocked())
     {
         clearScreen();
-        terminal.printStatusMessage("Locked.");
+        terminal.printStatusMessage(" Locked.");
         unlockEncryptedStore();        
         displayPasswordSelectionMenu();
 
