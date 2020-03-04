@@ -194,7 +194,7 @@ void Terminal::readString(char *string, byte stringMaxSize, char mask = 0)
 
 void Terminal::printMessage(uint8_t messageId)
 {
-    char buffer[256];
+    char buffer[512];
     strcpy_P(buffer, (char *)pgm_read_word(&(messages[messageId])));
     this->stream->print(buffer);
 }

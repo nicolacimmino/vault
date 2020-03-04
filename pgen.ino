@@ -212,6 +212,13 @@ void resetTerminal()
 {
     encryptedStore.lock();
     memset(clipboard, 0, ENCRYPTED_STORE_DATA_SIZE);
+
+    while (!Serial)
+    {
+        ; // wait for serial port to connect. Needed for Leonardo only
+    }
+    delay(500);
+    terminal.init(&Serial);
 }
 
 void setup()
