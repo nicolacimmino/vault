@@ -98,7 +98,7 @@ void addPassword()
 
 void wipePassword()
 {
-    terminal.printStatusMessage("Select position to wipe: ");
+    terminal.print("   Select position to wipe: ", TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 1, 1);
 
     char selection[1];
     terminal.readString(selection, 1);
