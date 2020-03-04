@@ -168,8 +168,6 @@ void actOnPassword(byte action)
     if (action == 0)
     {
         encryptedStore.get(selectedPasswordIndex, clipboard);
-        terminal.clearCanvas();
-        terminal.printStatusMessage(" Password in clipboard.");
     }
 
     if (action == 1)
@@ -180,7 +178,7 @@ void actOnPassword(byte action)
         memset(clipboard, 0, ENCRYPTED_STORE_DATA_SIZE);
 
         terminal.clearCanvas();
-        terminal.print(" Enter tokens positions: ", TERMINAL_FIRST_CANVAS_LINE + 2, 1);
+        terminal.print(" Enter tokens positions: ", TERMINAL_FIRST_CANVAS_LINE + 1, 1);
         terminal.readString(buffer, TERMINAL_WIDTH);
         byte ix = 0;
         char *token = strtok(buffer, ",");
@@ -191,9 +189,30 @@ void actOnPassword(byte action)
             token = strtok(NULL, ",");
             ix++;
         }
-        terminal.printStatusMessage(" Password tokens in clipboard.");
     }
-    delay(500);
+
+    // Just for a show, the decryption is already done.
+    terminal.clearCanvas();
+    terminal.print(VT_FOREGROUND_YELLOW " Fetch record", TERMINAL_FIRST_CANVAS_LINE + 2, 1);
+    delay(600);
+    terminal.print("           " VT_FOREGROUND_GREEN "[OK]");
+    terminal.print(VT_FOREGROUND_YELLOW " Decrypt password", TERMINAL_FIRST_CANVAS_LINE + 3, 1);
+    delay(600);
+    terminal.print("       " VT_FOREGROUND_GREEN "[OK]");
+    terminal.print(VT_FOREGROUND_YELLOW " Password in clipboard  " VT_FOREGROUND_GREEN "[OK]", TERMINAL_FIRST_CANVAS_LINE + 4, 1);
+    terminal.print(VT_FOREGROUND_YELLOW " Ready.  ", TERMINAL_FIRST_CANVAS_LINE + 5, 1);
+
+    while (strlen(clipboard) > 0)
+    {
+        if (digitalRead(BUTTON_A_SENSE) == LOW)
+        {
+            Keyboard.print(clipboard);
+            memset(clipboard, 0, ENCRYPTED_STORE_DATA_SIZE);
+        }
+
+        loop();
+    }
+
     displayPasswordSelectionMenu();
 }
 
@@ -206,7 +225,7 @@ void displayPasswordActionMenu()
     terminal.printMenuEntry(1, "Partial copy to clipboard");
 
     terminal.clearHotkeys();
-    terminal.setMenuCallback(actOnPassword);    
+    terminal.setMenuCallback(actOnPassword);
 }
 
 void resetTerminal()
@@ -253,16 +272,10 @@ void loop()
     {
         clearScreen();
         terminal.printStatusMessage(" Locked.");
-        unlockEncryptedStore();        
+        unlockEncryptedStore();
         displayPasswordSelectionMenu();
 
         return;
-    }
-
-    if (digitalRead(BUTTON_A_SENSE) == LOW && strlen(clipboard) > 0)
-    {
-        Keyboard.print(clipboard);
-        memset(clipboard, 0, ENCRYPTED_STORE_DATA_SIZE);
     }
 
     terminal.loop();
