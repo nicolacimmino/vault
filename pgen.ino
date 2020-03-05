@@ -113,6 +113,11 @@ void selectPassword(byte index)
 {
     char label[ENCRYPTED_STORE_LABEL_SIZE];
 
+    if (index >= ENCRYPTED_STORE_MAX_ENTRIES)
+    {
+        return;
+    }
+
     encryptedStore.getLabel(index, label);
 
     if (strlen(label) == 0)
@@ -143,8 +148,7 @@ void displayPasswordSelectionMenu()
 
         if (strlen(label) == 0)
         {
-            terminal.printMenuEntry(menuPosition, "---");
-            continue;
+            strcpy(label, "---");
         }
 
         terminal.printMenuEntry(menuPosition, label);
@@ -160,29 +164,20 @@ void displayPasswordSelectionMenu()
 
 void actOnPassword(byte action)
 {
-    if (action == 0)
+    switch (action)
     {
+    case 0:
         encryptedStore.get(selectedPasswordIndex, clipboard);
-    }
-
-    if (action == 1)
-    {
+        break;
+    case 1:
         char buffer[TERMINAL_WIDTH];
-        char password[ENCRYPTED_STORE_DATA_SIZE];
-        encryptedStore.get(selectedPasswordIndex, password);
-        memset(clipboard, 0, ENCRYPTED_STORE_DATA_SIZE);
 
         terminal.clearCanvas();
         terminal.readString("Enter tokens positions: ", buffer, TERMINAL_WIDTH, 0, TERMINAL_FIRST_CANVAS_LINE + 1, 2);
-        byte ix = 0;
-        char *token = strtok(buffer, ",");
-        while (token != NULL)
-        {
-            int tokenIndex = atoi(token) - 1;
-            clipboard[ix] = password[tokenIndex];
-            token = strtok(NULL, ",");
-            ix++;
-        }
+        encryptedStore.getTokens(selectedPasswordIndex, buffer, clipboard);
+        break;
+    default:
+        return;
     }
 
     // Just for a show, the decryption is already done.

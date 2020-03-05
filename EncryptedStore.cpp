@@ -63,6 +63,26 @@ void EncryptedStore::get(byte index, char *plainText)
     }
 
     memcpy(plainText, encryptedEntry.cipher, ENCRYPTED_STORE_DATA_SIZE);
+    memset(encryptedEntry.cipher, 0, ENCRYPTED_STORE_DATA_SIZE);
+}
+
+void EncryptedStore::getTokens(byte index, char *tokensList, char *plainText)
+{
+    byte ix = 0;
+    char password[ENCRYPTED_STORE_DATA_SIZE];
+
+    this->get(index, password);
+
+    char *token = strtok(tokensList, ",");
+    while (token != NULL)
+    {
+        int tokenIndex = atoi(token) - 1;
+        plainText[ix] = password[tokenIndex];
+        token = strtok(NULL, ",");
+        ix++;
+    }
+
+    memset(password, 0, ENCRYPTED_STORE_DATA_SIZE);
 }
 
 void EncryptedStore::getLabel(byte index, char *label)

@@ -37,6 +37,7 @@ public:
     void unlock(char *masterPassword);
     void lock();
     void get(byte index, char *plainText);
+    void getTokens(byte index, char *tokensList, char *plainText);
     void getLabel(byte index, char *label);
     void set(byte index, char *plainText, char *label);
     void wipe(byte index);
