@@ -61,7 +61,7 @@ void Terminal::loop()
         }
 
         if (alt)
-        {
+        {            
             if (key == 'q' && this->resetCallback)
             {
                 this->resetCallback();
@@ -161,8 +161,10 @@ void Terminal::printMenuEntry(byte position, char *text)
     this->print(buffer, line, column);
 }
 
-void Terminal::readString(char *string, byte stringMaxSize, char mask = 0)
+void Terminal::readString(char *prompt, char *string, byte stringMaxSize, char mask = 0, byte line = NULL, byte column = NULL)
 {
+    this->print(prompt, line, column);
+
     VT100.cursorOn();
     byte ix = 0;
     while (true)

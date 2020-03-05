@@ -64,8 +64,7 @@ void unlockEncryptedStore()
 {
     char masterPassword[MASTER_PASSWORD_MAX_SIZE];
     memset(masterPassword, 0, MASTER_PASSWORD_MAX_SIZE);
-    terminal.print(" Enter master password: ", TERMINAL_FIRST_CANVAS_LINE + 2, 1);
-    terminal.readString(masterPassword, MASTER_PASSWORD_MAX_SIZE, '*');
+    terminal.readString("Enter master password: ", masterPassword, MASTER_PASSWORD_MAX_SIZE, '*', TERMINAL_FIRST_CANVAS_LINE + 2, 2);
     encryptedStore.unlock(masterPassword);
     memset(masterPassword, 0, MASTER_PASSWORD_MAX_SIZE);
 }
@@ -86,10 +85,8 @@ void addPassword()
     char label[ENCRYPTED_STORE_LABEL_SIZE];
     char password[ENCRYPTED_STORE_DATA_SIZE];
 
-    terminal.print(" Enter label: ", TERMINAL_FIRST_CANVAS_LINE + 2, 1);
-    terminal.readString(label, ENCRYPTED_STORE_LABEL_SIZE);
-    terminal.print(" Enter password: ", TERMINAL_FIRST_CANVAS_LINE + 3, 1);
-    terminal.readString(password, ENCRYPTED_STORE_DATA_SIZE, '*');
+    terminal.readString("Enter label: ", label, ENCRYPTED_STORE_LABEL_SIZE, 0, TERMINAL_FIRST_CANVAS_LINE + 2, 2);
+    terminal.readString("Enter password: ", password, ENCRYPTED_STORE_DATA_SIZE, '*', TERMINAL_FIRST_CANVAS_LINE + 3, 2);
 
     terminal.printStatusMessage(" Enctrypting......");
     encryptedStore.set(firstFreeSlot, password, label);
@@ -98,10 +95,8 @@ void addPassword()
 
 void wipePassword()
 {
-    terminal.print(" Select position to wipe: ", TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 1, 1);
-
     char selection[1];
-    terminal.readString(selection, 1);
+    terminal.readString("Select position to wipe: ", selection, 1, 0, TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 1, 1);
 
     encryptedStore.wipe(selection[0] - 'a');
 
@@ -178,8 +173,7 @@ void actOnPassword(byte action)
         memset(clipboard, 0, ENCRYPTED_STORE_DATA_SIZE);
 
         terminal.clearCanvas();
-        terminal.print(" Enter tokens positions: ", TERMINAL_FIRST_CANVAS_LINE + 1, 1);
-        terminal.readString(buffer, TERMINAL_WIDTH);
+        terminal.readString("Enter tokens positions: ", buffer, TERMINAL_WIDTH, 0, TERMINAL_FIRST_CANVAS_LINE + 1, 2);
         byte ix = 0;
         char *token = strtok(buffer, ",");
         while (token != NULL)

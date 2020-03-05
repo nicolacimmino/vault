@@ -50,7 +50,7 @@ public:
     void printStatusMessage(char *message);
     void print(char *text, byte line = NULL, byte column = NULL);
     void printMenuEntry(byte position, char *text);
-    void readString(char *string, byte stringMaxSize, char mask = 0);
+    void readString(char *prompt, char *string, byte stringMaxSize, char mask = 0, byte line = NULL, byte column = NULL);
     void resetInactivityTimer();
     void loop();
 };
