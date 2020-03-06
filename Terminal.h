@@ -23,19 +23,25 @@
 class Terminal
 {
 private:
-    Stream *stream;
     void printMessage(uint8_t messageId);
+    void printHeader();
+    void resetInactivityTimer();
+    int getFreeRamBytes();
+
     struct terminalHotkey
     {
         void (*callback)();
         char key;
     };
 
+    Stream *stream;
     terminalHotkey hotkeys[TERMINAL_MAX_HOTKEYS];
     byte lastHotkeyIndex = 0;
     void (*menuCallback)(byte selection);
     void (*resetCallback)();
     uint32_t lastActiveTime;
+    bool clpIndicator = false;
+    bool lckIndicator = false;
 
 public:
     void init(Stream *stream);
@@ -48,10 +54,12 @@ public:
     void printBanner();
     void printHeaderMessage(char *message);
     void printStatusMessage(char *message);
+    void printStatusProgress(char *message, uint32_t delaymS, byte *completedMessage, byte line, byte column, byte areaWidth);
     void print(char *text, byte line = NULL, byte column = NULL);
     void printMenuEntry(byte position, char *text);
     void readString(char *prompt, char *string, byte stringMaxSize, char mask = 0, byte line = NULL, byte column = NULL);
-    void resetInactivityTimer();
+    void setClpIndicator(bool status);
+    void setLclIndicator(bool status);
     void loop();
 };
 

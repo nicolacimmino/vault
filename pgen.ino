@@ -19,6 +19,7 @@
 #include "EncryptedStore.h"
 #include "sha256.h"
 #include <Keyboard.h>
+#include "options.h"
 
 #define BUTTON_A_COMMON 7
 #define BUTTON_A_SENSE 8
@@ -28,37 +29,6 @@ Terminal terminal;
 EncryptedStore encryptedStore;
 char clipboard[ENCRYPTED_STORE_DATA_SIZE];
 byte selectedPasswordIndex;
-
-/**
- * See https://playground.arduino.cc/Code/AvailableMemory/
- **/
-int freeRam()
-{
-    extern int __heap_start, *__brkval;
-    int v;
-    return (int)&v - (__brkval == 0 ? (int)&__heap_start : (int)__brkval);
-}
-
-void printHeader()
-{
-    char headerMessage[TERMINAL_WIDTH];
-    memset(headerMessage, 0, TERMINAL_WIDTH);
-
-    sprintf(headerMessage, " Vault V0.1 - %d bytes free %s %s ",
-            freeRam(),
-            (strlen(clipboard) > 0) ? "[CLP]" : "",
-            (encryptedStore.isLocked() ? "[LCK]" : "[ULK]"));
-
-    terminal.printHeaderMessage(headerMessage);
-}
-
-void clearScreen()
-{
-    terminal.clearScreen();
-    printHeader();
-    terminal.printBanner();
-    terminal.resetInactivityTimer();
-}
 
 void unlockEncryptedStore()
 {
@@ -140,7 +110,7 @@ void displayPasswordSelectionMenu()
 {
     char label[ENCRYPTED_STORE_LABEL_SIZE];
 
-    clearScreen();
+    terminal.clearScreen();
 
     for (byte menuPosition = 0; menuPosition < ENCRYPTED_STORE_MAX_ENTRIES; menuPosition++)
     {
@@ -180,16 +150,15 @@ void actOnPassword(byte action)
         return;
     }
 
-    // Just for a show, the decryption is already done.
     terminal.clearCanvas();
-    terminal.print(VT_FOREGROUND_YELLOW " Fetch record", TERMINAL_FIRST_CANVAS_LINE + 2, 1);
-    delay(600);
-    terminal.print("           " VT_FOREGROUND_GREEN "[OK]");
-    terminal.print(VT_FOREGROUND_YELLOW " Decrypt password", TERMINAL_FIRST_CANVAS_LINE + 3, 1);
-    delay(600);
-    terminal.print("       " VT_FOREGROUND_GREEN "[OK]");
-    terminal.print(VT_FOREGROUND_YELLOW " Password in clipboard  " VT_FOREGROUND_GREEN "[OK]", TERMINAL_FIRST_CANVAS_LINE + 4, 1);
-    terminal.print(VT_FOREGROUND_YELLOW " Ready.  ", TERMINAL_FIRST_CANVAS_LINE + 5, 1);
+
+#ifdef OPTION_BELLS_AND_WHISTLES
+    // Just for a show, the decryption is already done.
+    terminal.printStatusProgress("Fetch record", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 2, 2, 30);
+    terminal.printStatusProgress("Decrypt", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 3, 2, 30);
+    terminal.printStatusProgress("Copy to clipboard", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 4, 2, 30);
+#endif
+    terminal.print("Ready.", TERMINAL_FIRST_CANVAS_LINE + 5, 2);
 
     while (strlen(clipboard) > 0)
     {
@@ -252,14 +221,12 @@ void setup()
 
 void loop()
 {
-    if (millis() % 300 == 0)
-    {
-        printHeader();
-    }
+    terminal.setClpIndicator(strlen(clipboard) > 0);
+    terminal.setLclIndicator(encryptedStore.isLocked());
 
     if (encryptedStore.isLocked())
     {
-        clearScreen();
+        terminal.clearScreen();
         terminal.printStatusMessage(" Locked.");
         unlockEncryptedStore();
         displayPasswordSelectionMenu();

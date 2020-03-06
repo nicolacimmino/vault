@@ -47,11 +47,11 @@ void Terminal::setResetCallback(void (*resetCallback)())
 void Terminal::loop()
 {
     static bool alt = false;
-    
+
     while (Serial.available())
     {
-        this->lastActiveTime = millis();
-           
+        this->resetInactivityTimer();
+
         char key = this->stream->read();
 
         if (key == (char)27)
@@ -61,7 +61,7 @@ void Terminal::loop()
         }
 
         if (alt)
-        {            
+        {
             if (key == 'q' && this->resetCallback)
             {
                 this->resetCallback();
@@ -84,7 +84,8 @@ void Terminal::loop()
         alt = false;
     }
 
-    if(millis() - this->lastActiveTime > TERMINAL_MAX_INACTIVE_TIME_MS && this->resetCallback) {
+    if (millis() - this->lastActiveTime > TERMINAL_MAX_INACTIVE_TIME_MS && this->resetCallback)
+    {
         this->resetCallback();
     }
 }
@@ -94,6 +95,8 @@ void Terminal::clearScreen()
     VT100.setBackgroundColor(TERMINAL_BACKGROUND_COLOR);
     VT100.setTextColor(TERMINAL_FOREGROUND_COLOR);
     VT100.clearScreen();
+    this->printHeader();
+    this->printBanner();
     this->printStatusMessage("");
 }
 
@@ -127,17 +130,17 @@ void Terminal::printStatusMessage(char *message)
     VT100.clearLineAfter();
 }
 
-void Terminal::printHeaderMessage(char *message)
+void Terminal::printStatusProgress(char *message, uint32_t delaymS, byte *completedMessage, byte line, byte column, byte areaWidth)
 {
-    VT100.setCursor(TERMINAL_HEADER_LINE, 1);
-    VT100.setBackgroundColor(TERMINAL_STATUS_LINE_BACKGROUND_COLOR);
-    VT100.setTextColor(TERMINAL_STATUS_LINE_FOREGROUND_COLOR);
-    this->stream->print(message);
-    VT100.clearLineAfter();
-    VT100.setCursor(TERMINAL_HEADER_LINE, TERMINAL_WIDTH);
-    VT100.setBackgroundColor(TERMINAL_BACKGROUND_COLOR);
     VT100.setTextColor(TERMINAL_FOREGROUND_COLOR);
-    VT100.clearLineAfter();
+    this->print(message, line, column);
+    delay(delaymS);
+    char buffer[TERMINAL_WIDTH];
+    memset(buffer, 0, TERMINAL_WIDTH);
+    memset(buffer, '.', areaWidth - strlen(message) - strlen(completedMessage));
+    strcat(buffer, completedMessage);
+    this->print(VT_FOREGROUND_GREEN);
+    this->print(buffer);
 }
 
 void Terminal::print(char *text, byte line = NULL, byte column = NULL)
@@ -170,7 +173,9 @@ void Terminal::readString(char *prompt, char *string, byte stringMaxSize, char m
     while (true)
     {
         if (Serial.available())
-        {            
+        {
+            this->resetInactivityTimer();
+
             char nextChar = this->stream->read();
 
             if (nextChar == '\r')
@@ -199,4 +204,57 @@ void Terminal::printMessage(uint8_t messageId)
     char buffer[512];
     strcpy_P(buffer, (char *)pgm_read_word(&(messages[messageId])));
     this->stream->print(buffer);
+}
+
+void Terminal::setClpIndicator(bool status)
+{
+    if (status == this->clpIndicator)
+    {
+        return;
+    }
+
+    this->clpIndicator = status;
+    this->printHeader();
+}
+void Terminal::setLclIndicator(bool status)
+{
+    if (status == this->lckIndicator)
+    {
+        return;
+    }
+
+    this->lckIndicator = status;
+    this->printHeader();
+}
+
+void Terminal::printHeader()
+{
+    char headerMessage[TERMINAL_WIDTH];
+    memset(headerMessage, 0, TERMINAL_WIDTH);
+
+    sprintf(headerMessage, " Vault V0.1 - %d bytes free %s %s ",
+            this->getFreeRamBytes(),
+            this->clpIndicator ? "[CLP]" : "",
+            this->lckIndicator ? "[LCK]" : "[ULK]");
+
+    VT100.setCursor(TERMINAL_HEADER_LINE, 1);
+    VT100.setBackgroundColor(TERMINAL_STATUS_LINE_BACKGROUND_COLOR);
+    VT100.setTextColor(TERMINAL_STATUS_LINE_FOREGROUND_COLOR);
+    this->stream->print(headerMessage);
+    VT100.clearLineAfter();
+    VT100.setCursor(TERMINAL_HEADER_LINE, TERMINAL_WIDTH);
+    VT100.setBackgroundColor(TERMINAL_BACKGROUND_COLOR);
+    VT100.setTextColor(TERMINAL_FOREGROUND_COLOR);
+    VT100.clearLineAfter();
+}
+
+
+/**
+ * See https://playground.arduino.cc/Code/AvailableMemory/
+ **/
+int Terminal::getFreeRamBytes()
+{
+    extern int __heap_start, *__brkval;
+    int v;
+    return (int)&v - (__brkval == 0 ? (int)&__heap_start : (int)__brkval);
 }
