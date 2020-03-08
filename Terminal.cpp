@@ -13,6 +13,18 @@ void Terminal::resetInactivityTimer()
     this->lastActiveTime = millis();
 }
 
+bool Terminal::checkInactivityTimer()
+{
+    if (millis() - this->lastActiveTime > TERMINAL_MAX_INACTIVE_TIME_MS && this->resetCallback)
+    {
+        this->resetCallback();
+
+        return false;
+    }
+
+    return true;
+}
+
 void Terminal::clearHotkeys()
 {
     this->lastHotkeyIndex = 0;
@@ -89,10 +101,7 @@ void Terminal::loop()
         alt = false;
     }
 
-    if (millis() - this->lastActiveTime > TERMINAL_MAX_INACTIVE_TIME_MS && this->resetCallback)
-    {
-        this->resetCallback();
-    }
+    this->checkInactivityTimer();    
 }
 
 void Terminal::clearScreen()
@@ -169,7 +178,7 @@ void Terminal::printMenuEntry(byte position, char *text)
     this->print(buffer, line, column);
 }
 
-void Terminal::readString(char *prompt, char *string, byte stringMaxSize, char mask = 0, byte line = NULL, byte column = NULL)
+bool Terminal::readString(char *prompt, char *string, byte stringMaxSize, char mask = 0, byte line = NULL, byte column = NULL)
 {
     this->print(prompt, line, column);
 
@@ -199,9 +208,16 @@ void Terminal::readString(char *prompt, char *string, byte stringMaxSize, char m
 
             this->stream->print(mask ? mask : nextChar);
         }
+
+        if(!this->checkInactivityTimer())
+        {
+            return false;
+        }
     }
 
     VT100.cursorOff();
+
+    return true;
 }
 
 void Terminal::printMessage(uint8_t messageId)

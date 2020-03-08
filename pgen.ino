@@ -34,8 +34,10 @@ void unlockEncryptedStore()
 {
     char masterPassword[MASTER_PASSWORD_MAX_SIZE];
     memset(masterPassword, 0, MASTER_PASSWORD_MAX_SIZE);
-    terminal.readString("Enter master password: ", masterPassword, MASTER_PASSWORD_MAX_SIZE, '*', TERMINAL_FIRST_CANVAS_LINE + 2, 2);
-    encryptedStore.unlock(masterPassword);
+    if (terminal.readString("Enter master password: ", masterPassword, MASTER_PASSWORD_MAX_SIZE, '*', TERMINAL_FIRST_CANVAS_LINE + 2, 2))
+    {
+        encryptedStore.unlock(masterPassword);
+    }    
     memset(masterPassword, 0, MASTER_PASSWORD_MAX_SIZE);
 }
 
@@ -46,7 +48,7 @@ void addPassword()
     byte selectedIndex = selection[0] - 'a';
 
     terminal.clearCanvas();
-        
+
     char label[ENCRYPTED_STORE_LABEL_SIZE];
     char password[ENCRYPTED_STORE_DATA_SIZE];
 

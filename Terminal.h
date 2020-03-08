@@ -26,6 +26,7 @@ private:
     void printMessage(uint8_t messageId);
     void printHeader();
     void resetInactivityTimer();
+    bool checkInactivityTimer();
     int getFreeRamBytes();
 
     struct terminalHotkey
@@ -57,7 +58,7 @@ public:
     void printStatusProgress(char *message, uint32_t delaymS, byte *completedMessage, byte line, byte column, byte areaWidth);
     void print(char *text, byte line = NULL, byte column = NULL);
     void printMenuEntry(byte position, char *text);
-    void readString(char *prompt, char *string, byte stringMaxSize, char mask = 0, byte line = NULL, byte column = NULL);
+    bool readString(char *prompt, char *string, byte stringMaxSize, char mask = 0, byte line = NULL, byte column = NULL);
     void setClpIndicator(bool status);
     void setLclIndicator(bool status);
     void loop();
