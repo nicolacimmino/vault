@@ -48,6 +48,11 @@ void Terminal::loop()
 {
     static bool alt = false;
 
+    if (millis() % 300 == 0)
+    {
+        this->printHeader();
+    }
+
     while (Serial.available())
     {
         this->resetInactivityTimer();
@@ -247,7 +252,6 @@ void Terminal::printHeader()
     VT100.setTextColor(TERMINAL_FOREGROUND_COLOR);
     VT100.clearLineAfter();
 }
-
 
 /**
  * See https://playground.arduino.cc/Code/AvailableMemory/

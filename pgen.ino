@@ -41,17 +41,12 @@ void unlockEncryptedStore()
 
 void addPassword()
 {
+    char selection[4];
+    terminal.readString("Select position: ", selection, 4, 0, TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 1, 2);
+    byte selectedIndex = selection[0] - 'a';
+
     terminal.clearCanvas();
-
-    byte firstFreeSlot = encryptedStore.getFirstFreeSlot();
-
-    if (firstFreeSlot == ENCRYPTED_STORE_FULL)
-    {
-        terminal.printStatusMessage(" Store full! Delete something first.");
-        delay(2000);
-        return;
-    }
-
+        
     char label[ENCRYPTED_STORE_LABEL_SIZE];
     char password[ENCRYPTED_STORE_DATA_SIZE];
 
@@ -59,14 +54,14 @@ void addPassword()
     terminal.readString("Enter password: ", password, ENCRYPTED_STORE_DATA_SIZE, '*', TERMINAL_FIRST_CANVAS_LINE + 3, 2);
 
     terminal.printStatusMessage(" Enctrypting......");
-    encryptedStore.set(firstFreeSlot, password, label);
+    encryptedStore.set(selectedIndex, password, label);
     displayPasswordSelectionMenu();
 }
 
 void wipePassword()
 {
-    char selection[1];
-    terminal.readString("Select position to wipe: ", selection, 1, 0, TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 1, 1);
+    char selection[4];
+    terminal.readString("Select position to wipe: ", selection, 4, 0, TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 1, 2);
 
     encryptedStore.wipe(selection[0] - 'a');
 
