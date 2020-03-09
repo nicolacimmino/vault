@@ -93,10 +93,10 @@ void VaultController::displayPasswordSelectionMenu()
     }
 
     this->terminal.clearHotkeys();
-    this->terminal.addHotkey('a', invoke_vaultController_addPassword);
-    this->terminal.addHotkey('w', invoke_vaultController_wipePassword);
-    this->terminal.addHotkey('l', invoke_vaultController_lockStore);
-    this->terminal.setMenuCallback(invoke_vaultController_selectPassword);
+    this->terminal.addHotkey('a', makeFunctor((Functor0 *)0, *this, &VaultController::addPassword));
+    this->terminal.addHotkey('w', makeFunctor((Functor0 *)0, *this, &VaultController::wipePassword));
+    this->terminal.addHotkey('l', makeFunctor((Functor0 *)0, *this, &VaultController::lockStore));
+    this->terminal.setMenuCallback(makeFunctor((Functor1<byte> *)0, *this, &VaultController::selectPassword));
     this->terminal.printStatusMessage(" ALT+A Add  |  ALT+W Wipe  |  ALT+L Lock  |  ALT+Q Reset");
 }
 
@@ -151,7 +151,7 @@ void VaultController::displayPasswordActionMenu()
     this->terminal.printMenuEntry(1, "Partial copy to clipboard");
 
     this->terminal.clearHotkeys();
-    this->terminal.setMenuCallback(invoke_vaultController_actOnPassword);
+    this->terminal.setMenuCallback(makeFunctor((Functor1<byte> *)0, *this, &VaultController::actOnPassword));
 }
 
 void VaultController::resetTerminal()
@@ -179,7 +179,7 @@ void VaultController::begin()
 
     memset(clipboard, 0, ENCRYPTED_STORE_DATA_SIZE);
 
-    this->terminal.setResetCallback(invoke_vaultController_resetTerminal);
+    this->terminal.setResetCallback(makeFunctor((Functor0 *)0, *this, &VaultController::resetTerminal));
 }
 
 void VaultController::loop()
@@ -200,7 +200,7 @@ void VaultController::loop()
     this->terminal.loop();
 }
 
-VaultController* VaultController::instance = 0;
+VaultController *VaultController::instance = 0;
 
 VaultController *VaultController::getInstance()
 {

@@ -1,6 +1,7 @@
 #ifndef ___PGEN_TERMINAL_H__
 #define ___PGEN_TERMINAL_H__
 
+#include <functor.h>
 #include "VT100.h"
 #include "messages.h"
 
@@ -31,15 +32,15 @@ private:
 
     struct terminalHotkey
     {
-        void (*callback)();
+        Functor0 callback;
         char key;
     };
 
     Stream *stream;
     terminalHotkey hotkeys[TERMINAL_MAX_HOTKEYS];
     byte lastHotkeyIndex = 0;
-    void (*menuCallback)(byte selection);
-    void (*resetCallback)();
+    Functor1<byte> menuCallback;
+    Functor0 resetCallback;
     uint32_t lastActiveTime;
     bool clpIndicator = false;
     bool lckIndicator = false;
@@ -47,9 +48,9 @@ private:
 public:
     void init(Stream *stream);
     void clearHotkeys();
-    void addHotkey(char key, void (*callback)());
-    void setMenuCallback(void (*menuCallback)(byte selection));
-    void setResetCallback(void (*resetCallback)());
+    void addHotkey(char key, const Functor0 &action);
+    void setMenuCallback(const Functor1<byte> &menuCallback);
+    void setResetCallback(const Functor0 &resetCallback);
     void clearScreen();
     void clearCanvas();
     void printBanner();

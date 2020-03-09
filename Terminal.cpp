@@ -30,7 +30,7 @@ void Terminal::clearHotkeys()
     this->lastHotkeyIndex = 0;
 }
 
-void Terminal::addHotkey(char key, void (*callback)())
+void Terminal::addHotkey(char key, const Functor0 &action)
 {
     if (this->lastHotkeyIndex == TERMINAL_MAX_HOTKEYS)
     {
@@ -38,7 +38,7 @@ void Terminal::addHotkey(char key, void (*callback)())
     }
 
     terminalHotkey hotkey;
-    hotkey.callback = callback;
+    hotkey.callback = action;
     hotkey.key = key;
 
     this->hotkeys[this->lastHotkeyIndex] = hotkey;
@@ -46,12 +46,12 @@ void Terminal::addHotkey(char key, void (*callback)())
     this->lastHotkeyIndex++;
 }
 
-void Terminal::setMenuCallback(void (*menuCallback)(byte selection))
+void Terminal::setMenuCallback(const Functor1<byte> &menuCallback)
 {
     this->menuCallback = menuCallback;
 }
 
-void Terminal::setResetCallback(void (*resetCallback)())
+void Terminal::setResetCallback(const Functor0 &resetCallback)
 {
     this->resetCallback = resetCallback;
 }

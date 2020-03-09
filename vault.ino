@@ -19,42 +19,6 @@
 #include "options.h"
 #include "VaultController.h"
 
-/**
- * We couuld use functors for the menus callbacks, but since VaultController is 
- * a singleton we just lazily do with these globals passed as function pointers
- * to the terminal.
- */
-
-void invoke_vaultController_addPassword()
-{
-    VaultController::getInstance()->addPassword();
-}
-
-void invoke_vaultController_wipePassword()
-{
-    VaultController::getInstance()->wipePassword();
-}
-
-void invoke_vaultController_lockStore()
-{
-    VaultController::getInstance()->lockStore();
-}
-
-void invoke_vaultController_selectPassword(byte index)
-{
-    VaultController::getInstance()->selectPassword(index);
-}
-
-void invoke_vaultController_actOnPassword(byte action)
-{
-    VaultController::getInstance()->actOnPassword(action);
-}
-
-void invoke_vaultController_resetTerminal()
-{
-    VaultController::getInstance()->resetTerminal();
-}
-
 void setup()
 {
     pinMode(BUTTON_A_COMMON, OUTPUT);
