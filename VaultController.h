@@ -18,14 +18,12 @@ private:
     EncryptedStore encryptedStore;
     char clipboard[ENCRYPTED_STORE_DATA_SIZE];
     byte selectedPasswordIndex;
-    static VaultController *instance;
-
+    
     void unlockEncryptedStore();
     void displayPasswordSelectionMenu();
     void displayPasswordActionMenu();
 
-public:
-    static VaultController *getInstance();
+public:    
     void loop();
     void begin();
     void addPassword();

@@ -19,18 +19,20 @@
 #include "options.h"
 #include "VaultController.h"
 
+VaultController vaultController;
+
 void setup()
 {
     pinMode(BUTTON_A_COMMON, OUTPUT);
     digitalWrite(BUTTON_A_COMMON, LOW);
     pinMode(BUTTON_A_SENSE, INPUT_PULLUP);
 
-    VaultController::getInstance()->begin();
+    vaultController.begin();
 
     Keyboard.begin();
 }
 
 void loop()
 {
-    VaultController::getInstance()->loop();
+    vaultController.loop();
 }

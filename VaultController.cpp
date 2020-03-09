@@ -199,15 +199,3 @@ void VaultController::loop()
 
     this->terminal.loop();
 }
-
-VaultController *VaultController::instance = 0;
-
-VaultController *VaultController::getInstance()
-{
-    if (!instance)
-    {
-        instance = new VaultController();
-    }
-
-    return instance;
-}
