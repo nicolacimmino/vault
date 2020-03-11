@@ -6,6 +6,7 @@
 #include "sha256.h"
 #include "NoiseSource.h"
 #include <EEPROM.h>
+#include "SafeBuffer.h"
 
 #define ENCRYPTED_STORE_EEPROM_SIZE 1024
 #define ENCRYPTED_STORE_KEY_SIZE 32
@@ -27,14 +28,13 @@ private:
     };
 
     byte key[ENCRYPTED_STORE_KEY_SIZE];
-    void generateIV(byte *iv);
-    void deriveKey(char *masterPassword);
+    void generateIV(byte *iv);    
     uint16_t getEncryptedEntryAddress(byte index);
     void safeStringCopy(char *destination, char *source, byte destinationSize);
     bool locked = true;
 
 public:
-    void unlock(char *masterPassword);
+    void unlock(SafeBuffer *masterPassword);
     void lock();
     void get(byte index, char *plainText);
     void getTokens(byte index, char *tokensList, char *plainText);

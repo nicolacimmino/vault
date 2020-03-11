@@ -2,6 +2,7 @@
 #define ___PGEN_TERMINAL_H__
 
 #include <functor.h>
+#include "SafeBuffer.h"
 #include "VT100.h"
 #include "messages.h"
 
@@ -60,6 +61,7 @@ public:
     void print(char *text, byte line = NULL, byte column = NULL);
     void printMenuEntry(byte position, char *text);
     bool readString(char *prompt, char *string, byte stringMaxSize, char mask = 0, byte line = NULL, byte column = NULL);
+    bool readString(char *prompt, SafeBuffer *string, char mask = 0, byte line = NULL, byte column = NULL);
     void setClpIndicator(bool status);
     void setLclIndicator(bool status);
     void loop();

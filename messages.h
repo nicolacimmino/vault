@@ -12,4 +12,7 @@ const char message0[] PROGMEM =
 
 const char *const messages[] PROGMEM = {message0};
 
+#define TXT_ENTER_MASTER_PASSWORD "Enter master password: "
+#define TXT_PASSWORD_MASK '*'
+
 #endif

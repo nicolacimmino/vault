@@ -1,15 +1,21 @@
 
 #include "VaultController.h"
 
+/**
+ * Unlock the store.
+ * 
+ * Get the user master password and use it to unlock the store.
+ */
 void VaultController::unlockEncryptedStore()
 {
-    char masterPassword[MASTER_PASSWORD_MAX_SIZE];
-    memset(masterPassword, 0, MASTER_PASSWORD_MAX_SIZE);
-    if (this->terminal.readString("Enter master password: ", masterPassword, MASTER_PASSWORD_MAX_SIZE, '*', TERMINAL_FIRST_CANVAS_LINE + 2, 2))
+    SafeBuffer *masterPassword = new SafeBuffer(MASTER_PASSWORD_MAX_SIZE);
+
+    if (this->terminal.readString(TXT_ENTER_MASTER_PASSWORD, masterPassword, TXT_PASSWORD_MASK, TERMINAL_FIRST_CANVAS_LINE + 2, 2))
     {
         this->encryptedStore.unlock(masterPassword);
     }
-    memset(masterPassword, 0, MASTER_PASSWORD_MAX_SIZE);
+
+    delete masterPassword;
 }
 
 void VaultController::addPassword()

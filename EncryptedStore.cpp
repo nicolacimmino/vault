@@ -1,8 +1,12 @@
 #include "EncryptedStore.h"
 
-void EncryptedStore::unlock(char *masterPassword)
+void EncryptedStore::unlock(SafeBuffer *masterPassword)
 {
-    this->deriveKey(masterPassword);
+    Sha256Class sha256;
+    sha256.init();
+    sha256.print(masterPassword->getBuffer());
+    memcpy(this->key, sha256.result(), ENCRYPTED_STORE_KEY_SIZE);
+
     this->locked = false;
 }
 
@@ -23,14 +27,6 @@ void EncryptedStore::wipe(byte index)
     memset(&encryptedEntry, 0, sizeof(EncryptedEntry));
 
     EEPROM.put(this->getEncryptedEntryAddress(index), encryptedEntry);
-}
-
-void EncryptedStore::deriveKey(char *masterPassword)
-{
-    Sha256Class sha256;
-    sha256.init();
-    sha256.print(masterPassword);
-    memcpy(this->key, sha256.result(), ENCRYPTED_STORE_KEY_SIZE);
 }
 
 byte EncryptedStore::getFirstFreeSlot()

@@ -101,7 +101,7 @@ void Terminal::loop()
         alt = false;
     }
 
-    this->checkInactivityTimer();    
+    this->checkInactivityTimer();
 }
 
 void Terminal::clearScreen()
@@ -180,6 +180,20 @@ void Terminal::printMenuEntry(byte position, char *text)
 
 bool Terminal::readString(char *prompt, char *string, byte stringMaxSize, char mask = 0, byte line = NULL, byte column = NULL)
 {
+    SafeBuffer *safeStringBuffer = new SafeBuffer(stringMaxSize);
+    safeStringBuffer->strcpy(string);
+
+    bool response = this->readString(prompt, safeStringBuffer, mask, line, column);
+
+    strcpy(string, safeStringBuffer->getBuffer());
+
+    delete safeStringBuffer;
+
+    return response;
+}
+
+bool Terminal::readString(char *prompt, SafeBuffer *string, char mask = 0, byte line = NULL, byte column = NULL)
+{
     this->print(prompt, line, column);
 
     VT100.cursorOn();
@@ -194,14 +208,14 @@ bool Terminal::readString(char *prompt, char *string, byte stringMaxSize, char m
 
             if (nextChar == '\r')
             {
-                string[ix] = 0;
+                string->setChar(ix, 0);
                 break;
             }
 
-            string[ix] = nextChar;
+            string->setChar(ix, nextChar);
             ix++;
 
-            if (ix == stringMaxSize - 1)
+            if (ix == string->getBufferSize() - 1)
             {
                 break;
             }
@@ -209,7 +223,7 @@ bool Terminal::readString(char *prompt, char *string, byte stringMaxSize, char m
             this->stream->print(mask ? mask : nextChar);
         }
 
-        if(!this->checkInactivityTimer())
+        if (!this->checkInactivityTimer())
         {
             return false;
         }
