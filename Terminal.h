@@ -21,6 +21,7 @@
 #define TERMINAL_STATUS_LINE_FOREGROUND_COLOR VT_BLACK
 #define TERMINAL_MENU_BASE 100
 #define TERMINAL_MAX_INACTIVE_TIME_MS 60000
+#define TERMINAL_OPERATION_ABORTED 255
 
 class Terminal
 {
@@ -62,6 +63,7 @@ public:
     void printMenuEntry(byte position, char *text);
     bool readString(char *prompt, char *string, byte stringMaxSize, char mask = 0, byte line = NULL, byte column = NULL);
     bool readString(char *prompt, SafeBuffer *string, char mask = 0, byte line = NULL, byte column = NULL);
+    byte waitKeySelection(char rangeStart, char rangeEnd);
     void setClpIndicator(bool status);
     void setLclIndicator(bool status);
     void loop();

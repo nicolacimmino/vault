@@ -89,7 +89,7 @@ void EncryptedStore::getLabel(byte index, char *label)
     memcpy(label, encryptedEntry.label, ENCRYPTED_STORE_LABEL_SIZE);
 }
 
-void EncryptedStore::set(byte index, char *plainText, char *label)
+void EncryptedStore::set(byte index, SafeBuffer *plainText, SafeBuffer *label)
 {
     EncryptedEntry encryptedEntry;
     this->generateIV(encryptedEntry.iv);
@@ -97,8 +97,8 @@ void EncryptedStore::set(byte index, char *plainText, char *label)
     aes256CtrCtx_t ctx;
     aes256CtrInit(&ctx, this->key, encryptedEntry.iv, ENCRYPTED_STORE_IV_SIZE);
 
-    this->safeStringCopy(encryptedEntry.cipher, plainText, ENCRYPTED_STORE_DATA_SIZE);
-    this->safeStringCopy(encryptedEntry.label, label, ENCRYPTED_STORE_LABEL_SIZE);
+    this->safeStringCopy(encryptedEntry.cipher, plainText->getBuffer(), plainText->getBufferSize());
+    this->safeStringCopy(encryptedEntry.label, label->getBuffer(), label->getBufferSize());
 
     for (int ix = 0; ix < ENCRYPTED_STORE_DATA_SIZE; ix += ENCRYPTED_STORE_BLOCK_SIZE)
     {

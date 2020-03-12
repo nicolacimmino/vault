@@ -28,7 +28,7 @@ private:
     };
 
     byte key[ENCRYPTED_STORE_KEY_SIZE];
-    void generateIV(byte *iv);    
+    void generateIV(byte *iv);
     uint16_t getEncryptedEntryAddress(byte index);
     void safeStringCopy(char *destination, char *source, byte destinationSize);
     bool locked = true;
@@ -39,7 +39,7 @@ public:
     void get(byte index, char *plainText);
     void getTokens(byte index, char *tokensList, char *plainText);
     void getLabel(byte index, char *label);
-    void set(byte index, char *plainText, char *label);
+    void set(byte index, SafeBuffer *plainText, SafeBuffer *label);
     void wipe(byte index);
     byte getFirstFreeSlot();
     bool isLocked();

@@ -18,31 +18,56 @@ void VaultController::unlockEncryptedStore()
     delete masterPassword;
 }
 
+/**
+ * Add a password to the store.
+ * 
+ * Asks the user the position, label and actual password and adds it to the store.
+ */
 void VaultController::addPassword()
 {
-    char selection[4];
-    this->terminal.readString("Select position: ", selection, 4, 0, TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 1, 2);
-    byte selectedIndex = selection[0] - 'a';
+    this->terminal.print("Select position: ", TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 1, 2);
+
+    byte selectedIndex = this->terminal.waitKeySelection('a', 'a' + ENCRYPTED_STORE_MAX_ENTRIES);
+
+    if (selectedIndex == TERMINAL_OPERATION_ABORTED)
+    {
+        return;
+    }
 
     this->terminal.clearCanvas();
 
-    char label[ENCRYPTED_STORE_LABEL_SIZE];
-    char password[ENCRYPTED_STORE_DATA_SIZE];
+    SafeBuffer *label = new SafeBuffer(ENCRYPTED_STORE_LABEL_SIZE);
+    SafeBuffer *password = new SafeBuffer(ENCRYPTED_STORE_DATA_SIZE);
 
-    this->terminal.readString("Enter label: ", label, ENCRYPTED_STORE_LABEL_SIZE, 0, TERMINAL_FIRST_CANVAS_LINE + 2, 2);
-    this->terminal.readString("Enter password: ", password, ENCRYPTED_STORE_DATA_SIZE, '*', TERMINAL_FIRST_CANVAS_LINE + 3, 2);
+    this->terminal.readString("Enter label: ", label, 0, TERMINAL_FIRST_CANVAS_LINE + 2, 2);
+    this->terminal.readString("Enter password: ", password, '*', TERMINAL_FIRST_CANVAS_LINE + 3, 2);
 
     this->terminal.printStatusMessage(" Enctrypting......");
     this->encryptedStore.set(selectedIndex, password, label);
+
+    delete label;
+    delete password;
+
     this->displayPasswordSelectionMenu();
 }
 
+/**
+ * Wipe a password.
+ * 
+ * Asks the user the position to wipe.
+ */
 void VaultController::wipePassword()
 {
-    char selection[4];
-    this->terminal.readString("Select position to wipe: ", selection, 4, 0, TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 1, 2);
+    this->terminal.print("Select position to wipe: ", TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 1, 2);
 
-    this->encryptedStore.wipe(selection[0] - 'a');
+    byte selectedIndex = this->terminal.waitKeySelection('a', 'a' + ENCRYPTED_STORE_MAX_ENTRIES);
+
+    if (selectedIndex == TERMINAL_OPERATION_ABORTED)
+    {
+        return;
+    }
+
+    this->encryptedStore.wipe(selectedIndex);
 
     this->displayPasswordSelectionMenu();
 }

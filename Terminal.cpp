@@ -234,6 +234,32 @@ bool Terminal::readString(char *prompt, SafeBuffer *string, char mask = 0, byte 
     return true;
 }
 
+byte Terminal::waitKeySelection(char rangeStart, char rangeEnd)
+{
+    while (true)
+    {
+        if (!this->checkInactivityTimer())
+        {
+            return TERMINAL_OPERATION_ABORTED;
+        }
+
+        if (!Serial.available())
+        {
+            continue;
+        }
+
+        this->resetInactivityTimer();
+
+        char key = this->stream->read();
+
+        if (key > rangeEnd || key < rangeStart)
+        {
+            continue;
+        }
+
+        return (byte)(key - rangeStart);
+    }
+}
 void Terminal::printMessage(uint8_t messageId)
 {
     char buffer[512];
