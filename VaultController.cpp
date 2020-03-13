@@ -136,8 +136,9 @@ void VaultController::displayPasswordSelectionMenu()
     this->terminal.addHotkey('a', makeFunctor((Functor0 *)0, *this, &VaultController::addPassword));
     this->terminal.addHotkey('w', makeFunctor((Functor0 *)0, *this, &VaultController::wipePassword));
     this->terminal.addHotkey('l', makeFunctor((Functor0 *)0, *this, &VaultController::lockStore));
-    this->terminal.setMenuCallback(makeFunctor((Functor1<byte> *)0, *this, &VaultController::selectPassword));
     this->terminal.printStatusMessage(" ALT+A Add  |  ALT+W Wipe  |  ALT+L Lock  |  ALT+Q Reset");
+
+    this->terminal.setMenuCallback(makeFunctor((Functor1<byte> *)0, *this, &VaultController::selectPassword));
 }
 
 void VaultController::actOnPassword(byte action)
@@ -145,33 +146,43 @@ void VaultController::actOnPassword(byte action)
     switch (action)
     {
     case 0:
+    {
         this->encryptedStore.get(selectedPasswordIndex, clipboard);
         break;
+    }
     case 1:
-        char buffer[TERMINAL_WIDTH];
+    {
+        SafeBuffer *buffer = new SafeBuffer(TERMINAL_WIDTH);
 
-        this->terminal.clearCanvas();
-        this->terminal.readString("Enter tokens positions: ", buffer, TERMINAL_WIDTH, 0, TERMINAL_FIRST_CANVAS_LINE + 1, 2);
-        this->encryptedStore.getTokens(selectedPasswordIndex, buffer, clipboard);
+        this->terminal.readString("Enter tokens positions: ", buffer, 0, TERMINAL_FIRST_CANVAS_LINE + 4, TERMINAL_RIGHT_HALF_FIRST_COLUMN);
+        this->encryptedStore.getTokens(selectedPasswordIndex, buffer->getBuffer(), clipboard);
+
+        delete buffer;
         break;
-    default:
+    }
+    case 2:
+    {
+        this->displayPasswordSelectionMenu();
         return;
     }
-    
+    default:    
+        return;    
+    }
+
 #ifdef OPTION_BELLS_AND_WHISTLES
     // Just for a show, the decryption is already done.
-    this->terminal.printStatusProgress("Fetch record", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 5, TERMINAL_RIGHT_HALF_FIRST_COLUMN, 30);
-    this->terminal.printStatusProgress("Decrypt", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 6, TERMINAL_RIGHT_HALF_FIRST_COLUMN, 30);
-    this->terminal.printStatusProgress("Copy to clipboard", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 7, TERMINAL_RIGHT_HALF_FIRST_COLUMN, 30);
+    this->terminal.printStatusProgress("Fetch record", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 6, TERMINAL_RIGHT_HALF_FIRST_COLUMN, 30);
+    this->terminal.printStatusProgress("Decrypt", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 7, TERMINAL_RIGHT_HALF_FIRST_COLUMN, 30);
+    this->terminal.printStatusProgress("Copy to clipboard", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 8, TERMINAL_RIGHT_HALF_FIRST_COLUMN, 30);
 #endif
-    this->terminal.print("Ready.", TERMINAL_FIRST_CANVAS_LINE + 8, TERMINAL_RIGHT_HALF_FIRST_COLUMN);
+    this->terminal.print("Ready.", TERMINAL_FIRST_CANVAS_LINE + 9, TERMINAL_RIGHT_HALF_FIRST_COLUMN);
 
     while (clipboard->strlen() > 0)
     {
         if (digitalRead(BUTTON_A_SENSE) == LOW)
         {
             Keyboard.print(this->clipboard->getBuffer());
-            this->clipboard->wipe();            
+            this->clipboard->wipe();
         }
 
         loop();
@@ -184,8 +195,8 @@ void VaultController::displayPasswordActionMenu()
 {
     this->terminal.printMenuEntry(0, "Copy to clipboard", true);
     this->terminal.printMenuEntry(1, "Partial copy to clipboard", true);
+    this->terminal.printMenuEntry(2, "Back", true);
 
-    this->terminal.clearHotkeys();
     this->terminal.setMenuCallback(makeFunctor((Functor1<byte> *)0, *this, &VaultController::actOnPassword));
 }
 
@@ -195,7 +206,7 @@ void VaultController::resetTerminal()
 
     while (!Serial)
     {
-        ; // wait for serial port to connect. Needed for Leonardo only
+        ;
     }
     delay(500);
     this->terminal.init(&Serial);
