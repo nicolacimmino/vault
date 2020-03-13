@@ -29,20 +29,12 @@ void EncryptedStore::wipe(byte index)
     EEPROM.put(this->getEncryptedEntryAddress(index), encryptedEntry);
 }
 
-byte EncryptedStore::getFirstFreeSlot()
+bool EncryptedStore::isPositionFree(byte index)
 {
-    for (byte ix = 0; ix < ENCRYPTED_STORE_MAX_ENTRIES; ix++)
-    {
-        char label[ENCRYPTED_STORE_LABEL_SIZE];
-        this->getLabel(ix, label);
+    char label[ENCRYPTED_STORE_LABEL_SIZE];
+    this->getLabel(index, label);
 
-        if (strlen(label) == 0)
-        {
-            return ix;
-        }
-    }
-
-    return ENCRYPTED_STORE_FULL;
+    return strlen(label) == 0;
 }
 
 void EncryptedStore::get(byte index, SafeBuffer *plainText)
@@ -82,12 +74,24 @@ void EncryptedStore::getTokens(byte index, char *tokensList, SafeBuffer *plainTe
     delete password;
 }
 
-void EncryptedStore::getLabel(byte index, char *label)
+bool EncryptedStore::getLabel(byte index, char *label)
 {
+    if (index > ENCRYPTED_STORE_MAX_ENTRIES)
+    {
+        return false;
+    }
+
     EncryptedEntry encryptedEntry;
     EEPROM.get(this->getEncryptedEntryAddress(index), encryptedEntry);
 
+    if (strlen(encryptedEntry.label) == 0)
+    {
+        return false;
+    }
+
     memcpy(label, encryptedEntry.label, ENCRYPTED_STORE_LABEL_SIZE);
+
+    return true;
 }
 
 void EncryptedStore::set(byte index, SafeBuffer *plainText, SafeBuffer *label)

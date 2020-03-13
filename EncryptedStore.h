@@ -36,12 +36,12 @@ private:
 public:
     void unlock(SafeBuffer *masterPassword);
     void lock();
+    bool isPositionFree(byte index);
     void get(byte index, SafeBuffer *plainText);
     void getTokens(byte index, char *tokensList, SafeBuffer *plainText);
-    void getLabel(byte index, char *label);
+    bool getLabel(byte index, char *label);
     void set(byte index, SafeBuffer *plainText, SafeBuffer *label);
-    void wipe(byte index);
-    byte getFirstFreeSlot();
+    void wipe(byte index);    
     bool isLocked();
 };
 

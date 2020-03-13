@@ -82,12 +82,18 @@ void VaultController::wipePassword()
     this->displayPasswordSelectionMenu();
 }
 
+/**
+ * Lock the store and wipe the clipboard.
+ */
 void VaultController::lockStore()
 {
     this->encryptedStore.lock();
     this->clipboard->wipe();
 }
 
+/**
+ * Select password to perform actions on.
+ */
 void VaultController::selectPassword(byte index)
 {
     char label[ENCRYPTED_STORE_LABEL_SIZE];
@@ -97,24 +103,19 @@ void VaultController::selectPassword(byte index)
         return;
     }
 
-    this->encryptedStore.getLabel(index, label);
-
-    if (strlen(label) == 0)
+    if (this->encryptedStore.isPositionFree(index))
     {
-        this->terminal.printStatusMessage(" No password stored here.");
-        delay(2000);
-        this->displayPasswordSelectionMenu();
         return;
     }
 
-    char message[TERMINAL_WIDTH];
-    sprintf(message, " Selected: %s", label);
-    this->terminal.printStatusMessage(message);
+    this->selectedPasswordIndex = index;
 
-    selectedPasswordIndex = index;
     this->displayPasswordActionMenu();
 }
 
+/**
+ * Display a menu to select one of the available passwords.
+ */
 void VaultController::displayPasswordSelectionMenu()
 {
     char label[ENCRYPTED_STORE_LABEL_SIZE];
@@ -123,9 +124,7 @@ void VaultController::displayPasswordSelectionMenu()
 
     for (byte menuPosition = 0; menuPosition < ENCRYPTED_STORE_MAX_ENTRIES; menuPosition++)
     {
-        this->encryptedStore.getLabel(menuPosition, label);
-
-        if (strlen(label) == 0)
+        if (!this->encryptedStore.getLabel(menuPosition, label))
         {
             strcpy(label, "---");
         }
@@ -158,23 +157,21 @@ void VaultController::actOnPassword(byte action)
     default:
         return;
     }
-
-    this->terminal.clearCanvas();
-
+    
 #ifdef OPTION_BELLS_AND_WHISTLES
     // Just for a show, the decryption is already done.
-    this->terminal.printStatusProgress("Fetch record", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 2, 2, 30);
-    this->terminal.printStatusProgress("Decrypt", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 3, 2, 30);
-    this->terminal.printStatusProgress("Copy to clipboard", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 4, 2, 30);
+    this->terminal.printStatusProgress("Fetch record", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 5, TERMINAL_RIGHT_HALF_FIRST_COLUMN, 30);
+    this->terminal.printStatusProgress("Decrypt", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 6, TERMINAL_RIGHT_HALF_FIRST_COLUMN, 30);
+    this->terminal.printStatusProgress("Copy to clipboard", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 7, TERMINAL_RIGHT_HALF_FIRST_COLUMN, 30);
 #endif
-    this->terminal.print("Ready.", TERMINAL_FIRST_CANVAS_LINE + 5, 2);
+    this->terminal.print("Ready.", TERMINAL_FIRST_CANVAS_LINE + 8, TERMINAL_RIGHT_HALF_FIRST_COLUMN);
 
     while (clipboard->strlen() > 0)
     {
         if (digitalRead(BUTTON_A_SENSE) == LOW)
         {
             Keyboard.print(this->clipboard->getBuffer());
-            this->clipboard->wipe();
+            this->clipboard->wipe();            
         }
 
         loop();
@@ -185,11 +182,8 @@ void VaultController::actOnPassword(byte action)
 
 void VaultController::displayPasswordActionMenu()
 {
-    char label[ENCRYPTED_STORE_LABEL_SIZE];
-
-    this->terminal.clearCanvas();
-    this->terminal.printMenuEntry(0, "Copy to clipboard");
-    this->terminal.printMenuEntry(1, "Partial copy to clipboard");
+    this->terminal.printMenuEntry(0, "Copy to clipboard", true);
+    this->terminal.printMenuEntry(1, "Partial copy to clipboard", true);
 
     this->terminal.clearHotkeys();
     this->terminal.setMenuCallback(makeFunctor((Functor1<byte> *)0, *this, &VaultController::actOnPassword));
@@ -216,7 +210,7 @@ void VaultController::begin()
     }
     delay(500);
     this->terminal.init(&Serial);
-    
+
     this->terminal.setResetCallback(makeFunctor((Functor0 *)0, *this, &VaultController::resetTerminal));
 }
 

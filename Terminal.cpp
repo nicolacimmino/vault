@@ -56,6 +56,14 @@ void Terminal::setResetCallback(const Functor0 &resetCallback)
     this->resetCallback = resetCallback;
 }
 
+void Terminal::clearInputBuffer()
+{    
+    while (this->stream->available())
+    {        
+        this->stream->read();        
+    }
+}
+
 void Terminal::loop()
 {
     static bool alt = false;
@@ -65,7 +73,7 @@ void Terminal::loop()
         this->printHeader();
     }
 
-    while (Serial.available())
+    while (this->stream->available())
     {
         this->resetInactivityTimer();
 
@@ -95,7 +103,15 @@ void Terminal::loop()
 
         if (!alt && key >= 'a' && key <= 'z' && this->menuCallback)
         {
-            this->menuCallback(key - 'a');
+            byte menuIndex = key - 'a';
+            bool secondLevel = false;
+            if(menuIndex >= TERMINAL_CANVAS_LINES) {
+                menuIndex -= TERMINAL_CANVAS_LINES;
+                secondLevel = true;
+            }
+
+            this->highlightMenuEntry(menuIndex, secondLevel);
+            this->menuCallback(menuIndex);
         }
 
         alt = false;
@@ -167,14 +183,36 @@ void Terminal::print(char *text, byte line = NULL, byte column = NULL)
     this->stream->print(text);
 }
 
-void Terminal::printMenuEntry(byte position, char *text)
+void Terminal::printMenuEntry(byte position, char *text, bool secondLevel = false)
 {
     byte line = (position % TERMINAL_CANVAS_LINES) + TERMINAL_FIRST_CANVAS_LINE;
     byte column = (position < TERMINAL_CANVAS_LINES) ? 2 : 22;
 
+    if (secondLevel)
+    {
+        column += TERMINAL_RIGHT_HALF_FIRST_COLUMN - 5;
+        position += TERMINAL_CANVAS_LINES;
+    }
+
     char buffer[TERMINAL_WIDTH];
     sprintf(buffer, "   %s[%c]%s  %s", VT_FOREGROUND_WHITE, 'A' + position, VT_FOREGROUND_YELLOW, text);
     buffer[TERMINAL_WIDTH - 1] = 0;
+    this->print(buffer, line, column);
+}
+
+void Terminal::highlightMenuEntry(byte position, bool secondLevel = false)
+{
+    byte line = (position % TERMINAL_CANVAS_LINES) + TERMINAL_FIRST_CANVAS_LINE;
+    byte column = (position < TERMINAL_CANVAS_LINES) ? 2 : 22;
+
+    if (secondLevel)
+    {
+        column += TERMINAL_RIGHT_HALF_FIRST_COLUMN - 5;
+        position += TERMINAL_CANVAS_LINES;
+    }
+
+    char buffer[TERMINAL_WIDTH];
+    sprintf(buffer, "   %s%s[%c]%s", VT_FOREGROUND_GREEN, VT_TEXT_BRIGHT, 'A' + position, VT_TEXT_DEFAULT);
     this->print(buffer, line, column);
 }
 
@@ -200,7 +238,7 @@ bool Terminal::readString(char *prompt, SafeBuffer *string, char mask = 0, byte 
     byte ix = 0;
     while (true)
     {
-        if (Serial.available())
+        if (this->stream->available())
         {
             this->resetInactivityTimer();
 
@@ -243,7 +281,7 @@ byte Terminal::waitKeySelection(char rangeStart, char rangeEnd)
             return TERMINAL_OPERATION_ABORTED;
         }
 
-        if (!Serial.available())
+        if (!this->stream->available())
         {
             continue;
         }

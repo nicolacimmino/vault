@@ -14,6 +14,7 @@
 #define TERMINAL_STATUS_LINE 23
 #define TERMINAL_HEADER_LINE 1
 #define TERMINAL_BANNER_LINE 2
+#define TERMINAL_RIGHT_HALF_FIRST_COLUMN (TERMINAL_WIDTH / 2) - 3
 #define TERMINAL_BACKGROUND_COLOR VT_BLACK
 #define TERMINAL_FOREGROUND_COLOR VT_YELLOW
 #define TERMINAL_LABEL_COLOR VT_WHITE
@@ -50,6 +51,7 @@ private:
 public:
     void init(Stream *stream);
     void clearHotkeys();
+    void clearInputBuffer();
     void addHotkey(char key, const Functor0 &action);
     void setMenuCallback(const Functor1<byte> &menuCallback);
     void setResetCallback(const Functor0 &resetCallback);
@@ -60,7 +62,8 @@ public:
     void printStatusMessage(char *message);
     void printStatusProgress(char *message, uint32_t delaymS, byte *completedMessage, byte line, byte column, byte areaWidth);
     void print(char *text, byte line = NULL, byte column = NULL);
-    void printMenuEntry(byte position, char *text);
+    void printMenuEntry(byte position, char *text, bool secondLevel = false);
+    void highlightMenuEntry(byte position, bool secondLevel = false);
     bool readString(char *prompt, char *string, byte stringMaxSize, char mask = 0, byte line = NULL, byte column = NULL);
     bool readString(char *prompt, SafeBuffer *string, char mask = 0, byte line = NULL, byte column = NULL);
     byte waitKeySelection(char rangeStart, char rangeEnd);
