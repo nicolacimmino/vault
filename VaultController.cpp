@@ -98,13 +98,9 @@ void VaultController::selectPassword(byte index)
 {
     char label[ENCRYPTED_STORE_LABEL_SIZE];
 
-    if (index >= ENCRYPTED_STORE_MAX_ENTRIES)
+    if (index >= ENCRYPTED_STORE_MAX_ENTRIES || this->encryptedStore.isPositionFree(index))
     {
-        return;
-    }
-
-    if (this->encryptedStore.isPositionFree(index))
-    {
+        this->displayPasswordSelectionMenu();
         return;
     }
 
@@ -165,8 +161,8 @@ void VaultController::actOnPassword(byte action)
         this->displayPasswordSelectionMenu();
         return;
     }
-    default:    
-        return;    
+    default:
+        return;
     }
 
 #ifdef OPTION_BELLS_AND_WHISTLES

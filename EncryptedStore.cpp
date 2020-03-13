@@ -32,9 +32,7 @@ void EncryptedStore::wipe(byte index)
 bool EncryptedStore::isPositionFree(byte index)
 {
     char label[ENCRYPTED_STORE_LABEL_SIZE];
-    this->getLabel(index, label);
-
-    return strlen(label) == 0;
+    return !this->getLabel(index, label);    
 }
 
 void EncryptedStore::get(byte index, SafeBuffer *plainText)

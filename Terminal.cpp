@@ -179,8 +179,6 @@ void Terminal::print(char *text, byte line = NULL, byte column = NULL)
     {
         VT100.setCursor(line, column);
     }
-
-    VT100.setTextColor(TERMINAL_FOREGROUND_COLOR);
     
     this->stream->print(text);
 }
