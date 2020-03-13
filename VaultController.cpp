@@ -1,6 +1,16 @@
 
 #include "VaultController.h"
 
+VaultController::VaultController()
+{
+    this->clipboard = new SafeBuffer(ENCRYPTED_STORE_DATA_SIZE);
+}
+
+VaultController::~VaultController()
+{
+    delete this->clipboard;
+}
+
 /**
  * Unlock the store.
  * 
@@ -75,7 +85,7 @@ void VaultController::wipePassword()
 void VaultController::lockStore()
 {
     this->encryptedStore.lock();
-    memset(clipboard, 0, ENCRYPTED_STORE_DATA_SIZE);
+    this->clipboard->wipe();
 }
 
 void VaultController::selectPassword(byte index)
@@ -159,12 +169,12 @@ void VaultController::actOnPassword(byte action)
 #endif
     this->terminal.print("Ready.", TERMINAL_FIRST_CANVAS_LINE + 5, 2);
 
-    while (strlen(clipboard) > 0)
+    while (clipboard->strlen() > 0)
     {
         if (digitalRead(BUTTON_A_SENSE) == LOW)
         {
-            Keyboard.print(clipboard);
-            memset(clipboard, 0, ENCRYPTED_STORE_DATA_SIZE);
+            Keyboard.print(this->clipboard->getBuffer());
+            this->clipboard->wipe();
         }
 
         loop();
@@ -187,8 +197,7 @@ void VaultController::displayPasswordActionMenu()
 
 void VaultController::resetTerminal()
 {
-    this->encryptedStore.lock();
-    memset(clipboard, 0, ENCRYPTED_STORE_DATA_SIZE);
+    this->lockStore();
 
     while (!Serial)
     {
@@ -207,15 +216,13 @@ void VaultController::begin()
     }
     delay(500);
     this->terminal.init(&Serial);
-
-    memset(clipboard, 0, ENCRYPTED_STORE_DATA_SIZE);
-
+    
     this->terminal.setResetCallback(makeFunctor((Functor0 *)0, *this, &VaultController::resetTerminal));
 }
 
 void VaultController::loop()
 {
-    this->terminal.setClpIndicator(strlen(clipboard) > 0);
+    this->terminal.setClpIndicator(this->clipboard->strlen() > 0);
     this->terminal.setLclIndicator(encryptedStore.isLocked());
 
     if (encryptedStore.isLocked())

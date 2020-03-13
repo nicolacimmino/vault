@@ -40,6 +40,16 @@ void SafeBuffer::setChar(byte position, char ch)
     this->buffer[position] = ch;
 }
 
+char SafeBuffer::getChar(byte position)
+{
+    if (position >= this->bufferSize)
+    {
+        return;
+    }
+
+    return this->buffer[position];
+}
+
 void SafeBuffer::strcpy(char *src)
 {
     strncpy(this->buffer, src, this->bufferSize);

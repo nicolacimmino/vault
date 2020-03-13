@@ -19,6 +19,7 @@ public:
     byte strlen();
     void strcpy(char *src);
     void setChar(byte position, char ch);
+    char getChar(byte position);
     void wipe();
 };
 

@@ -45,7 +45,7 @@ byte EncryptedStore::getFirstFreeSlot()
     return ENCRYPTED_STORE_FULL;
 }
 
-void EncryptedStore::get(byte index, char *plainText)
+void EncryptedStore::get(byte index, SafeBuffer *plainText)
 {
     EncryptedEntry encryptedEntry;
     EEPROM.get(this->getEncryptedEntryAddress(index), encryptedEntry);
@@ -58,14 +58,15 @@ void EncryptedStore::get(byte index, char *plainText)
         aes256CtrDecrypt(&ctx, encryptedEntry.cipher + ix, ENCRYPTED_STORE_BLOCK_SIZE);
     }
 
-    memcpy(plainText, encryptedEntry.cipher, ENCRYPTED_STORE_DATA_SIZE);
-    memset(encryptedEntry.cipher, 0, ENCRYPTED_STORE_DATA_SIZE);
+    plainText->strcpy(encryptedEntry.cipher);
+
+    memset(encryptedEntry.cipher, 0, sizeof(encryptedEntry));
 }
 
-void EncryptedStore::getTokens(byte index, char *tokensList, char *plainText)
+void EncryptedStore::getTokens(byte index, char *tokensList, SafeBuffer *plainText)
 {
     byte ix = 0;
-    char password[ENCRYPTED_STORE_DATA_SIZE];
+    SafeBuffer *password = new SafeBuffer(ENCRYPTED_STORE_DATA_SIZE);
 
     this->get(index, password);
 
@@ -73,12 +74,12 @@ void EncryptedStore::getTokens(byte index, char *tokensList, char *plainText)
     while (token != NULL)
     {
         int tokenIndex = atoi(token) - 1;
-        plainText[ix] = password[tokenIndex];
+        plainText->setChar(ix, password->getChar(tokenIndex));
         token = strtok(NULL, ",");
         ix++;
     }
 
-    memset(password, 0, ENCRYPTED_STORE_DATA_SIZE);
+    delete password;
 }
 
 void EncryptedStore::getLabel(byte index, char *label)

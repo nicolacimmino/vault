@@ -16,14 +16,16 @@ class VaultController
 private:
     Terminal terminal;
     EncryptedStore encryptedStore;
-    char clipboard[ENCRYPTED_STORE_DATA_SIZE];
+    SafeBuffer *clipboard;
     byte selectedPasswordIndex;
-    
+
     void unlockEncryptedStore();
     void displayPasswordSelectionMenu();
     void displayPasswordActionMenu();
 
-public:    
+public:
+    VaultController();
+    ~VaultController();
     void loop();
     void begin();
     void addPassword();
