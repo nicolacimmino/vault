@@ -77,7 +77,7 @@ void NoiseSource::collectNoise()
           * de-bias of the input source.
         */
         this->crc.update(noiseBuffer & 0xFF);
-        this->randomNumber = this->crc.finalize() && 0xFF;
+        this->randomNumber = this->crc.finalize() & 0xFF;
         
         this->randomNumberReady = true;
         collectedBits = 0;

@@ -132,7 +132,8 @@ void VaultController::displayPasswordSelectionMenu()
     this->terminal.addHotkey('a', makeFunctor((Functor0 *)0, *this, &VaultController::addPassword));
     this->terminal.addHotkey('w', makeFunctor((Functor0 *)0, *this, &VaultController::wipePassword));
     this->terminal.addHotkey('l', makeFunctor((Functor0 *)0, *this, &VaultController::lockStore));
-    this->terminal.printStatusMessage(" ALT+A Add  |  ALT+W Wipe  |  ALT+L Lock  |  ALT+Q Reset");
+    this->terminal.addHotkey('b', makeFunctor((Functor0 *)0, *this, &VaultController::backup));
+    this->terminal.printStatusMessage(" ALT+A Add  |  ALT+W Wipe  |  ALT+L Lock  |  ALT+Q Reset  |  ALT+B Backup");
 
     this->terminal.setMenuCallback(makeFunctor((Functor1<byte> *)0, *this, &VaultController::selectPassword));
 }
@@ -206,6 +207,37 @@ void VaultController::resetTerminal()
     }
     delay(500);
     this->terminal.init(&Serial);
+}
+
+void VaultController::backup()
+{
+    while (digitalRead(BUTTON_A_SENSE) == HIGH)
+    {
+        loop();
+    }
+
+    SafeBuffer *asciiPrint = new SafeBuffer(16);
+
+    for (uint16_t address = 0; address < ENCRYPTED_STORE_EEPROM_SIZE; address++)
+    {
+        byte value = EEPROM.read(address);
+        Keyboard.print(value >> 4, HEX);
+        Keyboard.print(value & 4, HEX);
+        asciiPrint->setChar(address % 16, value > 31 && value < 127 ? (char)value : '.');
+
+        if (address % 16 == 15)
+        {
+            Keyboard.print("\t");
+            Keyboard.print(asciiPrint->getBuffer());
+            Keyboard.print("\n");
+        }
+        else
+        {
+            Keyboard.print(".");
+        }
+    }
+
+    delete asciiPrint;
 }
 
 void VaultController::begin()

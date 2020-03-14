@@ -33,6 +33,7 @@ public:
     void actOnPassword(byte action);
     void resetTerminal();
     void lockStore();
+    void backup();
     void selectPassword(byte index);
 };
 
