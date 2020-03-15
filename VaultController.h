@@ -22,7 +22,8 @@ private:
     void unlockEncryptedStore();
     void displayPasswordSelectionMenu();
     void displayPasswordActionMenu();
-
+    void showInfoScreen();
+    
 public:
     VaultController();
     ~VaultController();

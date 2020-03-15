@@ -32,7 +32,7 @@ void EncryptedStore::wipe(byte index)
 bool EncryptedStore::isPositionFree(byte index)
 {
     char label[ENCRYPTED_STORE_LABEL_SIZE];
-    return !this->getLabel(index, label);    
+    return !this->getLabel(index, label);
 }
 
 void EncryptedStore::get(byte index, SafeBuffer *plainText)
@@ -136,4 +136,20 @@ void EncryptedStore::generateIV(byte *iv)
 uint16_t EncryptedStore::getEncryptedEntryAddress(byte index)
 {
     return index * sizeof(EncryptedEntry);
+}
+
+
+byte *EncryptedStore::getFirmwareFingerPrint()
+{
+    Sha256Class sha256;        
+    sha256.initHmac(this->key, ENCRYPTED_STORE_KEY_SIZE);
+
+    for (uint32_t address = 0; address < 32768; address++)
+    {
+        sha256.write((byte)pgm_read_byte(address));
+    }
+
+    memcpy(this->fwFingerPrint, sha256.result(), ENCRYPTED_STORE_FW_FINGERPRINT_SIZE);
+
+    return this->fwFingerPrint;
 }

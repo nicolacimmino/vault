@@ -10,6 +10,7 @@
 
 #define ENCRYPTED_STORE_EEPROM_SIZE 1024
 #define ENCRYPTED_STORE_KEY_SIZE 32
+#define ENCRYPTED_STORE_FW_FINGERPRINT_SIZE 32
 #define ENCRYPTED_STORE_IV_SIZE 16
 #define ENCRYPTED_STORE_BLOCK_SIZE 16
 #define ENCRYPTED_STORE_DATA_SIZE 64
@@ -28,6 +29,7 @@ private:
     };
 
     byte key[ENCRYPTED_STORE_KEY_SIZE];
+    byte fwFingerPrint[ENCRYPTED_STORE_FW_FINGERPRINT_SIZE];
     void generateIV(byte *iv);
     uint16_t getEncryptedEntryAddress(byte index);
     void safeStringCopy(char *destination, char *source, byte destinationSize);
@@ -41,8 +43,9 @@ public:
     void getTokens(byte index, char *tokensList, SafeBuffer *plainText);
     bool getLabel(byte index, char *label);
     void set(byte index, SafeBuffer *plainText, SafeBuffer *label);
-    void wipe(byte index);    
+    void wipe(byte index);
     bool isLocked();
+    byte *getFirmwareFingerPrint();
 };
 
 #endif

@@ -63,6 +63,7 @@ public:
     void printStatusProgress(char *message, uint32_t delaymS, byte *completedMessage, byte line, byte column, byte areaWidth);
     void print(char *text, byte line = NULL, byte column = NULL);
     void printMenuEntry(byte position, char *text, bool secondLevel = false);
+    void printBufferHex(byte *buffer, byte bufferSize);
     void highlightMenuEntry(byte position, bool secondLevel = false);
     bool readString(char *prompt, char *string, byte stringMaxSize, char mask = 0, byte line = NULL, byte column = NULL);
     bool readString(char *prompt, SafeBuffer *string, char mask = 0, byte line = NULL, byte column = NULL);

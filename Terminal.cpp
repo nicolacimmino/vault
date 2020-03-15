@@ -57,10 +57,10 @@ void Terminal::setResetCallback(const Functor0 &resetCallback)
 }
 
 void Terminal::clearInputBuffer()
-{    
+{
     while (this->stream->available())
-    {        
-        this->stream->read();        
+    {
+        this->stream->read();
     }
 }
 
@@ -105,7 +105,8 @@ void Terminal::loop()
         {
             byte menuIndex = key - 'a';
             bool secondLevel = false;
-            if(menuIndex >= TERMINAL_CANVAS_LINES) {
+            if (menuIndex >= TERMINAL_CANVAS_LINES)
+            {
                 menuIndex -= TERMINAL_CANVAS_LINES;
                 secondLevel = true;
             }
@@ -179,7 +180,7 @@ void Terminal::print(char *text, byte line = NULL, byte column = NULL)
     {
         VT100.setCursor(line, column);
     }
-    
+
     this->stream->print(text);
 }
 
@@ -345,6 +346,15 @@ void Terminal::printHeader()
     VT100.setBackgroundColor(TERMINAL_BACKGROUND_COLOR);
     VT100.setTextColor(TERMINAL_FOREGROUND_COLOR);
     VT100.clearLineAfter();
+}
+
+void Terminal::printBufferHex(byte *buffer, byte bufferSize)
+{
+    for (byte ix = 0; ix < bufferSize; ix++)
+    {
+        this->stream->print(buffer[ix], HEX);
+        this->stream->print(":");
+    }
 }
 
 /**

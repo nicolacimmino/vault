@@ -132,10 +132,18 @@ void VaultController::displayPasswordSelectionMenu()
     this->terminal.addHotkey('a', makeFunctor((Functor0 *)0, *this, &VaultController::addPassword));
     this->terminal.addHotkey('w', makeFunctor((Functor0 *)0, *this, &VaultController::wipePassword));
     this->terminal.addHotkey('l', makeFunctor((Functor0 *)0, *this, &VaultController::lockStore));
+    this->terminal.addHotkey('i', makeFunctor((Functor0 *)0, *this, &VaultController::showInfoScreen));
     this->terminal.addHotkey('b', makeFunctor((Functor0 *)0, *this, &VaultController::backup));
-    this->terminal.printStatusMessage(" ALT+A Add  |  ALT+W Wipe  |  ALT+L Lock  |  ALT+Q Reset  |  ALT+B Backup");
+    this->terminal.printStatusMessage(" ALT+A Add  |  ALT+W Wipe  |  ALT+L Lock  |  ALT+I Info  |  ALT+B Backup");
 
     this->terminal.setMenuCallback(makeFunctor((Functor1<byte> *)0, *this, &VaultController::selectPassword));
+}
+
+void VaultController::showInfoScreen()
+{
+    this->terminal.clearCanvas();
+    this->terminal.print("FW Fingerprint:", TERMINAL_FIRST_CANVAS_LINE + 2, 2);
+    this->terminal.printBufferHex(this->encryptedStore.getFirmwareFingerPrint(), ENCRYPTED_STORE_FW_FINGERPRINT_SIZE);
 }
 
 void VaultController::actOnPassword(byte action)
