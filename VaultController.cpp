@@ -143,7 +143,7 @@ void VaultController::showInfoScreen()
 {
     this->terminal.clearCanvas();
     this->terminal.print("FW Fingerprint:", TERMINAL_FIRST_CANVAS_LINE + 2, 2);
-    this->terminal.printBufferHex(this->encryptedStore.getFirmwareFingerPrint(), ENCRYPTED_STORE_FW_FINGERPRINT_SIZE);
+    this->terminal.printBufferHex(this->encryptedStore.getFirmwareFingerprint(), ENCRYPTED_STORE_FW_FINGERPRINT_SIZE);
 }
 
 void VaultController::actOnPassword(byte action)
@@ -265,14 +265,15 @@ void VaultController::loop()
 {
     this->terminal.setClpIndicator(this->clipboard->strlen() > 0);
     this->terminal.setLclIndicator(encryptedStore.isLocked());
-
+    
     if (encryptedStore.isLocked())
     {
         this->terminal.clearScreen();
         this->terminal.printStatusMessage(" Locked.");
         this->unlockEncryptedStore();
         this->displayPasswordSelectionMenu();
-
+        this->terminal.setKeyFingerprint(encryptedStore.getKeyFingerprint());
+        
         return;
     }
 

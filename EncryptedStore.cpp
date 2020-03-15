@@ -138,10 +138,9 @@ uint16_t EncryptedStore::getEncryptedEntryAddress(byte index)
     return index * sizeof(EncryptedEntry);
 }
 
-
-byte *EncryptedStore::getFirmwareFingerPrint()
+byte *EncryptedStore::getFirmwareFingerprint()
 {
-    Sha256Class sha256;        
+    Sha256Class sha256;
     sha256.initHmac(this->key, ENCRYPTED_STORE_KEY_SIZE);
 
     for (uint32_t address = 0; address < 32768; address++)
@@ -152,4 +151,16 @@ byte *EncryptedStore::getFirmwareFingerPrint()
     memcpy(this->fwFingerPrint, sha256.result(), ENCRYPTED_STORE_FW_FINGERPRINT_SIZE);
 
     return this->fwFingerPrint;
+}
+
+int EncryptedStore::getKeyFingerprint()
+{
+    CRC32 crc;
+    
+    for (byte ix = 0; ix < ENCRYPTED_STORE_KEY_SIZE / 4; ix++)
+    {
+        crc.update(this->key[ix]);
+    }
+
+    return crc.finalize() % 10000;
 }

@@ -27,7 +27,7 @@ private:
         byte cipher[ENCRYPTED_STORE_DATA_SIZE];
         char label[ENCRYPTED_STORE_LABEL_SIZE];
     };
-
+   
     byte key[ENCRYPTED_STORE_KEY_SIZE];
     byte fwFingerPrint[ENCRYPTED_STORE_FW_FINGERPRINT_SIZE];
     void generateIV(byte *iv);
@@ -45,7 +45,8 @@ public:
     void set(byte index, SafeBuffer *plainText, SafeBuffer *label);
     void wipe(byte index);
     bool isLocked();
-    byte *getFirmwareFingerPrint();
+    byte *getFirmwareFingerprint();
+    int getKeyFingerprint();
 };
 
 #endif

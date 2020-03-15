@@ -47,6 +47,7 @@ private:
     uint32_t lastActiveTime;
     bool clpIndicator = false;
     bool lckIndicator = false;
+    int keyFingerprint = 0;
 
 public:
     void init(Stream *stream);
@@ -70,6 +71,7 @@ public:
     byte waitKeySelection(char rangeStart, char rangeEnd);
     void setClpIndicator(bool status);
     void setLclIndicator(bool status);
+    void setKeyFingerprint(int keyFingerprint);
     void loop();
 };
 

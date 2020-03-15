@@ -306,6 +306,11 @@ void Terminal::printMessage(uint8_t messageId)
     this->stream->print(buffer);
 }
 
+void Terminal::setKeyFingerprint(int keyFingerprint)
+{
+    this->keyFingerprint = keyFingerprint;
+}
+
 void Terminal::setClpIndicator(bool status)
 {
     if (status == this->clpIndicator)
@@ -332,10 +337,11 @@ void Terminal::printHeader()
     char headerMessage[TERMINAL_WIDTH];
     memset(headerMessage, 0, TERMINAL_WIDTH);
 
-    sprintf(headerMessage, " Vault V0.1 - %d bytes free %s %s ",
+    sprintf(headerMessage, " Vault V0.1 - %d bytes free                     KFP: %04u      %s %s",
             this->getFreeRamBytes(),
-            this->clpIndicator ? "[CLP]" : "",
-            this->lckIndicator ? "[LCK]" : "[ULK]");
+            (this->lckIndicator ? 0 : this->keyFingerprint),
+            (this->clpIndicator ? "[CLP]" : "     "),
+            (this->lckIndicator ? "[LCK]" : "[ULK]"));
 
     VT100.setCursor(TERMINAL_HEADER_LINE, 1);
     VT100.setBackgroundColor(TERMINAL_STATUS_LINE_BACKGROUND_COLOR);
