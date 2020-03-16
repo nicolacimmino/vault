@@ -251,6 +251,16 @@ bool Terminal::readString(char *prompt, SafeBuffer *string, char mask = 0, byte 
                 break;
             }
 
+            if (nextChar == 0x7F)
+            {
+                if (ix > 0)
+                {
+                    ix--;
+                    this->stream->print(nextChar);
+                }
+                continue;
+            }
+
             string->setChar(ix, nextChar);
             ix++;
 
