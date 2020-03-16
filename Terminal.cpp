@@ -261,14 +261,14 @@ bool Terminal::readString(char *prompt, SafeBuffer *string, char mask = 0, byte 
                 continue;
             }
 
-            string->setChar(ix, nextChar);
-            ix++;
-
-            if (ix == string->getBufferSize() - 1)
+            if (ix == string->getBufferSize() -1)
             {
-                break;
+                continue;
             }
 
+            string->setChar(ix, nextChar);
+            ix++;
+            
             this->stream->print(mask ? mask : nextChar);
         }
 

@@ -6,7 +6,7 @@
 #include "VT100.h"
 #include "messages.h"
 
-#define TERMINAL_MAX_HOTKEYS 4
+#define TERMINAL_MAX_HOTKEYS 5
 #define TERMINAL_WIDTH 80
 #define TERMINAL_HEIGTH 24
 #define TERMINAL_FIRST_CANVAS_LINE 10
