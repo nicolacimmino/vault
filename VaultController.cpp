@@ -81,7 +81,7 @@ void VaultController::wipePassword()
 /**
  * Lock the store and wipe the clipboard.
  */
-void VaultController::lockStore()
+void VaultController::lockEnctryptedStore()
 {
     this->encryptedStore.lock();
     this->clipboard->wipe();
@@ -127,7 +127,7 @@ void VaultController::displayPasswordSelectionMenu()
     this->terminal.clearHotkeys();
     this->terminal.addHotkey('a', makeFunctor((Functor0 *)0, *this, &VaultController::addPassword));
     this->terminal.addHotkey('w', makeFunctor((Functor0 *)0, *this, &VaultController::wipePassword));
-    this->terminal.addHotkey('l', makeFunctor((Functor0 *)0, *this, &VaultController::lockStore));
+    this->terminal.addHotkey('l', makeFunctor((Functor0 *)0, *this, &VaultController::lockEnctryptedStore));
     this->terminal.addHotkey('i', makeFunctor((Functor0 *)0, *this, &VaultController::showInfoScreen));
     this->terminal.addHotkey('b', makeFunctor((Functor0 *)0, *this, &VaultController::backup));
     this->terminal.printStatusMessage(" ALT+A Add  |  ALT+W Wipe  |  ALT+L Lock  |  ALT+I Info  |  ALT+B Backup");
@@ -142,7 +142,7 @@ void VaultController::showInfoScreen()
     this->terminal.printBufferHex(this->encryptedStore.getFirmwareFingerprint(), ENCRYPTED_STORE_FW_FINGERPRINT_SIZE);
 }
 
-void VaultController::actOnPassword(byte action)
+void VaultController::retrievePassword(byte action)
 {
     switch (action)
     {
@@ -198,12 +198,14 @@ void VaultController::displayPasswordActionMenu()
     this->terminal.printMenuEntry(1, "Partial copy to clipboard", true);
     this->terminal.printMenuEntry(2, "Back", true);
 
-    this->terminal.setMenuCallback(makeFunctor((Functor1<byte> *)0, *this, &VaultController::actOnPassword));
+    this->terminal.setMenuCallback(makeFunctor((Functor1<byte> *)0, *this, &VaultController::retrievePassword));
 }
 
 void VaultController::resetTerminal()
 {
-    this->lockStore();
+    Serial.begin(9600);
+
+    this->lockEnctryptedStore();
 
     while (!Serial)
     {
@@ -211,6 +213,8 @@ void VaultController::resetTerminal()
     }
     delay(500);
     this->terminal.init(&Serial);
+        
+    this->terminal.setResetCallback(makeFunctor((Functor0 *)0, *this, &VaultController::resetTerminal));
 }
 
 void VaultController::backup()
@@ -242,19 +246,6 @@ void VaultController::backup()
     }
 
     delete asciiPrint;
-}
-
-void VaultController::begin()
-{
-    Serial.begin(9600);
-    while (!Serial)
-    {
-        ; // Wait for someone to connect
-    }
-    delay(500);
-    this->terminal.init(&Serial);
-
-    this->terminal.setResetCallback(makeFunctor((Functor0 *)0, *this, &VaultController::resetTerminal));
 }
 
 void VaultController::loop()

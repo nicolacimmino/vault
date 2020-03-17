@@ -19,7 +19,7 @@
 #include "options.h"
 #include "VaultController.h"
 
-VaultController vaultController;
+VaultController *vaultController;
 
 void setup()
 {
@@ -27,12 +27,13 @@ void setup()
     digitalWrite(BUTTON_A_COMMON, LOW);
     pinMode(BUTTON_A_SENSE, INPUT_PULLUP);
 
-    vaultController.begin();
+    vaultController = new VaultController();
+    vaultController->resetTerminal();
 
     Keyboard.begin();
 }
 
 void loop()
 {
-    vaultController.loop();
+    vaultController->loop();
 }

@@ -20,6 +20,7 @@ private:
     byte selectedPasswordIndex;
 
     void unlockEncryptedStore();
+    void lockEnctryptedStore();
     void displayPasswordSelectionMenu();
     void displayPasswordActionMenu();
     void showInfoScreen();
@@ -27,15 +28,14 @@ private:
 public:
     VaultController();
     ~VaultController();
-    void loop();
-    void begin();
+    void loop();    
     void addPassword();
     void wipePassword();
-    void actOnPassword(byte action);
-    void resetTerminal();
-    void lockStore();
-    void backup();
     void selectPassword(byte index);
+    void retrievePassword(byte action);
+    void resetTerminal();    
+    void backup();
+    
 };
 
 #endif
