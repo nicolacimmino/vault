@@ -18,7 +18,7 @@ VaultController::~VaultController()
  */
 void VaultController::unlockEncryptedStore()
 {
-    SafeBuffer *masterPassword = new SafeBuffer(MASTER_PASSWORD_MAX_SIZE);
+    SafeBuffer *masterPassword = new SafeBuffer(ENCRYPTED_STORE_MASTER_PASSWORD_MAX_SIZE);
 
     if (this->terminal.readString(TXT_ENTER_MASTER_PASSWORD, masterPassword, TXT_PASSWORD_MASK, TERMINAL_FIRST_CANVAS_LINE + 2, 2))
     {

@@ -9,8 +9,6 @@
 #include "EncryptedStore.h"
 #include <Keyboard.h>
 
-#define MASTER_PASSWORD_MAX_SIZE 64
-
 class VaultController
 {
 private:
