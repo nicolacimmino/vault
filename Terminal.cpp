@@ -251,7 +251,7 @@ bool Terminal::readString(char *prompt, SafeBuffer *string, char mask = 0, byte 
                 break;
             }
 
-            if (nextChar == 0x7F)
+            if (nextChar == TERMINAL_KEY_BACKSPACE)
             {
                 if (ix > 0)
                 {
@@ -301,6 +301,11 @@ byte Terminal::waitKeySelection(char rangeStart, char rangeEnd)
 
         char key = this->stream->read();
 
+        if(key == TERMINAL_KEY_ESC)
+        {
+            return TERMINAL_OPERATION_ABORTED;                
+        }
+        
         if (key > rangeEnd || key < rangeStart)
         {
             continue;
@@ -309,6 +314,7 @@ byte Terminal::waitKeySelection(char rangeStart, char rangeEnd)
         return (byte)(key - rangeStart);
     }
 }
+
 void Terminal::printMessage(uint8_t messageId)
 {
     char buffer[512];

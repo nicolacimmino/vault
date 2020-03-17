@@ -39,24 +39,22 @@ void VaultController::addPassword()
 
     byte selectedIndex = this->terminal.waitKeySelection('a', 'a' + ENCRYPTED_STORE_MAX_ENTRIES);
 
-    if (selectedIndex == TERMINAL_OPERATION_ABORTED)
+    if (selectedIndex != TERMINAL_OPERATION_ABORTED)
     {
-        return;
+        this->terminal.clearCanvas();
+
+        SafeBuffer *label = new SafeBuffer(ENCRYPTED_STORE_LABEL_SIZE);
+        SafeBuffer *password = new SafeBuffer(ENCRYPTED_STORE_DATA_SIZE);
+
+        this->terminal.readString("Enter label: ", label, 0, TERMINAL_FIRST_CANVAS_LINE + 2, 2);
+        this->terminal.readString("Enter password: ", password, '*', TERMINAL_FIRST_CANVAS_LINE + 3, 2);
+
+        this->terminal.printStatusMessage(" Enctrypting......");
+        this->encryptedStore.set(selectedIndex, password, label);
+
+        delete label;
+        delete password;        
     }
-
-    this->terminal.clearCanvas();
-
-    SafeBuffer *label = new SafeBuffer(ENCRYPTED_STORE_LABEL_SIZE);
-    SafeBuffer *password = new SafeBuffer(ENCRYPTED_STORE_DATA_SIZE);
-
-    this->terminal.readString("Enter label: ", label, 0, TERMINAL_FIRST_CANVAS_LINE + 2, 2);
-    this->terminal.readString("Enter password: ", password, '*', TERMINAL_FIRST_CANVAS_LINE + 3, 2);
-
-    this->terminal.printStatusMessage(" Enctrypting......");
-    this->encryptedStore.set(selectedIndex, password, label);
-
-    delete label;
-    delete password;
 
     this->displayPasswordSelectionMenu();
 }
@@ -72,12 +70,10 @@ void VaultController::wipePassword()
 
     byte selectedIndex = this->terminal.waitKeySelection('a', 'a' + ENCRYPTED_STORE_MAX_ENTRIES);
 
-    if (selectedIndex == TERMINAL_OPERATION_ABORTED)
+    if (selectedIndex != TERMINAL_OPERATION_ABORTED)
     {
-        return;
+        this->encryptedStore.wipe(selectedIndex);
     }
-
-    this->encryptedStore.wipe(selectedIndex);
 
     this->displayPasswordSelectionMenu();
 }
@@ -265,7 +261,7 @@ void VaultController::loop()
 {
     this->terminal.setClpIndicator(this->clipboard->strlen() > 0);
     this->terminal.setLclIndicator(encryptedStore.isLocked());
-    
+
     if (encryptedStore.isLocked())
     {
         this->terminal.clearScreen();
@@ -273,7 +269,7 @@ void VaultController::loop()
         this->unlockEncryptedStore();
         this->displayPasswordSelectionMenu();
         this->terminal.setKeyFingerprint(encryptedStore.getKeyFingerprint());
-        
+
         return;
     }
 
