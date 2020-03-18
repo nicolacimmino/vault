@@ -14,11 +14,13 @@ void NotificationLight::begin()
 void NotificationLight::setColor(CRGB color)
 {
     this->color = color;
+    this->loop();
 }
 
 void NotificationLight::setBrightness(uint8_t brightness)
 {
     FastLED.setBrightness(brightness);
+    this->loop();
 }
 
 void NotificationLight::loop()
@@ -29,7 +31,7 @@ void NotificationLight::loop()
     {
         // Keep breathing! See Sean Voisen great post from which I grabbed the formula.
         // https://sean.voisen.org/blog/2011/10/breathing-led-with-arduino/
-        float val = (exp(sin(millis() / 2000.0 * PI)) - 0.36787944) * 108.0;        
+        float val = (exp(sin(millis() / 2000.0 * PI)) - 0.36787944) * 108.0;
         this->leds[0].fadeLightBy(val);
     }
     else

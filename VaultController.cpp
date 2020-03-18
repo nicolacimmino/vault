@@ -208,19 +208,16 @@ void VaultController::resetTerminal()
     this->lockEnctryptedStore();
 
     this->notificationLight.begin();
-    this->notificationLight.setBreathe(true);
     this->notificationLight.setBrightness(50);
     this->notificationLight.setColor(CRGB::Red);
-
+    
     while (!Serial)
     {
-        this->notificationLight.loop();
+        ;
     }
     delay(500);
 
     this->terminal.init(&Serial);
-
-    this->notificationLight.setBreathe(false);
 
     this->terminal.setResetCallback(makeFunctor((Functor0 *)0, *this, &VaultController::resetTerminal));
 }
@@ -263,8 +260,7 @@ void VaultController::loop()
 
     if (encryptedStore.isLocked())
     {
-        this->notificationLight.setColor(CRGB::Red);
-        this->notificationLight.loop();
+        this->notificationLight.setColor(CRGB::Red);        
         this->terminal.clearScreen();
         this->terminal.printStatusMessage(" Locked.");
         this->unlockEncryptedStore();
