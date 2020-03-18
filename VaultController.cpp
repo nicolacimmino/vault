@@ -53,7 +53,7 @@ void VaultController::addPassword()
         this->encryptedStore.set(selectedIndex, password, label);
 
         delete label;
-        delete password;        
+        delete password;
     }
 
     this->displayPasswordSelectionMenu();
@@ -207,13 +207,21 @@ void VaultController::resetTerminal()
 
     this->lockEnctryptedStore();
 
+    this->notificationLight.begin();
+    this->notificationLight.setBreathe(true);
+    this->notificationLight.setBrightness(50);
+    this->notificationLight.setColor(CRGB::Red);
+
     while (!Serial)
     {
-        ;
+        this->notificationLight.loop();
     }
     delay(500);
+
     this->terminal.init(&Serial);
-        
+
+    this->notificationLight.setBreathe(false);
+
     this->terminal.setResetCallback(makeFunctor((Functor0 *)0, *this, &VaultController::resetTerminal));
 }
 
@@ -255,6 +263,8 @@ void VaultController::loop()
 
     if (encryptedStore.isLocked())
     {
+        this->notificationLight.setColor(CRGB::Red);
+        this->notificationLight.loop();
         this->terminal.clearScreen();
         this->terminal.printStatusMessage(" Locked.");
         this->unlockEncryptedStore();
@@ -264,5 +274,15 @@ void VaultController::loop()
         return;
     }
 
+    if (this->clipboard->strlen() > 0)
+    {
+        this->notificationLight.setColor(CRGB::Yellow);
+    }
+    else
+    {
+        this->notificationLight.setColor(CRGB::Green);
+    }
+
+    this->notificationLight.loop();
     this->terminal.loop();
 }

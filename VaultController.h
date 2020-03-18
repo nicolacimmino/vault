@@ -8,11 +8,13 @@
 #include "Terminal.h"
 #include "EncryptedStore.h"
 #include <Keyboard.h>
+#include "NotificationLight.h"
 
 class VaultController
 {
 private:
     Terminal terminal;
+    NotificationLight notificationLight;
     EncryptedStore encryptedStore;
     SafeBuffer *clipboard;
     byte selectedPasswordIndex;
