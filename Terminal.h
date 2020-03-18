@@ -71,7 +71,7 @@ public:
     void highlightMenuEntry(byte position, bool secondLevel = false);
     bool readString(char *prompt, char *string, byte stringMaxSize, char mask = 0, byte line = NULL, byte column = NULL);
     bool readString(char *prompt, SafeBuffer *string, char mask = 0, byte line = NULL, byte column = NULL);
-    byte waitKeySelection(char rangeStart, char rangeEnd);
+    byte waitKeySelection(char rangeStart = 0, char rangeEnd = 255);
     void setClpIndicator(bool status);
     void setLclIndicator(bool status);
     void setKeyFingerprint(int keyFingerprint);

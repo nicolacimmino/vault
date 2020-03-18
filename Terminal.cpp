@@ -283,7 +283,7 @@ bool Terminal::readString(char *prompt, SafeBuffer *string, char mask = 0, byte 
     return true;
 }
 
-byte Terminal::waitKeySelection(char rangeStart, char rangeEnd)
+byte Terminal::waitKeySelection(char rangeStart = 0, char rangeEnd = 255)
 {
     while (true)
     {
@@ -306,7 +306,7 @@ byte Terminal::waitKeySelection(char rangeStart, char rangeEnd)
             return TERMINAL_OPERATION_ABORTED;                
         }
         
-        if (key > rangeEnd || key < rangeStart)
+        if (rangeStart && (key > rangeEnd || key < rangeStart))
         {
             continue;
         }

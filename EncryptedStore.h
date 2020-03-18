@@ -48,6 +48,7 @@ public:
     bool isLocked();
     byte *getFirmwareFingerprint();
     int getKeyFingerprint();
+    void fullWipe();
 };
 
 #endif

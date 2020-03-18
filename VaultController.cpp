@@ -128,18 +128,55 @@ void VaultController::displayPasswordSelectionMenu()
     this->terminal.addHotkey('a', makeFunctor((Functor0 *)0, *this, &VaultController::addPassword));
     this->terminal.addHotkey('w', makeFunctor((Functor0 *)0, *this, &VaultController::wipePassword));
     this->terminal.addHotkey('l', makeFunctor((Functor0 *)0, *this, &VaultController::lockEnctryptedStore));
-    this->terminal.addHotkey('i', makeFunctor((Functor0 *)0, *this, &VaultController::showInfoScreen));
-    this->terminal.addHotkey('b', makeFunctor((Functor0 *)0, *this, &VaultController::backup));
-    this->terminal.printStatusMessage(" ALT+A Add  |  ALT+W Wipe  |  ALT+L Lock  |  ALT+I Info  |  ALT+B Backup");
+    this->terminal.addHotkey('o', makeFunctor((Functor0 *)0, *this, &VaultController::showOptionsScreen));
+    this->terminal.printStatusMessage(" ALT+A Add  |  ALT+W Wipe Password  |  ALT+L Lock  |  ALT+O Options");
 
     this->terminal.setMenuCallback(makeFunctor((Functor1<byte> *)0, *this, &VaultController::selectPassword));
 }
 
-void VaultController::showInfoScreen()
+void VaultController::showOptionsScreen()
 {
     this->terminal.clearCanvas();
-    this->terminal.print("FW Fingerprint:", TERMINAL_FIRST_CANVAS_LINE + 2, 2);
-    this->terminal.printBufferHex(this->encryptedStore.getFirmwareFingerprint(), ENCRYPTED_STORE_FW_FINGERPRINT_SIZE);
+    this->terminal.printMenuEntry(0, "Backup");
+    this->terminal.printMenuEntry(1, "Full Wipe");
+
+    this->terminal.setMenuCallback(makeFunctor((Functor1<byte> *)0, *this, &VaultController::processOptionsSelection));
+}
+
+void VaultController::processOptionsSelection(byte action)
+{
+    switch (action)
+    {
+    case 0:
+    {
+        this->backup();
+        break;
+    }
+    case 1:
+    {
+        while (true)
+        {
+            this->terminal.print(VT_FOREGROUND_RED VT_TEXT_BLINK "WARNING! " VT_TEXT_DEFAULT VT_FOREGROUND_YELLOW  "This will ERASE ALL data! Sure ? (y/n)", TERMINAL_FIRST_CANVAS_LINE + 6, 2);
+            byte key = this->terminal.waitKeySelection();
+
+            if (key == 'n' || key == TERMINAL_OPERATION_ABORTED)
+            {
+                this->displayPasswordSelectionMenu();
+                return;
+            }
+
+            if (key == 'y')
+            {
+                this->terminal.print(VT_FOREGROUND_RED  "Wiping storage......                                         ", TERMINAL_FIRST_CANVAS_LINE + 6, 2);
+                this->encryptedStore.fullWipe();
+                this->resetTerminal();
+                return;
+            }
+        }
+
+        break;
+    }
+    }
 }
 
 void VaultController::retrievePassword(byte action)
@@ -210,7 +247,7 @@ void VaultController::resetTerminal()
     this->notificationLight.begin();
     this->notificationLight.setBrightness(50);
     this->notificationLight.setColor(CRGB::Red);
-    
+
     while (!Serial)
     {
         ;
@@ -260,7 +297,7 @@ void VaultController::loop()
 
     if (encryptedStore.isLocked())
     {
-        this->notificationLight.setColor(CRGB::Red);        
+        this->notificationLight.setColor(CRGB::Red);
         this->terminal.clearScreen();
         this->terminal.printStatusMessage(" Locked.");
         this->unlockEncryptedStore();

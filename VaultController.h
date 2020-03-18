@@ -23,7 +23,8 @@ private:
     void lockEnctryptedStore();
     void displayPasswordSelectionMenu();
     void displayPasswordActionMenu();
-    void showInfoScreen();
+    void showOptionsScreen();
+    void processOptionsSelection(byte action);
     
 public:
     VaultController();

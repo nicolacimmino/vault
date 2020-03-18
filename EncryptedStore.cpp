@@ -29,6 +29,16 @@ void EncryptedStore::wipe(byte index)
     EEPROM.put(this->getEncryptedEntryAddress(index), encryptedEntry);
 }
 
+void EncryptedStore::fullWipe()
+{
+    for (uint16_t ix = 0; ix < ENCRYPTED_STORE_EEPROM_SIZE; ix++)
+    {
+        EEPROM.write(ix, 0);
+    }
+
+    this->lock();
+}
+
 bool EncryptedStore::isPositionFree(byte index)
 {
     char label[ENCRYPTED_STORE_LABEL_SIZE];
@@ -156,7 +166,7 @@ byte *EncryptedStore::getFirmwareFingerprint()
 int EncryptedStore::getKeyFingerprint()
 {
     CRC32 crc;
-    
+
     for (byte ix = 0; ix < ENCRYPTED_STORE_KEY_SIZE / 4; ix++)
     {
         crc.update(this->key[ix]);
