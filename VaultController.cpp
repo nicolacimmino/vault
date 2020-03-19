@@ -219,7 +219,11 @@ void VaultController::retrievePassword(byte action)
     {
         if (digitalRead(BUTTON_A_SENSE) == LOW)
         {
-            Keyboard.print(this->clipboard->getBuffer());
+            for(byte ix=0; ix<this->clipboard->strlen(); ix++) {
+                Keyboard.print(this->clipboard->getBuffer()[ix]);
+                delay(400);
+            }
+            
             this->clipboard->wipe();
         }
 
