@@ -213,7 +213,7 @@ void VaultController::retrievePassword(byte action)
     this->terminal.printStatusProgress("Decrypt", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 7, TERMINAL_RIGHT_HALF_FIRST_COLUMN, 30);
     this->terminal.printStatusProgress("Copy to clipboard", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 8, TERMINAL_RIGHT_HALF_FIRST_COLUMN, 30);
 #endif
-    this->terminal.print("Ready.", TERMINAL_FIRST_CANVAS_LINE + 9, TERMINAL_RIGHT_HALF_FIRST_COLUMN);
+    this->terminal.print("Ready. Press button to type.", TERMINAL_FIRST_CANVAS_LINE + 9, TERMINAL_RIGHT_HALF_FIRST_COLUMN);
 
     while (clipboard->strlen() > 0)
     {
@@ -221,7 +221,11 @@ void VaultController::retrievePassword(byte action)
         {
             for(byte ix=0; ix<this->clipboard->strlen(); ix++) {
                 Keyboard.print(this->clipboard->getBuffer()[ix]);
-                delay(400);
+                this->setLedStatus(true, false, false);
+                delay(100);
+                this->setLedStatus(true, true, false);
+                delay(200);
+
             }
             
             this->clipboard->wipe();
@@ -269,9 +273,18 @@ void VaultController::resetTerminal()
 
 void VaultController::backup()
 {
+    #ifdef OPTION_BELLS_AND_WHISTLES
+    // Just for a show, the decryption is already done.
+    this->terminal.printStatusProgress("Read storage", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 3, 5, 30);
+    this->terminal.printStatusProgress("Prepare backup", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 4, 5, 30);
+    this->terminal.printStatusProgress("Copy to clipboard", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 5, 5, 30);
+#endif
+    this->terminal.print("Ready. Press button to type.", TERMINAL_FIRST_CANVAS_LINE + 6, 5);
+
     while (digitalRead(BUTTON_SENSE) == HIGH)
     {
         loop();
+        this->setLedStatus(true, true, false);
     }
 
     SafeBuffer *asciiPrint = new SafeBuffer(16);
@@ -288,6 +301,9 @@ void VaultController::backup()
             Keyboard.print("\t");
             Keyboard.print(asciiPrint->getBuffer());
             Keyboard.print("\n");
+            this->setLedStatus(true, false, false);
+            delay(100);
+            this->setLedStatus(true, true, false);
         }
         else
         {
@@ -295,6 +311,8 @@ void VaultController::backup()
         }
     }
 
+    this->displayPasswordSelectionMenu();
+    
     delete asciiPrint;
 }
 
