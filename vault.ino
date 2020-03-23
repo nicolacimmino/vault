@@ -23,9 +23,15 @@ VaultController *vaultController;
 
 void setup()
 {
-    pinMode(BUTTON_A_COMMON, OUTPUT);
-    digitalWrite(BUTTON_A_COMMON, LOW);
-    pinMode(BUTTON_A_SENSE, INPUT_PULLUP);
+        
+    pinMode(BUTTON_SENSE, INPUT_PULLUP);
+    pinMode(LED_RED, OUTPUT);
+    pinMode(LED_GREEN, OUTPUT);
+    pinMode(LED_YELLOW, OUTPUT);
+
+    digitalWrite(LED_RED, HIGH);
+    digitalWrite(LED_GREEN, HIGH);
+    digitalWrite(LED_YELLOW, HIGH);
 
     vaultController = new VaultController();
     vaultController->resetTerminal();

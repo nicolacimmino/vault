@@ -217,7 +217,7 @@ void VaultController::retrievePassword(byte action)
 
     while (clipboard->strlen() > 0)
     {
-        if (digitalRead(BUTTON_A_SENSE) == LOW)
+        if (digitalRead(BUTTON_SENSE) == LOW)
         {
             for(byte ix=0; ix<this->clipboard->strlen(); ix++) {
                 Keyboard.print(this->clipboard->getBuffer()[ix]);
@@ -242,15 +242,19 @@ void VaultController::displayPasswordActionMenu()
     this->terminal.setMenuCallback(makeFunctor((Functor1<byte> *)0, *this, &VaultController::retrievePassword));
 }
 
+void VaultController::setLedStatus(bool green, bool yellow, bool red) {
+    digitalWrite(LED_GREEN, green);
+    digitalWrite(LED_YELLOW, yellow);
+    digitalWrite(LED_RED, red);
+}
+
 void VaultController::resetTerminal()
 {
     Serial.begin(9600);
 
     this->lockEnctryptedStore();
 
-    this->notificationLight.begin();
-    this->notificationLight.setBrightness(50);
-    this->notificationLight.setColor(CRGB::Red);
+    this->setLedStatus(false, false, true);
 
     while (!Serial)
     {
@@ -265,7 +269,7 @@ void VaultController::resetTerminal()
 
 void VaultController::backup()
 {
-    while (digitalRead(BUTTON_A_SENSE) == HIGH)
+    while (digitalRead(BUTTON_SENSE) == HIGH)
     {
         loop();
     }
@@ -301,7 +305,7 @@ void VaultController::loop()
 
     if (encryptedStore.isLocked())
     {
-        this->notificationLight.setColor(CRGB::Red);
+        this->setLedStatus(false, false, true);
         this->terminal.clearScreen();
         this->terminal.printStatusMessage(" Locked.");
         this->unlockEncryptedStore();
@@ -313,13 +317,12 @@ void VaultController::loop()
 
     if (this->clipboard->strlen() > 0)
     {
-        this->notificationLight.setColor(CRGB::Yellow);
+        this->setLedStatus(true, true, false);
     }
     else
     {
-        this->notificationLight.setColor(CRGB::Green);
+        this->setLedStatus(true, false, false);
     }
-
-    this->notificationLight.loop();
+    
     this->terminal.loop();
 }

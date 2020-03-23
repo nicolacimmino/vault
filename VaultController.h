@@ -8,13 +8,11 @@
 #include "Terminal.h"
 #include "EncryptedStore.h"
 #include <Keyboard.h>
-#include "NotificationLight.h"
 
 class VaultController
 {
 private:
     Terminal terminal;
-    NotificationLight notificationLight;
     EncryptedStore encryptedStore;
     SafeBuffer *clipboard;
     byte selectedPasswordIndex;
@@ -25,6 +23,7 @@ private:
     void displayPasswordActionMenu();
     void showOptionsScreen();
     void processOptionsSelection(byte action);
+    void setLedStatus(bool green, bool yellow, bool red);
     
 public:
     VaultController();
