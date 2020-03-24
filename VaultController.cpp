@@ -23,6 +23,8 @@ void VaultController::unlockEncryptedStore()
     if (this->terminal.readString(TXT_ENTER_MASTER_PASSWORD, masterPassword, TXT_PASSWORD_MASK, TERMINAL_FIRST_CANVAS_LINE + 2, 2))
     {
         this->encryptedStore.unlock(masterPassword);
+
+        this->notificationController.setStoreLocked(false);
     }
 
     delete masterPassword;
@@ -85,6 +87,8 @@ void VaultController::lockEnctryptedStore()
 {
     this->encryptedStore.lock();
     this->clipboard->wipe();
+
+    this->notificationController.setStoreLocked(true);
 }
 
 /**
@@ -156,7 +160,7 @@ void VaultController::processOptionsSelection(byte action)
     {
         while (true)
         {
-            this->terminal.print(VT_FOREGROUND_RED VT_TEXT_BLINK "WARNING! " VT_TEXT_DEFAULT VT_FOREGROUND_YELLOW  "This will ERASE ALL data! Sure ? (y/n)", TERMINAL_FIRST_CANVAS_LINE + 6, 2);
+            this->terminal.print(VT_FOREGROUND_RED VT_TEXT_BLINK "WARNING! " VT_TEXT_DEFAULT VT_FOREGROUND_YELLOW "This will ERASE ALL data! Sure ? (y/n)", TERMINAL_FIRST_CANVAS_LINE + 6, 2);
             byte key = this->terminal.waitKeySelection();
 
             if (key == 'n' || key == TERMINAL_OPERATION_ABORTED)
@@ -167,7 +171,7 @@ void VaultController::processOptionsSelection(byte action)
 
             if (key == 'y')
             {
-                this->terminal.print(VT_FOREGROUND_RED  "Wiping storage......                                         ", TERMINAL_FIRST_CANVAS_LINE + 6, 2);
+                this->terminal.print(VT_FOREGROUND_RED "Wiping storage......                                         ", TERMINAL_FIRST_CANVAS_LINE + 6, 2);
                 this->encryptedStore.fullWipe();
                 this->resetTerminal();
                 return;
@@ -219,15 +223,12 @@ void VaultController::retrievePassword(byte action)
     {
         if (digitalRead(BUTTON_SENSE) == LOW)
         {
-            for(byte ix=0; ix<this->clipboard->strlen(); ix++) {
+            for (byte ix = 0; ix < this->clipboard->strlen(); ix++)
+            {
                 Keyboard.print(this->clipboard->getBuffer()[ix]);
-                this->setLedStatus(true, false, false);
-                delay(100);
-                this->setLedStatus(true, true, false);
-                delay(200);
-
+                delay(300);
             }
-            
+
             this->clipboard->wipe();
         }
 
@@ -246,19 +247,11 @@ void VaultController::displayPasswordActionMenu()
     this->terminal.setMenuCallback(makeFunctor((Functor1<byte> *)0, *this, &VaultController::retrievePassword));
 }
 
-void VaultController::setLedStatus(bool green, bool yellow, bool red) {
-    digitalWrite(LED_GREEN, green);
-    digitalWrite(LED_YELLOW, yellow);
-    digitalWrite(LED_RED, red);
-}
-
 void VaultController::resetTerminal()
 {
     Serial.begin(9600);
 
     this->lockEnctryptedStore();
-
-    this->setLedStatus(false, false, true);
 
     while (!Serial)
     {
@@ -273,18 +266,19 @@ void VaultController::resetTerminal()
 
 void VaultController::backup()
 {
-    #ifdef OPTION_BELLS_AND_WHISTLES
-    // Just for a show, the decryption is already done.
+#ifdef OPTION_BELLS_AND_WHISTLES
+    // Just for a show
     this->terminal.printStatusProgress("Read storage", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 3, 5, 30);
     this->terminal.printStatusProgress("Prepare backup", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 4, 5, 30);
     this->terminal.printStatusProgress("Copy to clipboard", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 5, 5, 30);
 #endif
     this->terminal.print("Ready. Press button to type.", TERMINAL_FIRST_CANVAS_LINE + 6, 5);
 
+    this->notificationController.setClipboardArmed(true);
+
     while (digitalRead(BUTTON_SENSE) == HIGH)
     {
         loop();
-        this->setLedStatus(true, true, false);
     }
 
     SafeBuffer *asciiPrint = new SafeBuffer(16);
@@ -301,9 +295,6 @@ void VaultController::backup()
             Keyboard.print("\t");
             Keyboard.print(asciiPrint->getBuffer());
             Keyboard.print("\n");
-            this->setLedStatus(true, false, false);
-            delay(100);
-            this->setLedStatus(true, true, false);
         }
         else
         {
@@ -312,7 +303,7 @@ void VaultController::backup()
     }
 
     this->displayPasswordSelectionMenu();
-    
+
     delete asciiPrint;
 }
 
@@ -323,24 +314,18 @@ void VaultController::loop()
 
     if (encryptedStore.isLocked())
     {
-        this->setLedStatus(false, false, true);
+        this->notificationController.setStoreLocked(true);
         this->terminal.clearScreen();
         this->terminal.printStatusMessage(" Locked.");
         this->unlockEncryptedStore();
         this->displayPasswordSelectionMenu();
         this->terminal.setKeyFingerprint(encryptedStore.getKeyFingerprint());
+        this->notificationController.setStoreLocked(false);
 
         return;
     }
 
-    if (this->clipboard->strlen() > 0)
-    {
-        this->setLedStatus(true, true, false);
-    }
-    else
-    {
-        this->setLedStatus(true, false, false);
-    }
-    
+    this->notificationController.setClipboardArmed(this->clipboard->strlen() > 0);
+
     this->terminal.loop();
 }

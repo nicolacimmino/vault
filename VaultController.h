@@ -8,6 +8,7 @@
 #include "Terminal.h"
 #include "EncryptedStore.h"
 #include <Keyboard.h>
+#include "NotificationController.h"
 
 class VaultController
 {
@@ -15,6 +16,7 @@ private:
     Terminal terminal;
     EncryptedStore encryptedStore;
     SafeBuffer *clipboard;
+    NotificationController notificationController;
     byte selectedPasswordIndex;
 
     void unlockEncryptedStore();
@@ -24,7 +26,7 @@ private:
     void showOptionsScreen();
     void processOptionsSelection(byte action);
     void setLedStatus(bool green, bool yellow, bool red);
-    
+
 public:
     VaultController();
     ~VaultController();
