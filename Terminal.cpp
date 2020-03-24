@@ -6,6 +6,8 @@ void Terminal::init(Stream *stream)
     this->stream = stream;
     VT100.begin(*stream);
     this->lastActiveTime = millis();
+    Wire.begin();
+    this->rtc = uRTCLib(0x68);
 }
 
 void Terminal::resetInactivityTimer()
@@ -353,8 +355,15 @@ void Terminal::printHeader()
     char headerMessage[TERMINAL_WIDTH];
     memset(headerMessage, 0, TERMINAL_WIDTH);
 
-    sprintf(headerMessage, " Vault V0.1 - %d bytes free                     KFP: %04u      %s %s",
+    this->rtc.refresh();
+    sprintf(headerMessage, " Vault V0.1 - %d bytes free   %02u:%02u:%02u %04u-%02u-%02u   KFP: %04u     %s %s",
             this->getFreeRamBytes(),
+            this->rtc.hour(),
+            this->rtc.minute(),
+            this->rtc.second(),
+            this->rtc.year(),
+            this->rtc.month(),
+            this->rtc.day(),
             (this->lckIndicator ? 0 : this->keyFingerprint),
             (this->clpIndicator ? "[CLP]" : "     "),
             (this->lckIndicator ? "[LCK]" : "[ULK]"));

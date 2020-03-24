@@ -5,6 +5,7 @@
 #include "SafeBuffer.h"
 #include "VT100.h"
 #include "messages.h"
+#include <uRTCLib.h>
 
 #define TERMINAL_MAX_HOTKEYS 5
 #define TERMINAL_WIDTH 80
@@ -35,6 +36,7 @@ private:
     void resetInactivityTimer();
     bool checkInactivityTimer();
     int getFreeRamBytes();
+    uRTCLib rtc;
 
     struct terminalHotkey
     {

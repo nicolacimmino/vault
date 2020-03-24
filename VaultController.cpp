@@ -278,8 +278,10 @@ void VaultController::backup()
 
     while (digitalRead(BUTTON_SENSE) == HIGH)
     {
-        loop();
+        this->loop();
     }
+
+    this->notificationController.setClipboardBusy(true);
 
     SafeBuffer *asciiPrint = new SafeBuffer(16);
 
@@ -300,7 +302,11 @@ void VaultController::backup()
         {
             Keyboard.print(".");
         }
+
+        this->notificationController.loop();
     }
+
+    this->notificationController.setClipboardBusy(false);
 
     this->displayPasswordSelectionMenu();
 

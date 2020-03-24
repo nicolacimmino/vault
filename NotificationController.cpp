@@ -24,9 +24,18 @@ void NotificationController::setStoreLocked(bool locked)
     this->loop();
 }
 
+void NotificationController::setClipboardBusy(bool busy)
+{
+    this->ledYellowBlink = busy;
+    
+    this->loop();
+}
+
 void NotificationController::loop()
 {
+    bool ledYellowState = this->ledYellow && (!this->ledYellowBlink || (this->ledYellowBlink && (millis() % 500) < 100));
+
     digitalWrite(LED_RED, this->ledRed);
-    digitalWrite(LED_YELLOW, this->ledYellow);
+    digitalWrite(LED_YELLOW, ledYellowState);
     digitalWrite(LED_GREEN, this->ledGreen);
 }

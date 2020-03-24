@@ -10,11 +10,13 @@ class NotificationController
 private:
     bool ledRed = false;
     bool ledYellow = false;
+    bool ledYellowBlink = false;
     bool ledGreen = false;
 
 public:
     NotificationController();
     void setClipboardArmed(bool armed);
+    void setClipboardBusy(bool busy);
     void setStoreLocked(bool locked);
     void loop();
 };
