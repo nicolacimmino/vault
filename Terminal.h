@@ -37,6 +37,7 @@ private:
     bool checkInactivityTimer();
     int getFreeRamBytes();
     uRTCLib rtc;
+    byte maxMenuPosition = 0;
 
     struct terminalHotkey
     {

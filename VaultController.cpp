@@ -68,9 +68,17 @@ void VaultController::addPassword()
  */
 void VaultController::wipePassword()
 {
-    this->terminal.print("Select position to wipe: ", TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 1, 2);
+    this->terminal.print("Select position to wipe: ", TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 1, 5);
 
     byte selectedIndex = this->terminal.waitKeySelection('a', 'a' + ENCRYPTED_STORE_MAX_ENTRIES);
+
+    this->terminal.print(VT_FOREGROUND_RED VT_TEXT_BLINK "WARNING! " VT_TEXT_DEFAULT VT_FOREGROUND_YELLOW "This will ERASE the password! Sure ? (y/n)", TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 1, 5);
+    byte key = this->terminal.waitKeySelection();
+
+    if (key == 'n' || key == TERMINAL_OPERATION_ABORTED)
+    {
+        selectedIndex = TERMINAL_OPERATION_ABORTED;
+    }
 
     if (selectedIndex != TERMINAL_OPERATION_ABORTED)
     {
@@ -176,7 +184,7 @@ void VaultController::fullWipe()
 {
     while (true)
     {
-        this->terminal.print(VT_FOREGROUND_RED VT_TEXT_BLINK "WARNING! " VT_TEXT_DEFAULT VT_FOREGROUND_YELLOW "This will ERASE ALL data! Sure ? (y/n)", TERMINAL_FIRST_CANVAS_LINE + 6, 2);
+        this->terminal.print(VT_FOREGROUND_RED VT_TEXT_BLINK "WARNING! " VT_TEXT_DEFAULT VT_FOREGROUND_YELLOW "This will ERASE ALL data! Sure ? (y/n)", TERMINAL_FIRST_CANVAS_LINE + 6, 5);
         byte key = this->terminal.waitKeySelection();
 
         if (key == 'n' || key == TERMINAL_OPERATION_ABORTED)
@@ -305,7 +313,8 @@ void VaultController::backup()
     {
         byte value = EEPROM.read(address);
 
-        if(address % 16 == 0) {
+        if (address % 16 == 0)
+        {
             sprintf(addressBuffer->getBuffer(), "%04X ", address);
             Keyboard.print(addressBuffer->getBuffer());
         }

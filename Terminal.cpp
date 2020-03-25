@@ -101,9 +101,13 @@ void Terminal::loop()
                     this->hotkeys[ix].callback();
                 }
             }
+
+            alt = false;
+
+            continue;
         }
 
-        if (!alt && key >= 'a' && key <= 'z' && this->menuCallback)
+        if (key >= 'a' && (key <= 'a' + this->maxMenuPosition) && this->menuCallback)
         {
             byte menuIndex = key - 'a';
             bool secondLevel = false;
@@ -116,8 +120,6 @@ void Terminal::loop()
             this->highlightMenuEntry(menuIndex, secondLevel);
             this->menuCallback(menuIndex);
         }
-
-        alt = false;
     }
 
     this->checkInactivityTimer();
@@ -131,6 +133,7 @@ void Terminal::clearScreen()
     this->printHeader();
     this->printBanner();
     this->printStatusMessage("");
+    this->maxMenuPosition = 0;
 }
 
 void Terminal::clearCanvas()
@@ -142,6 +145,7 @@ void Terminal::clearCanvas()
         VT100.setCursor(line + TERMINAL_FIRST_CANVAS_LINE, 1);
         VT100.clearLineAfter();
     }
+    this->maxMenuPosition = 0;
 }
 
 void Terminal::printBanner()
@@ -188,6 +192,11 @@ void Terminal::print(char *text, byte line = NULL, byte column = NULL)
 
 void Terminal::printMenuEntry(byte position, char *text, bool secondLevel = false)
 {
+    if (position > this->maxMenuPosition)
+    {
+        this->maxMenuPosition = position;
+    }
+
     byte line = (position % TERMINAL_CANVAS_LINES) + TERMINAL_FIRST_CANVAS_LINE;
     byte column = (position < TERMINAL_CANVAS_LINES) ? 2 : 22;
 
@@ -263,14 +272,14 @@ bool Terminal::readString(char *prompt, SafeBuffer *string, char mask = 0, byte 
                 continue;
             }
 
-            if (ix == string->getBufferSize() -1)
+            if (ix == string->getBufferSize() - 1)
             {
                 continue;
             }
 
             string->setChar(ix, nextChar);
             ix++;
-            
+
             this->stream->print(mask ? mask : nextChar);
         }
 
@@ -303,11 +312,11 @@ byte Terminal::waitKeySelection(char rangeStart = 0, char rangeEnd = 255)
 
         char key = this->stream->read();
 
-        if(key == TERMINAL_KEY_ESC)
+        if (key == TERMINAL_KEY_ESC)
         {
-            return TERMINAL_OPERATION_ABORTED;                
+            return TERMINAL_OPERATION_ABORTED;
         }
-        
+
         if (rangeStart && (key > rangeEnd || key < rangeStart))
         {
             continue;
