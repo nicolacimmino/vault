@@ -22,13 +22,15 @@ VaultController *vaultController;
 
 void setup()
 {
-        
+    Wire.begin();
     pinMode(BUTTON_SENSE, INPUT_PULLUP);
-    
+
     vaultController = new VaultController();
     vaultController->resetTerminal();
 
     Keyboard.begin();
+
+
 }
 
 void loop()

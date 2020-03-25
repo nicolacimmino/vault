@@ -306,12 +306,23 @@ void VaultController::backup()
 
     this->notificationController.setClipboardBusy(true);
 
+    this->spitOutBackupForRange(STORAGE_INTERNAL_EEPROM_BASE, STORAGE_INTERNAL_EEPROM_BASE + STORAGE_INTERNAL_EEPROM_SIZE);
+
+    this->spitOutBackupForRange(STORAGE_EXTERNAL_EEPROM_BASE, STORAGE_EXTERNAL_EEPROM_BASE + STORAGE_EXTERNAL_EEPROM_SIZE);
+
+    this->notificationController.setClipboardBusy(false);
+
+    this->displayPasswordSelectionMenu();
+}
+
+void VaultController::spitOutBackupForRange(uint16_t start, uint16_t end)
+{
     SafeBuffer *asciiPrint = new SafeBuffer(16);
     SafeBuffer *addressBuffer = new SafeBuffer(5);
 
-    for (uint16_t address = 0; address < ENCRYPTED_STORE_EEPROM_SIZE; address++)
+    for (uint16_t address = start; address < end; address++)
     {
-        byte value = EEPROM.read(address);
+        byte value = this->storage.read(address);
 
         if (address % 16 == 0)
         {
@@ -320,7 +331,7 @@ void VaultController::backup()
         }
 
         Keyboard.print(value >> 4, HEX);
-        Keyboard.print(value & 4, HEX);
+        Keyboard.print(value & 0xF, HEX);
         asciiPrint->setChar(address % 16, value > 31 && value < 127 ? (char)value : '.');
 
         if (address % 16 == 15)
@@ -337,10 +348,7 @@ void VaultController::backup()
         this->notificationController.loop();
     }
 
-    this->notificationController.setClipboardBusy(false);
-
-    this->displayPasswordSelectionMenu();
-
+    delete addressBuffer;
     delete asciiPrint;
 }
 

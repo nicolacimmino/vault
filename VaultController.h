@@ -9,6 +9,7 @@
 #include "EncryptedStore.h"
 #include <Keyboard.h>
 #include "NotificationController.h"
+#include "Storage.h"
 
 class VaultController
 {
@@ -18,6 +19,7 @@ private:
     SafeBuffer *clipboard;
     NotificationController notificationController;
     byte selectedPasswordIndex;
+    Storage storage;
 
     void unlockEncryptedStore();
     void lockEnctryptedStore();
@@ -28,6 +30,7 @@ private:
     void setLedStatus(bool green, bool yellow, bool red);
     void setTime();
     void fullWipe();
+    void spitOutBackupForRange(uint16_t start, uint16_t end);
     
 public:
     VaultController();

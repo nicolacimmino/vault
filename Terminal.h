@@ -1,7 +1,7 @@
 #ifndef ___PGEN_TERMINAL_H__
 #define ___PGEN_TERMINAL_H__
 
-#include <functor.h>
+#include <Functor.h>
 #include "SafeBuffer.h"
 #include "VT100.h"
 #include "messages.h"

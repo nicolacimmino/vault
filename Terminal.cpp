@@ -5,8 +5,7 @@ void Terminal::init(Stream *stream)
 {
     this->stream = stream;
     VT100.begin(*stream);
-    this->lastActiveTime = millis();
-    Wire.begin();
+    this->lastActiveTime = millis();    
     this->rtc = uRTCLib(0x68);
 }
 
