@@ -143,6 +143,8 @@ void VaultController::showOptionsScreen()
     this->terminal.clearCanvas();
     this->terminal.printMenuEntry(0, "Backup");
     this->terminal.printMenuEntry(1, "Full Wipe");
+    this->terminal.printMenuEntry(2, "Set Time");
+    this->terminal.printMenuEntry(3, "Back");
 
     this->terminal.setMenuCallback(makeFunctor((Functor1<byte> *)0, *this, &VaultController::processOptionsSelection));
 }
@@ -152,35 +154,48 @@ void VaultController::processOptionsSelection(byte action)
     switch (action)
     {
     case 0:
-    {
         this->backup();
         break;
-    }
     case 1:
+        this->fullWipe();
+        break;
+    case 2:
+        this->setTime();
+        break;
+    case 3:
+        this->displayPasswordSelectionMenu();
+        break;
+    default:
+        return;
+    }
+
+    this->displayPasswordSelectionMenu();
+}
+
+void VaultController::fullWipe()
+{
+    while (true)
     {
-        while (true)
+        this->terminal.print(VT_FOREGROUND_RED VT_TEXT_BLINK "WARNING! " VT_TEXT_DEFAULT VT_FOREGROUND_YELLOW "This will ERASE ALL data! Sure ? (y/n)", TERMINAL_FIRST_CANVAS_LINE + 6, 2);
+        byte key = this->terminal.waitKeySelection();
+
+        if (key == 'n' || key == TERMINAL_OPERATION_ABORTED)
         {
-            this->terminal.print(VT_FOREGROUND_RED VT_TEXT_BLINK "WARNING! " VT_TEXT_DEFAULT VT_FOREGROUND_YELLOW "This will ERASE ALL data! Sure ? (y/n)", TERMINAL_FIRST_CANVAS_LINE + 6, 2);
-            byte key = this->terminal.waitKeySelection();
-
-            if (key == 'n' || key == TERMINAL_OPERATION_ABORTED)
-            {
-                this->displayPasswordSelectionMenu();
-                return;
-            }
-
-            if (key == 'y')
-            {
-                this->terminal.print(VT_FOREGROUND_RED "Wiping storage......                                         ", TERMINAL_FIRST_CANVAS_LINE + 6, 2);
-                this->encryptedStore.fullWipe();
-                this->resetTerminal();
-                return;
-            }
+            return;
         }
 
-        break;
+        if (key == 'y')
+        {
+            this->terminal.print(VT_FOREGROUND_RED "Wiping storage......                                         ", TERMINAL_FIRST_CANVAS_LINE + 6, 2);
+            this->encryptedStore.fullWipe();
+            this->resetTerminal();
+            return;
+        }
     }
-    }
+}
+
+void VaultController::setTime()
+{
 }
 
 void VaultController::retrievePassword(byte action)
@@ -268,11 +283,11 @@ void VaultController::backup()
 {
 #ifdef OPTION_BELLS_AND_WHISTLES
     // Just for a show
-    this->terminal.printStatusProgress("Read storage", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 3, 5, 30);
-    this->terminal.printStatusProgress("Prepare backup", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 4, 5, 30);
-    this->terminal.printStatusProgress("Copy to clipboard", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 5, 5, 30);
+    this->terminal.printStatusProgress("Read storage", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE, TERMINAL_RIGHT_HALF_FIRST_COLUMN, 30);
+    this->terminal.printStatusProgress("Prepare backup", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 1, TERMINAL_RIGHT_HALF_FIRST_COLUMN, 30);
+    this->terminal.printStatusProgress("Copy to clipboard", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 2, TERMINAL_RIGHT_HALF_FIRST_COLUMN, 30);
 #endif
-    this->terminal.print("Ready. Press button to type.", TERMINAL_FIRST_CANVAS_LINE + 6, 5);
+    this->terminal.print("Ready. Press button to type.", TERMINAL_FIRST_CANVAS_LINE + 3, TERMINAL_RIGHT_HALF_FIRST_COLUMN);
 
     this->notificationController.setClipboardArmed(true);
 
@@ -284,10 +299,17 @@ void VaultController::backup()
     this->notificationController.setClipboardBusy(true);
 
     SafeBuffer *asciiPrint = new SafeBuffer(16);
+    SafeBuffer *addressBuffer = new SafeBuffer(5);
 
     for (uint16_t address = 0; address < ENCRYPTED_STORE_EEPROM_SIZE; address++)
     {
         byte value = EEPROM.read(address);
+
+        if(address % 16 == 0) {
+            sprintf(addressBuffer->getBuffer(), "%04X ", address);
+            Keyboard.print(addressBuffer->getBuffer());
+        }
+
         Keyboard.print(value >> 4, HEX);
         Keyboard.print(value & 4, HEX);
         asciiPrint->setChar(address % 16, value > 31 && value < 127 ? (char)value : '.');
