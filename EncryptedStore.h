@@ -7,6 +7,8 @@
 #include "NoiseSource.h"
 #include <EEPROM.h>
 #include "SafeBuffer.h"
+#include "Storage.h"
+#include "Functor.h"
 
 #define ENCRYPTED_STORE_MASTER_PASSWORD_MAX_SIZE 64
 #define ENCRYPTED_STORE_EEPROM_SIZE 1024
@@ -35,6 +37,7 @@ private:
     uint16_t getEncryptedEntryAddress(byte index);
     void safeStringCopy(char *destination, char *source, byte destinationSize);
     bool locked = true;
+    Storage storage;
 
 public:
     void unlock(SafeBuffer *masterPassword);
@@ -48,7 +51,7 @@ public:
     bool isLocked();
     byte *getFirmwareFingerprint();
     int getKeyFingerprint();
-    void fullWipe();
+    void fullWipe(const Functor1<byte> &progress);
 };
 
 #endif

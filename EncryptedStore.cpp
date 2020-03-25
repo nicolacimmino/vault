@@ -23,17 +23,19 @@ bool EncryptedStore::isLocked()
 
 void EncryptedStore::wipe(byte index)
 {
-    EncryptedEntry encryptedEntry;
-    memset(&encryptedEntry, 0, sizeof(EncryptedEntry));
-
-    EEPROM.put(this->getEncryptedEntryAddress(index), encryptedEntry);
+    for (byte ix = 0; ix < sizeof(EncryptedEntry); ix++)
+    {
+        this->storage.write(this->getEncryptedEntryAddress(index) + ix, 0);
+    }
 }
 
-void EncryptedStore::fullWipe()
+void EncryptedStore::fullWipe(const Functor1<byte> &progress)
 {
-    for (uint16_t ix = 0; ix < ENCRYPTED_STORE_EEPROM_SIZE; ix++)
+    for (uint16_t address = STORAGE_BASE; address < STORAGE_SIZE; address++)
     {
-        EEPROM.write(ix, 0);
+        progress((byte)floor((100.0 * (float)(address - STORAGE_BASE)) / STORAGE_SIZE));
+
+        EEPROM.write(address, 0);
     }
 
     this->lock();

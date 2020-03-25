@@ -180,6 +180,13 @@ void VaultController::processOptionsSelection(byte action)
     this->displayPasswordSelectionMenu();
 }
 
+void VaultController::showProgress(byte progressPercentile)
+{
+    SafeBuffer progressMessage = SafeBuffer(20);
+    sprintf(progressMessage.getBuffer(), "Done: %d%%", progressPercentile);
+    this->terminal.print(progressMessage.getBuffer(), TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 5, 5);
+}
+
 void VaultController::fullWipe()
 {
     while (true)
@@ -194,8 +201,8 @@ void VaultController::fullWipe()
 
         if (key == 'y')
         {
-            this->terminal.print(VT_FOREGROUND_RED "Wiping storage......                                         ", TERMINAL_FIRST_CANVAS_LINE + 6, 2);
-            this->encryptedStore.fullWipe();
+            this->terminal.print("Wiping storage......                                         ", TERMINAL_FIRST_CANVAS_LINE + 6, 5);
+            this->encryptedStore.fullWipe(makeFunctor((Functor1<byte> *)0, *this, &VaultController::showProgress));
             this->resetTerminal();
             return;
         }
@@ -306,22 +313,13 @@ void VaultController::backup()
 
     this->notificationController.setClipboardBusy(true);
 
-    this->spitOutBackupForRange(STORAGE_INTERNAL_EEPROM_BASE, STORAGE_INTERNAL_EEPROM_BASE + STORAGE_INTERNAL_EEPROM_SIZE);
-
-    this->spitOutBackupForRange(STORAGE_EXTERNAL_EEPROM_BASE, STORAGE_EXTERNAL_EEPROM_BASE + STORAGE_EXTERNAL_EEPROM_SIZE);
-
-    this->notificationController.setClipboardBusy(false);
-
-    this->displayPasswordSelectionMenu();
-}
-
-void VaultController::spitOutBackupForRange(uint16_t start, uint16_t end)
-{
     SafeBuffer *asciiPrint = new SafeBuffer(16);
     SafeBuffer *addressBuffer = new SafeBuffer(5);
 
-    for (uint16_t address = start; address < end; address++)
+    for (uint16_t address = STORAGE_BASE; address < STORAGE_BASE + STORAGE_SIZE; address++)
     {
+        this->showProgress((byte)floor(100 * ((address - STORAGE_BASE) / STORAGE_SIZE)));
+
         byte value = this->storage.read(address);
 
         if (address % 16 == 0)
@@ -350,6 +348,10 @@ void VaultController::spitOutBackupForRange(uint16_t start, uint16_t end)
 
     delete addressBuffer;
     delete asciiPrint;
+
+    this->notificationController.setClipboardBusy(false);
+
+    this->displayPasswordSelectionMenu();
 }
 
 void VaultController::loop()

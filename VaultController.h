@@ -29,9 +29,8 @@ private:
     void processOptionsSelection(byte action);
     void setLedStatus(bool green, bool yellow, bool red);
     void setTime();
-    void fullWipe();
-    void spitOutBackupForRange(uint16_t start, uint16_t end);
-    
+    void fullWipe();    
+
 public:
     VaultController();
     ~VaultController();
@@ -42,7 +41,7 @@ public:
     void retrievePassword(byte action);
     void resetTerminal();    
     void backup();
-    
+    void showProgress(byte progressPercentile);
 };
 
 #endif
