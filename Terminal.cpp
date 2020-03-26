@@ -108,7 +108,7 @@ void Terminal::loop()
 
         if (key >= 'a' && (key <= 'a' + this->maxMenuPosition) && this->menuCallback)
         {
-            byte menuIndex = key - 'a';            
+            byte menuIndex = key - 'a';
             this->highlightMenuEntry(menuIndex);
             this->menuCallback(menuIndex);
         }
@@ -182,7 +182,7 @@ void Terminal::print(char *text, byte line = NULL, byte column = NULL)
     this->stream->print(text);
 }
 
-void Terminal::printMenuEntry(byte position, char *text)
+void Terminal::printMenuEntry(byte position, char *text, char *selectorColor = VT_FOREGROUND_WHITE)
 {
     this->maxMenuPosition = max(this->maxMenuPosition, position);
 
@@ -190,19 +190,14 @@ void Terminal::printMenuEntry(byte position, char *text)
     byte column = (position < TERMINAL_SECOND_LEVEL_MENU_FIRST_POSITION) ? TERMINAL_LEFT_MENU_FIRST_COLUMN : TERMINAL_RIGHT_MENU_FIRST_COLUMN;
 
     char buffer[TERMINAL_WIDTH];
-    sprintf(buffer, "%s[%c]%s  %s", VT_FOREGROUND_WHITE, 'A' + position, VT_FOREGROUND_YELLOW, text);
+    sprintf(buffer, "%s[%c]%s  %s", selectorColor, 'A' + position, VT_FOREGROUND_YELLOW, text);
     buffer[TERMINAL_WIDTH - 1] = 0;
     this->print(buffer, line, column);
 }
 
 void Terminal::highlightMenuEntry(byte position)
 {
-    byte line = (position % TERMINAL_SECOND_LEVEL_MENU_FIRST_POSITION) + TERMINAL_FIRST_CANVAS_LINE;
-    byte column = (position < TERMINAL_SECOND_LEVEL_MENU_FIRST_POSITION) ? TERMINAL_LEFT_MENU_FIRST_COLUMN : TERMINAL_RIGHT_MENU_FIRST_COLUMN;
-        
-    char buffer[TERMINAL_WIDTH];
-    sprintf(buffer, "%s%s[%c]%s", VT_FOREGROUND_GREEN, VT_TEXT_BRIGHT, 'A' + position, VT_TEXT_DEFAULT);
-    this->print(buffer, line, column);
+    this->printMenuEntry(position, "", VT_FOREGROUND_GREEN);
 }
 
 bool Terminal::readString(char *prompt, char *string, byte stringMaxSize, char mask = 0, byte line = NULL, byte column = NULL)

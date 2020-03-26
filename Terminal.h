@@ -72,7 +72,7 @@ public:
     void printStatusMessage(char *message);
     void printStatusProgress(char *message, uint32_t delaymS, byte *completedMessage, byte line, byte column, byte areaWidth);
     void print(char *text, byte line = NULL, byte column = NULL);
-    void printMenuEntry(byte position, char *text);
+    void printMenuEntry(byte position, char *text, char *selectorColor = VT_FOREGROUND_WHITE);
     void printBufferHex(byte *buffer, byte bufferSize);
     void highlightMenuEntry(byte position);
     bool readString(char *prompt, char *string, byte stringMaxSize, char mask = 0, byte line = NULL, byte column = NULL);
