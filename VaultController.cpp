@@ -195,6 +195,8 @@ void VaultController::setTime()
 
 void VaultController::retrievePassword(byte action)
 {
+    action -= TERMINAL_SECOND_LEVEL_MENU_FIRST_POSITION;
+    
     switch (action)
     {
     case 0:
@@ -250,9 +252,9 @@ void VaultController::retrievePassword(byte action)
 
 void VaultController::displayPasswordActionMenu()
 {
-    this->terminal.printMenuEntry(0, "Copy to clipboard", true);
-    this->terminal.printMenuEntry(1, "Partial copy to clipboard", true);
-    this->terminal.printMenuEntry(2, "Back", true);
+    this->terminal.printMenuEntry(TERMINAL_SECOND_LEVEL_MENU_FIRST_POSITION, "Copy to clipboard");
+    this->terminal.printMenuEntry(TERMINAL_SECOND_LEVEL_MENU_FIRST_POSITION + 1, "Partial copy to clipboard");
+    this->terminal.printMenuEntry(TERMINAL_SECOND_LEVEL_MENU_FIRST_POSITION + 2, "Back");
 
     this->terminal.setMenuCallback(makeFunctor((Functor1<byte> *)0, *this, &VaultController::retrievePassword));
 }

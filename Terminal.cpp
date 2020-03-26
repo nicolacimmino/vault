@@ -108,15 +108,8 @@ void Terminal::loop()
 
         if (key >= 'a' && (key <= 'a' + this->maxMenuPosition) && this->menuCallback)
         {
-            byte menuIndex = key - 'a';
-            bool secondLevel = false;
-            if (menuIndex >= TERMINAL_CANVAS_LINES)
-            {
-                menuIndex -= TERMINAL_CANVAS_LINES;
-                secondLevel = true;
-            }
-
-            this->highlightMenuEntry(menuIndex, secondLevel);
+            byte menuIndex = key - 'a';            
+            this->highlightMenuEntry(menuIndex);
             this->menuCallback(menuIndex);
         }
     }
@@ -189,41 +182,26 @@ void Terminal::print(char *text, byte line = NULL, byte column = NULL)
     this->stream->print(text);
 }
 
-void Terminal::printMenuEntry(byte position, char *text, bool secondLevel = false)
+void Terminal::printMenuEntry(byte position, char *text)
 {
-    if (position + (secondLevel ? TERMINAL_CANVAS_LINES : 0) > this->maxMenuPosition)
-    {
-        this->maxMenuPosition = position + (secondLevel ? TERMINAL_CANVAS_LINES : 0);
-    }
+    this->maxMenuPosition = max(this->maxMenuPosition, position);
 
-    byte line = (position % TERMINAL_CANVAS_LINES) + TERMINAL_FIRST_CANVAS_LINE;
-    byte column = (position < TERMINAL_CANVAS_LINES) ? 2 : 22;
-
-    if (secondLevel)
-    {
-        column += TERMINAL_RIGHT_HALF_FIRST_COLUMN - 5;
-        position += TERMINAL_CANVAS_LINES;
-    }
+    byte line = (position % TERMINAL_SECOND_LEVEL_MENU_FIRST_POSITION) + TERMINAL_FIRST_CANVAS_LINE;
+    byte column = (position < TERMINAL_SECOND_LEVEL_MENU_FIRST_POSITION) ? TERMINAL_LEFT_MENU_FIRST_COLUMN : TERMINAL_RIGHT_MENU_FIRST_COLUMN;
 
     char buffer[TERMINAL_WIDTH];
-    sprintf(buffer, "   %s[%c]%s  %s", VT_FOREGROUND_WHITE, 'A' + position, VT_FOREGROUND_YELLOW, text);
+    sprintf(buffer, "%s[%c]%s  %s", VT_FOREGROUND_WHITE, 'A' + position, VT_FOREGROUND_YELLOW, text);
     buffer[TERMINAL_WIDTH - 1] = 0;
     this->print(buffer, line, column);
 }
 
-void Terminal::highlightMenuEntry(byte position, bool secondLevel = false)
+void Terminal::highlightMenuEntry(byte position)
 {
-    byte line = (position % TERMINAL_CANVAS_LINES) + TERMINAL_FIRST_CANVAS_LINE;
-    byte column = (position < TERMINAL_CANVAS_LINES) ? 2 : 22;
-
-    if (secondLevel)
-    {
-        column += TERMINAL_RIGHT_HALF_FIRST_COLUMN - 5;
-        position += TERMINAL_CANVAS_LINES;
-    }
-
+    byte line = (position % TERMINAL_SECOND_LEVEL_MENU_FIRST_POSITION) + TERMINAL_FIRST_CANVAS_LINE;
+    byte column = (position < TERMINAL_SECOND_LEVEL_MENU_FIRST_POSITION) ? TERMINAL_LEFT_MENU_FIRST_COLUMN : TERMINAL_RIGHT_MENU_FIRST_COLUMN;
+        
     char buffer[TERMINAL_WIDTH];
-    sprintf(buffer, "   %s%s[%c]%s", VT_FOREGROUND_GREEN, VT_TEXT_BRIGHT, 'A' + position, VT_TEXT_DEFAULT);
+    sprintf(buffer, "%s%s[%c]%s", VT_FOREGROUND_GREEN, VT_TEXT_BRIGHT, 'A' + position, VT_TEXT_DEFAULT);
     this->print(buffer, line, column);
 }
 

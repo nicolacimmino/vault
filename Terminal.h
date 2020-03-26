@@ -24,6 +24,9 @@
 #define TERMINAL_MENU_BASE 100
 #define TERMINAL_MAX_INACTIVE_TIME_MS 60000
 #define TERMINAL_OPERATION_ABORTED 255
+#define TERMINAL_SECOND_LEVEL_MENU_FIRST_POSITION TERMINAL_CANVAS_LINES
+#define TERMINAL_LEFT_MENU_FIRST_COLUMN 5
+#define TERMINAL_RIGHT_MENU_FIRST_COLUMN TERMINAL_RIGHT_HALF_FIRST_COLUMN
 
 #define TERMINAL_KEY_ESC 0x1B
 #define TERMINAL_KEY_BACKSPACE 0x7F
@@ -69,9 +72,9 @@ public:
     void printStatusMessage(char *message);
     void printStatusProgress(char *message, uint32_t delaymS, byte *completedMessage, byte line, byte column, byte areaWidth);
     void print(char *text, byte line = NULL, byte column = NULL);
-    void printMenuEntry(byte position, char *text, bool secondLevel = false);
+    void printMenuEntry(byte position, char *text);
     void printBufferHex(byte *buffer, byte bufferSize);
-    void highlightMenuEntry(byte position, bool secondLevel = false);
+    void highlightMenuEntry(byte position);
     bool readString(char *prompt, char *string, byte stringMaxSize, char mask = 0, byte line = NULL, byte column = NULL);
     bool readString(char *prompt, SafeBuffer *string, char mask = 0, byte line = NULL, byte column = NULL);
     byte waitKeySelection(char rangeStart = 0, char rangeEnd = 255);
