@@ -163,7 +163,7 @@ void VaultController::processOptionsSelection(byte action)
     {
     case 0:
         this->backup();
-        break;
+        return; // temporary, backup runs as a service, we don't want to fall through to the end and display a menu yet.        
     case 1:
         this->fullWipe();
         break;
@@ -185,6 +185,7 @@ void VaultController::showProgress(byte progressPercentile)
     SafeBuffer progressMessage = SafeBuffer(20);
     sprintf(progressMessage.getBuffer(), "Done: %d%%", progressPercentile);
     this->terminal.print(progressMessage.getBuffer(), TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 5, 5);
+    this->terminal->update
 }
 
 void VaultController::fullWipe()
@@ -313,49 +314,31 @@ void VaultController::backup()
 
     this->notificationController.setClipboardBusy(true);
 
-    SafeBuffer *asciiPrint = new SafeBuffer(16);
-    SafeBuffer *addressBuffer = new SafeBuffer(5);
+    this->runningService = new BackupService(
+        makeFunctor((Functor1<byte> *)0, *this, &VaultController::showProgress),
+        makeFunctor((Functor1<byte> *)0, *this, &VaultController::backupDone));
 
-    for (uint16_t address = STORAGE_BASE; address < STORAGE_BASE + STORAGE_SIZE; address++)
-    {
-        this->showProgress((byte)floor(100 * ((address - STORAGE_BASE) / STORAGE_SIZE)));
+    this->runningService->start();
+}
 
-        byte value = this->storage.read(address);
-
-        if (address % 16 == 0)
-        {
-            sprintf(addressBuffer->getBuffer(), "%04X ", address);
-            Keyboard.print(addressBuffer->getBuffer());
-        }
-
-        Keyboard.print(value >> 4, HEX);
-        Keyboard.print(value & 0xF, HEX);
-        asciiPrint->setChar(address % 16, value > 31 && value < 127 ? (char)value : '.');
-
-        if (address % 16 == 15)
-        {
-            Keyboard.print("\t");
-            Keyboard.print(asciiPrint->getBuffer());
-            Keyboard.print("\n");
-        }
-        else
-        {
-            Keyboard.print(".");
-        }
-
-        this->notificationController.loop();
-    }
-
-    delete addressBuffer;
-    delete asciiPrint;
-
-    this->notificationController.setClipboardBusy(false);
-
+void VaultController::backupDone(byte arg)
+{
     this->displayPasswordSelectionMenu();
 }
 
 void VaultController::loop()
 {
+    if (this->runningService)
+    {
+        this->runningService->loop();
+
+        if (!this->runningService->isRunning())
+        {
+            delete this->runningService;
+            this->runningService = NULL;
+        }
+    }
+
     this->terminal.setClpIndicator(this->clipboard->strlen() > 0);
     this->terminal.setLclIndicator(encryptedStore.isLocked());
 

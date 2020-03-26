@@ -10,6 +10,8 @@
 #include <Keyboard.h>
 #include "NotificationController.h"
 #include "Storage.h"
+#include "Service.h"
+#include "BackupService.h"
 
 class VaultController
 {
@@ -29,7 +31,8 @@ private:
     void processOptionsSelection(byte action);
     void setLedStatus(bool green, bool yellow, bool red);
     void setTime();
-    void fullWipe();    
+    void fullWipe(); 
+    Service *runningService = NULL;   
 
 public:
     VaultController();
@@ -41,6 +44,7 @@ public:
     void retrievePassword(byte action);
     void resetTerminal();    
     void backup();
+    void backupDone(byte arg);
     void showProgress(byte progressPercentile);
 };
 
