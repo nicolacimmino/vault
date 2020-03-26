@@ -5,7 +5,7 @@ void Terminal::init(Stream *stream)
 {
     this->stream = stream;
     VT100.begin(*stream);
-    this->lastActiveTime = millis();    
+    this->lastActiveTime = millis();
     this->rtc = uRTCLib(0x68);
 }
 
@@ -385,6 +385,21 @@ void Terminal::printHeader()
     VT100.setBackgroundColor(TERMINAL_BACKGROUND_COLOR);
     VT100.setTextColor(TERMINAL_FOREGROUND_COLOR);
     VT100.clearLineAfter();
+}
+
+void Terminal::initProgress(char *message)
+{    
+    this->print(message, TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 6, 5); 
+    VT100.clearLineAfter();
+}
+
+void Terminal::showProgress(byte progressPercentile)
+{
+    SafeBuffer progressMessage = SafeBuffer(20);
+    sprintf(progressMessage.getBuffer(), "Done: %d%%", progressPercentile);
+    this->print(progressMessage.getBuffer(), TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 5, 5);
+    
+    this->resetInactivityTimer();
 }
 
 void Terminal::printBufferHex(byte *buffer, byte bufferSize)

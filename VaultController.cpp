@@ -163,7 +163,7 @@ void VaultController::processOptionsSelection(byte action)
     {
     case 0:
         this->backup();
-        return; // temporary, backup runs as a service, we don't want to fall through to the end and display a menu yet.        
+        return; // temporary, backup runs as a service, we don't want to fall through to the end and display a menu yet.
     case 1:
         this->fullWipe();
         break;
@@ -180,14 +180,6 @@ void VaultController::processOptionsSelection(byte action)
     this->displayPasswordSelectionMenu();
 }
 
-void VaultController::showProgress(byte progressPercentile)
-{
-    SafeBuffer progressMessage = SafeBuffer(20);
-    sprintf(progressMessage.getBuffer(), "Done: %d%%", progressPercentile);
-    this->terminal.print(progressMessage.getBuffer(), TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 5, 5);
-    this->terminal->update
-}
-
 void VaultController::fullWipe()
 {
     while (true)
@@ -201,9 +193,9 @@ void VaultController::fullWipe()
         }
 
         if (key == 'y')
-        {
-            this->terminal.print("Wiping storage......                                         ", TERMINAL_FIRST_CANVAS_LINE + 6, 5);
-            this->encryptedStore.fullWipe(makeFunctor((Functor1<byte> *)0, *this, &VaultController::showProgress));
+        {            
+            this->terminal.initProgress("Wiping storage.....");
+            this->encryptedStore.fullWipe(makeFunctor((Functor1<byte> *)0, this->terminal, &Terminal::showProgress));
             this->resetTerminal();
             return;
         }
@@ -314,8 +306,10 @@ void VaultController::backup()
 
     this->notificationController.setClipboardBusy(true);
 
+    this->terminal.initProgress("Backup in progress.....");
+
     this->runningService = new BackupService(
-        makeFunctor((Functor1<byte> *)0, *this, &VaultController::showProgress),
+        makeFunctor((Functor1<byte> *)0, this->terminal, &Terminal::showProgress),
         makeFunctor((Functor1<byte> *)0, *this, &VaultController::backupDone));
 
     this->runningService->start();

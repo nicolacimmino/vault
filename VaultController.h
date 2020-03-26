@@ -44,8 +44,7 @@ public:
     void retrievePassword(byte action);
     void resetTerminal();    
     void backup();
-    void backupDone(byte arg);
-    void showProgress(byte progressPercentile);
+    void backupDone(byte arg);    
 };
 
 #endif

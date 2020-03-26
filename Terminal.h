@@ -78,6 +78,8 @@ public:
     void setClpIndicator(bool status);
     void setLclIndicator(bool status);
     void setKeyFingerprint(int keyFingerprint);
+    void initProgress(char *message);
+    void showProgress(byte progressPercentile);
     void loop();
 };
 
