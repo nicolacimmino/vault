@@ -35,7 +35,7 @@ void EncryptedStore::fullWipe(const Functor1<byte> &progress)
     {
         progress((byte)floor((100.0 * (float)(address - STORAGE_BASE)) / STORAGE_SIZE));
 
-        EEPROM.write(address, 0);
+        this->storage.write(address, 0);
     }
 
     this->lock();
@@ -148,21 +148,6 @@ void EncryptedStore::generateIV(byte *iv)
 uint16_t EncryptedStore::getEncryptedEntryAddress(byte index)
 {
     return index * sizeof(EncryptedEntry);
-}
-
-byte *EncryptedStore::getFirmwareFingerprint()
-{
-    Sha256Class sha256;
-    sha256.initHmac(this->key, ENCRYPTED_STORE_KEY_SIZE);
-
-    for (uint32_t address = 0; address < 32768; address++)
-    {
-        sha256.write((byte)pgm_read_byte(address));
-    }
-
-    memcpy(this->fwFingerPrint, sha256.result(), ENCRYPTED_STORE_FW_FINGERPRINT_SIZE);
-
-    return this->fwFingerPrint;
 }
 
 int EncryptedStore::getKeyFingerprint()

@@ -31,8 +31,7 @@ private:
         char label[ENCRYPTED_STORE_LABEL_SIZE];
     };
    
-    byte key[ENCRYPTED_STORE_KEY_SIZE];
-    byte fwFingerPrint[ENCRYPTED_STORE_FW_FINGERPRINT_SIZE];
+    byte key[ENCRYPTED_STORE_KEY_SIZE];    
     void generateIV(byte *iv);
     uint16_t getEncryptedEntryAddress(byte index);
     void safeStringCopy(char *destination, char *source, byte destinationSize);
@@ -48,8 +47,7 @@ public:
     bool getLabel(byte index, char *label);
     void set(byte index, SafeBuffer *plainText, SafeBuffer *label);
     void wipe(byte index);
-    bool isLocked();
-    byte *getFirmwareFingerprint();
+    bool isLocked();    
     int getKeyFingerprint();
     void fullWipe(const Functor1<byte> &progress);
 };

@@ -191,9 +191,9 @@ void Terminal::print(char *text, byte line = NULL, byte column = NULL)
 
 void Terminal::printMenuEntry(byte position, char *text, bool secondLevel = false)
 {
-    if (position > this->maxMenuPosition)
+    if (position + (secondLevel ? TERMINAL_CANVAS_LINES : 0) > this->maxMenuPosition)
     {
-        this->maxMenuPosition = position;
+        this->maxMenuPosition = position + (secondLevel ? TERMINAL_CANVAS_LINES : 0);
     }
 
     byte line = (position % TERMINAL_CANVAS_LINES) + TERMINAL_FIRST_CANVAS_LINE;
@@ -293,6 +293,23 @@ bool Terminal::readString(char *prompt, SafeBuffer *string, char mask = 0, byte 
     return true;
 }
 
+bool Terminal::askYesNoQuestion(char *question, byte line, byte column)
+{
+    this->print(question, line, column);
+
+    while (true)
+    {
+        byte key = this->waitKeySelection();
+
+        if (key != 'n' && key != 'y' && key != TERMINAL_OPERATION_ABORTED)
+        {
+            continue;
+        }
+
+        return key == 'y';
+    }
+}
+
 byte Terminal::waitKeySelection(char rangeStart = 0, char rangeEnd = 255)
 {
     while (true)
@@ -363,18 +380,25 @@ void Terminal::printHeader()
     char headerMessage[TERMINAL_WIDTH];
     memset(headerMessage, 0, TERMINAL_WIDTH);
 
-    this->rtc.refresh();
-    sprintf(headerMessage, " Vault V0.1 - %d bytes free   %02u:%02u:%02u %04u-%02u-%02u   KFP: %04u     %s %s",
-            this->getFreeRamBytes(),
-            this->rtc.hour(),
-            this->rtc.minute(),
-            this->rtc.second(),
-            this->rtc.year(),
-            this->rtc.month(),
-            this->rtc.day(),
-            (this->lckIndicator ? 0 : this->keyFingerprint),
-            (this->clpIndicator ? "[CLP]" : "     "),
-            (this->lckIndicator ? "[LCK]" : "[ULK]"));
+    if (this->lckIndicator)
+    {
+        sprintf(headerMessage, TXT_LOCKED_TERMINAL_HEADER_PROTOTYPE, this->getFreeRamBytes());
+    }
+    else
+    {
+        this->rtc.refresh();
+
+        sprintf(headerMessage, TXT_UNLOCKED_TERMINAL_HEADER_PROTOTYPE,
+                this->getFreeRamBytes(),
+                this->rtc.hour(),
+                this->rtc.minute(),
+                this->rtc.second(),
+                this->rtc.year(),
+                this->rtc.month(),
+                this->rtc.day(),
+                this->keyFingerprint,
+                (this->clpIndicator ? "[CLP]" : "     "));
+    }
 
     VT100.setCursor(TERMINAL_HEADER_LINE, 1);
     VT100.setBackgroundColor(TERMINAL_STATUS_LINE_BACKGROUND_COLOR);
@@ -388,17 +412,28 @@ void Terminal::printHeader()
 }
 
 void Terminal::initProgress(char *message)
-{    
-    this->print(message, TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 6, 5); 
+{
+    this->print(message, TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 6, 5);
     VT100.clearLineAfter();
 }
 
 void Terminal::showProgress(byte progressPercentile)
 {
-    SafeBuffer progressMessage = SafeBuffer(20);
-    sprintf(progressMessage.getBuffer(), "Done: %d%%", progressPercentile);
-    this->print(progressMessage.getBuffer(), TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 5, 5);
-    
+    static byte lastProgress = 0;
+
+    if (lastProgress == progressPercentile)
+    {
+        return;
+    }
+
+    lastProgress = progressPercentile;
+
+    char progressMessage[TERMINAL_WIDTH];
+
+    sprintf(progressMessage, TXT_PROGRESS_PROTOTYPE, progressPercentile);
+
+    this->print(progressMessage, TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 5, 5);
+
     this->resetInactivityTimer();
 }
 

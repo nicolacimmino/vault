@@ -72,15 +72,7 @@ void VaultController::wipePassword()
 
     byte selectedIndex = this->terminal.waitKeySelection('a', 'a' + ENCRYPTED_STORE_MAX_ENTRIES);
 
-    this->terminal.print(VT_FOREGROUND_RED VT_TEXT_BLINK "WARNING! " VT_TEXT_DEFAULT VT_FOREGROUND_YELLOW "This will ERASE the password! Sure ? (y/n)", TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 1, 5);
-    byte key = this->terminal.waitKeySelection();
-
-    if (key == 'n' || key == TERMINAL_OPERATION_ABORTED)
-    {
-        selectedIndex = TERMINAL_OPERATION_ABORTED;
-    }
-
-    if (selectedIndex != TERMINAL_OPERATION_ABORTED)
+    if (this->terminal.askYesNoQuestion(TXT_WIPE_PASSWORD_CONFIRMATION, TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 1, 5))
     {
         this->encryptedStore.wipe(selectedIndex);
     }
@@ -184,21 +176,16 @@ void VaultController::fullWipe()
 {
     while (true)
     {
-        this->terminal.print(VT_FOREGROUND_RED VT_TEXT_BLINK "WARNING! " VT_TEXT_DEFAULT VT_FOREGROUND_YELLOW "This will ERASE ALL data! Sure ? (y/n)", TERMINAL_FIRST_CANVAS_LINE + 6, 5);
-        byte key = this->terminal.waitKeySelection();
-
-        if (key == 'n' || key == TERMINAL_OPERATION_ABORTED)
+        if (!this->terminal.askYesNoQuestion(TXT_WIPE_FULL_CONFIRMATION, TERMINAL_FIRST_CANVAS_LINE + 6, 5))
         {
             return;
         }
 
-        if (key == 'y')
-        {            
-            this->terminal.initProgress("Wiping storage.....");
-            this->encryptedStore.fullWipe(makeFunctor((Functor1<byte> *)0, this->terminal, &Terminal::showProgress));
-            this->resetTerminal();
-            return;
-        }
+        this->terminal.initProgress(TXT_WIPING);
+        this->encryptedStore.fullWipe(makeFunctor((Functor1<byte> *)0, this->terminal, &Terminal::showProgress));
+        this->resetTerminal();
+
+        return;
     }
 }
 
@@ -219,7 +206,7 @@ void VaultController::retrievePassword(byte action)
     {
         SafeBuffer *buffer = new SafeBuffer(TERMINAL_WIDTH);
 
-        this->terminal.readString("Enter tokens positions: ", buffer, 0, TERMINAL_FIRST_CANVAS_LINE + 4, TERMINAL_RIGHT_HALF_FIRST_COLUMN);
+        this->terminal.readString(TXT_ENTER_TOKENS_POS, buffer, 0, TERMINAL_FIRST_CANVAS_LINE + 4, TERMINAL_RIGHT_HALF_FIRST_COLUMN);
         this->encryptedStore.getTokens(selectedPasswordIndex, buffer->getBuffer(), clipboard);
 
         delete buffer;

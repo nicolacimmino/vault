@@ -15,4 +15,12 @@ const char *const messages[] PROGMEM = {message0};
 #define TXT_ENTER_MASTER_PASSWORD "Master password:"
 #define TXT_PASSWORD_MASK '*'
 
+#define TXT_WIPE_FULL_CONFIRMATION VT_FOREGROUND_RED VT_TEXT_BLINK "WARNING! " VT_TEXT_DEFAULT VT_FOREGROUND_YELLOW "This will ERASE ALL data! Sure ? (y/n)"
+#define TXT_WIPE_PASSWORD_CONFIRMATION VT_FOREGROUND_RED VT_TEXT_BLINK "WARNING! " VT_TEXT_DEFAULT VT_FOREGROUND_YELLOW "This will ERASE the password! Sure ? (y/n)"
+#define TXT_WIPING "Wiping storage....."
+#define TXT_ENTER_TOKENS_POS "Enter tokens positions: "
+#define TXT_PROGRESS_PROTOTYPE "Done: %d%%"
+#define TXT_UNLOCKED_TERMINAL_HEADER_PROTOTYPE " Vault V0.1 - %d bytes free   %02u:%02u:%02u %04u-%02u-%02u   KFP: %04u     %s [ULK]"
+#define TXT_LOCKED_TERMINAL_HEADER_PROTOTYPE " Vault V0.1 - %d bytes free                                             [LCK]"
+
 #endif
