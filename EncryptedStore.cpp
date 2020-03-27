@@ -29,18 +29,6 @@ void EncryptedStore::wipe(byte index)
     }
 }
 
-void EncryptedStore::fullWipe(const Functor1<byte> &progress)
-{
-    for (uint16_t address = STORAGE_BASE; address < STORAGE_SIZE; address++)
-    {
-        progress((byte)floor((100.0 * (float)(address - STORAGE_BASE)) / STORAGE_SIZE));
-
-        this->storage.write(address, 0);
-    }
-
-    this->lock();
-}
-
 bool EncryptedStore::isPositionFree(byte index)
 {
     char label[ENCRYPTED_STORE_LABEL_SIZE];

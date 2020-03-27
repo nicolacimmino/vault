@@ -158,7 +158,7 @@ void VaultController::processOptionsSelection(byte action)
         return; // temporary, backup runs as a service, we don't want to fall through to the end and display a menu yet.
     case 1:
         this->fullWipe();
-        break;
+        return; // temporary, backup runs as a service, we don't want to fall through to the end and display a menu yet.        
     case 2:
         this->setTime();
         break;
@@ -178,14 +178,20 @@ void VaultController::fullWipe()
     {
         if (!this->terminal.askYesNoQuestion(TXT_WIPE_FULL_CONFIRMATION, TERMINAL_FIRST_CANVAS_LINE + 6, 5))
         {
-            return;
+            this->displayPasswordSelectionMenu();
+
+            break;
         }
 
         this->terminal.initProgress(TXT_WIPING);
-        this->encryptedStore.fullWipe(makeFunctor((Functor1<byte> *)0, this->terminal, &Terminal::showProgress));
-        this->resetTerminal();
 
-        return;
+        this->runningService = new FullWipeService(
+            makeFunctor((Functor1<byte> *)0, this->terminal, &Terminal::showProgress),
+            makeFunctor((Functor1<byte> *)0, *this, &VaultController::fullWipeDone));
+
+        this->runningService->start();
+
+        break;
     }
 }
 
@@ -196,7 +202,7 @@ void VaultController::setTime()
 void VaultController::retrievePassword(byte action)
 {
     action -= TERMINAL_SECOND_LEVEL_MENU_FIRST_POSITION;
-    
+
     switch (action)
     {
     case 0:
@@ -307,6 +313,11 @@ void VaultController::backup()
 void VaultController::backupDone(byte arg)
 {
     this->displayPasswordSelectionMenu();
+}
+
+void VaultController::fullWipeDone(byte arg)
+{
+    this->resetTerminal();
 }
 
 void VaultController::loop()

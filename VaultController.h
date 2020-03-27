@@ -12,6 +12,7 @@
 #include "Storage.h"
 #include "Service.h"
 #include "BackupService.h"
+#include "FullWipeService.h"
 
 class VaultController
 {
@@ -31,6 +32,7 @@ private:
     void processOptionsSelection(byte action);
     void setLedStatus(bool green, bool yellow, bool red);
     void setTime();
+    void backup();
     void fullWipe(); 
     Service *runningService = NULL;   
 
@@ -42,9 +44,9 @@ public:
     void wipePassword();
     void selectPassword(byte index);
     void retrievePassword(byte action);
-    void resetTerminal();    
-    void backup();
+    void resetTerminal();        
     void backupDone(byte arg);    
+    void fullWipeDone(byte arg);
 };
 
 #endif

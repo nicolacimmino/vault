@@ -48,8 +48,7 @@ public:
     void set(byte index, SafeBuffer *plainText, SafeBuffer *label);
     void wipe(byte index);
     bool isLocked();    
-    int getKeyFingerprint();
-    void fullWipe(const Functor1<byte> &progress);
+    int getKeyFingerprint();    
 };
 
 #endif
