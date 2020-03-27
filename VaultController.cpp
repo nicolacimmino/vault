@@ -132,13 +132,13 @@ void VaultController::displayPasswordSelectionMenu()
     this->terminal.addHotkey('a', makeFunctor((Functor0 *)0, *this, &VaultController::addPassword));
     this->terminal.addHotkey('w', makeFunctor((Functor0 *)0, *this, &VaultController::wipePassword));
     this->terminal.addHotkey('l', makeFunctor((Functor0 *)0, *this, &VaultController::lockEnctryptedStore));
-    this->terminal.addHotkey('o', makeFunctor((Functor0 *)0, *this, &VaultController::showOptionsScreen));
+    this->terminal.addHotkey('o', makeFunctor((Functor0 *)0, *this, &VaultController::displayOptionsMenu));
     this->terminal.printStatusMessage(" ALT+A Add  |  ALT+W Wipe Password  |  ALT+L Lock  |  ALT+O Options");
 
     this->terminal.setMenuCallback(makeFunctor((Functor1<byte> *)0, *this, &VaultController::selectPassword));
 }
 
-void VaultController::showOptionsScreen()
+void VaultController::displayOptionsMenu()
 {
     this->terminal.clearCanvas();
     this->terminal.printMenuEntry(0, "Backup");
@@ -155,10 +155,10 @@ void VaultController::processOptionsSelection(byte action)
     {
     case 0:
         this->backup();
-        return; // temporary, backup runs as a service, we don't want to fall through to the end and display a menu yet.
+        break;
     case 1:
         this->fullWipe();
-        return; // temporary, backup runs as a service, we don't want to fall through to the end and display a menu yet.        
+        break;
     case 2:
         this->setTime();
         break;
@@ -168,31 +168,25 @@ void VaultController::processOptionsSelection(byte action)
     default:
         return;
     }
-
-    this->displayPasswordSelectionMenu();
 }
 
 void VaultController::fullWipe()
 {
-    while (true)
+
+    if (!this->terminal.askYesNoQuestion(TXT_WIPE_FULL_CONFIRMATION, TERMINAL_FIRST_CANVAS_LINE + 6, 5))
     {
-        if (!this->terminal.askYesNoQuestion(TXT_WIPE_FULL_CONFIRMATION, TERMINAL_FIRST_CANVAS_LINE + 6, 5))
-        {
-            this->displayPasswordSelectionMenu();
+        this->displayOptionsMenu();
 
-            break;
-        }
-
-        this->terminal.initProgress(TXT_WIPING);
-
-        this->runningService = new FullWipeService(
-            makeFunctor((Functor1<byte> *)0, this->terminal, &Terminal::showProgress),
-            makeFunctor((Functor1<byte> *)0, *this, &VaultController::fullWipeDone));
-
-        this->runningService->start();
-
-        break;
+        return;
     }
+
+    this->terminal.initProgress(TXT_WIPING);
+
+    this->runningService = new FullWipeService(
+        makeFunctor((Functor1<byte> *)0, this->terminal, &Terminal::showProgress),
+        makeFunctor((Functor1<byte> *)0, *this, &VaultController::fullWipeDone));
+
+    this->runningService->start();    
 }
 
 void VaultController::setTime()
@@ -344,9 +338,7 @@ void VaultController::loop()
         this->unlockEncryptedStore();
         this->displayPasswordSelectionMenu();
         this->terminal.setKeyFingerprint(encryptedStore.getKeyFingerprint());
-        this->notificationController.setStoreLocked(false);
-
-        return;
+        this->notificationController.setStoreLocked(false);     
     }
 
     this->notificationController.setClipboardArmed(this->clipboard->strlen() > 0);

@@ -28,7 +28,7 @@ private:
     void lockEnctryptedStore();
     void displayPasswordSelectionMenu();
     void displayPasswordActionMenu();
-    void showOptionsScreen();
+    void displayOptionsMenu();
     void processOptionsSelection(byte action);
     void setLedStatus(bool green, bool yellow, bool red);
     void setTime();
