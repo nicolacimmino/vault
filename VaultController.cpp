@@ -3,16 +3,10 @@
 
 VaultController::VaultController()
 {
-    this->clipboard = new SafeBuffer(ENCRYPTED_STORE_DATA_SIZE);
     this->terminal = new Terminal();
-    this->encryptedStore = new EncryptedStore();    
+    this->encryptedStore = new EncryptedStore();
     this->notificationController = new NotificationController();
     this->storage = new Storage();
-}
-
-VaultController::~VaultController()
-{
-    delete this->clipboard;   
 }
 
 /**
@@ -90,7 +84,6 @@ void VaultController::wipePassword()
 void VaultController::lockEnctryptedStore()
 {
     this->encryptedStore->lock();
-    this->clipboard->wipe();
 
     this->notificationController->setStoreLocked(true);
 }
@@ -199,14 +192,20 @@ void VaultController::retrievePassword(byte action)
 {
     action -= TERMINAL_SECOND_LEVEL_MENU_FIRST_POSITION;
 
-    switch (action)
+    if (action != 0 && action != 1)
     {
-    case 0:
+        this->displayPasswordSelectionMenu();
+        return;
+    }
+
+    SafeBuffer *clipboard = new SafeBuffer(ENCRYPTED_STORE_DATA_SIZE);
+
+    if (action == 0)
     {
         this->encryptedStore->get(selectedPasswordIndex, clipboard);
-        break;
     }
-    case 1:
+
+    if (action == 1)
     {
         SafeBuffer *buffer = new SafeBuffer(TERMINAL_WIDTH);
 
@@ -214,15 +213,6 @@ void VaultController::retrievePassword(byte action)
         this->encryptedStore->getTokens(selectedPasswordIndex, buffer->getBuffer(), clipboard);
 
         delete buffer;
-        break;
-    }
-    case 2:
-    {
-        this->displayPasswordSelectionMenu();
-        return;
-    }
-    default:
-        return;
     }
 
 #ifdef OPTION_BELLS_AND_WHISTLES
@@ -236,17 +226,19 @@ void VaultController::retrievePassword(byte action)
     {
         if (digitalRead(BUTTON_SENSE) == LOW)
         {
-            for (byte ix = 0; ix < this->clipboard->strlen(); ix++)
+            for (byte ix = 0; ix < clipboard->strlen(); ix++)
             {
-                Keyboard.print(this->clipboard->getBuffer()[ix]);
+                Keyboard.print(clipboard->getBuffer()[ix]);
                 delay(300);
             }
 
-            this->clipboard->wipe();
+            clipboard->wipe();
         }
 
         loop();
     }
+
+    delete clipboard;
 
     this->displayPasswordSelectionMenu();
 }
@@ -304,7 +296,7 @@ void VaultController::loop()
         }
     }
 
-    this->terminal->setClpIndicator(this->clipboard->strlen() > 0);
+    //this->terminal->setClpIndicator(this->clipboard->strlen() > 0);
     this->terminal->setLclIndicator(encryptedStore->isLocked());
 
     if (encryptedStore->isLocked())
@@ -318,7 +310,7 @@ void VaultController::loop()
         this->notificationController->setStoreLocked(false);
     }
 
-    this->notificationController->setClipboardArmed(this->clipboard->strlen() > 0);
+    //this->notificationController->setClipboardArmed(this->clipboard->strlen() > 0);
 
     this->terminal->loop();
 }

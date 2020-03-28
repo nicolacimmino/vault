@@ -20,12 +20,10 @@ class VaultController
 private:
     Terminal *terminal;
     EncryptedStore *encryptedStore;
-    SafeBuffer *clipboard;
     NotificationController *notificationController;
     Storage *storage;
 
     byte selectedPasswordIndex;
-    
 
     void unlockEncryptedStore();
     void lockEnctryptedStore();
@@ -36,18 +34,17 @@ private:
     void setLedStatus(bool green, bool yellow, bool red);
     void setTime();
     void backup();
-    void fullWipe(); 
-    Service *runningService = NULL;   
+    void fullWipe();
+    Service *runningService = NULL;
 
 public:
     VaultController();
-    ~VaultController();
-    void loop();    
+    void loop();
     void addPassword();
     void wipePassword();
     void selectPassword(byte index);
     void retrievePassword(byte action);
-    void resetTerminal();            
+    void resetTerminal();
 };
 
 #endif
