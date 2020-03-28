@@ -36,9 +36,10 @@ private:
     uint16_t getEncryptedEntryAddress(byte index);
     void safeStringCopy(char *destination, char *source, byte destinationSize);
     bool locked = true;
-    Storage storage;
+    Storage *storage;
 
 public:
+    EncryptedStore(Storage *storage);
     void unlock(SafeBuffer *masterPassword);
     void lock();
     bool isPositionFree(byte index);

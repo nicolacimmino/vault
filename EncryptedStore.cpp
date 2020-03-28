@@ -1,5 +1,10 @@
 #include "EncryptedStore.h"
 
+EncryptedStore::EncryptedStore(Storage *storage)
+{
+    this->storage = storage;
+}
+
 void EncryptedStore::unlock(SafeBuffer *masterPassword)
 {
     Sha256Class sha256;
@@ -25,7 +30,7 @@ void EncryptedStore::wipe(byte index)
 {
     for (byte ix = 0; ix < sizeof(EncryptedEntry); ix++)
     {
-        this->storage.write(this->getEncryptedEntryAddress(index) + ix, 0);
+        this->storage->write(this->getEncryptedEntryAddress(index) + ix, 0);
     }
 }
 

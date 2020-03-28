@@ -4,9 +4,9 @@
 VaultController::VaultController()
 {
     this->terminal = new Terminal();
-    this->encryptedStore = new EncryptedStore();
-    this->notificationController = new NotificationController();
     this->storage = new Storage();
+    this->encryptedStore = new EncryptedStore(this->storage);
+    this->notificationController = new NotificationController();
 }
 
 /**
