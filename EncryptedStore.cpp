@@ -84,7 +84,7 @@ void EncryptedStore::getTokens(byte index, char *tokensList, SafeBuffer *plainTe
 bool EncryptedStore::getLabel(byte index, char *label)
 {
     memset(label, 0, ENCRYPTED_STORE_LABEL_SIZE);
-    
+
     if (index > ENCRYPTED_STORE_MAX_ENTRIES)
     {
         return false;
@@ -124,10 +124,10 @@ void EncryptedStore::set(byte index, SafeBuffer *plainText, SafeBuffer *label)
 
     aes256CtrClean(ctx);
 
-    //memset(encryptedEntry, 0, sizeof(encryptedEntry));
+    memset(encryptedEntry, 0, sizeof(encryptedEntry));
+
     delete encryptedEntry;
-    delete ctx;
-    //memset(&ctx, 0, sizeof(ctx));
+    delete ctx;    
 }
 
 void EncryptedStore::safeStringCopy(char *destination, char *source, byte destinationSize)
