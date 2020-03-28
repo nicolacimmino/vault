@@ -37,9 +37,8 @@ void EncryptedStore::wipe(byte index)
 }
 
 bool EncryptedStore::isPositionFree(byte index)
-{
-    char label[ENCRYPTED_STORE_LABEL_SIZE];
-    return !this->getLabel(index, label);
+{    
+    return this->storage->read(this->getEncryptedEntryAddress(index)) == 0;
 }
 
 void EncryptedStore::get(byte index, SafeBuffer *plainText)
@@ -155,12 +154,16 @@ uint16_t EncryptedStore::getEncryptedEntryAddress(byte index)
 
 int EncryptedStore::getKeyFingerprint()
 {
-    CRC32 crc;
+    CRC32 *crc = new CRC32();
 
     for (byte ix = 0; ix < ENCRYPTED_STORE_KEY_SIZE / 4; ix++)
     {
-        crc.update(this->key[ix]);
+        crc->update(this->key[ix]);
     }
 
-    return crc.finalize() % 10000;
+    int fingerprint = crc->finalize() % 10000;
+
+    delete crc;
+
+    return fingerprint;
 }
