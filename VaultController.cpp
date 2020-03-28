@@ -176,9 +176,12 @@ void VaultController::fullWipe()
         &this->terminal,
         &this->storage,
         makeFunctor((Functor1<byte> *)0, this->terminal, &Terminal::showProgress),
-        makeFunctor((Functor1<byte> *)0, *this, &VaultController::fullWipeDone));
+        makeFunctor((Functor0 *)0, *this, &VaultController::resetTerminal));
 
-    this->runningService->start();
+    if (!this->runningService->start())
+    {
+        this->displayOptionsMenu();
+    }
 }
 
 void VaultController::setTime()
@@ -294,19 +297,9 @@ void VaultController::backup()
 
     this->runningService = new BackupService(
         makeFunctor((Functor1<byte> *)0, this->terminal, &Terminal::showProgress),
-        makeFunctor((Functor1<byte> *)0, *this, &VaultController::backupDone));
+        makeFunctor((Functor0 *)0, *this, &VaultController::displayPasswordSelectionMenu));
 
     this->runningService->start();
-}
-
-void VaultController::backupDone(byte arg)
-{
-    this->displayPasswordSelectionMenu();
-}
-
-void VaultController::fullWipeDone(byte arg)
-{
-    this->resetTerminal();
 }
 
 void VaultController::loop()

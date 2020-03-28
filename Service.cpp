@@ -1,6 +1,6 @@
 #include "Service.h"
 
-Service::Service(const Functor1<byte> &reportProgress, const Functor1<byte> &reportCompletion)
+Service::Service(const Functor1<byte> &reportProgress, const Functor0 &reportCompletion)
 {
     this->reportProgress = reportProgress;
     this->reportCompletion = reportCompletion;

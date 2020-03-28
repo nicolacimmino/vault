@@ -1,6 +1,6 @@
 #include "BackupService.h"
 
-BackupService::BackupService(const Functor1<byte> &reportProgress, const Functor1<byte> &reportCompletion)
+BackupService::BackupService(const Functor1<byte> &reportProgress, const Functor0 &reportCompletion)
     : Service(reportProgress, reportCompletion)
 {
     this->asciiPrint = new SafeBuffer(16);
@@ -63,6 +63,6 @@ void BackupService::loop()
     if (this->backupAddress >= (STORAGE_BASE + STORAGE_SIZE))
     {
         this->running = false;
-        this->reportCompletion(0);
+        this->reportCompletion();
     }
 }

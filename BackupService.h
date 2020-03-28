@@ -18,7 +18,7 @@ private:
     Storage storage;
 
 public:
-    BackupService(const Functor1<byte> &reportProgress, const Functor1<byte> &reportCompletion);
+    BackupService(const Functor1<byte> &reportProgress, const Functor0 &reportCompletion);
     ~BackupService();
     bool start();
     void loop();

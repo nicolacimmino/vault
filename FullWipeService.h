@@ -16,7 +16,7 @@ private:
     Terminal *terminal;
 
 public:
-    FullWipeService(Terminal *terminal, Storage *storage, const Functor1<byte> &reportProgress, const Functor1<byte> &reportCompletion);    
+    FullWipeService(Terminal *terminal, Storage *storage, const Functor1<byte> &reportProgress, const Functor0 &reportCompletion);    
     bool start();
     void loop();
 };

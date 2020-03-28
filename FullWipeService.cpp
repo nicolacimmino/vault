@@ -1,6 +1,6 @@
 #include "FullWipeService.h"
 
-FullWipeService::FullWipeService(Terminal *terminal, Storage *storage, const Functor1<byte> &reportProgress, const Functor1<byte> &reportCompletion)
+FullWipeService::FullWipeService(Terminal *terminal, Storage *storage, const Functor1<byte> &reportProgress, const Functor0 &reportCompletion)
     : Service(reportProgress, reportCompletion)
 {
     this->terminal = terminal;
@@ -11,7 +11,7 @@ FullWipeService::FullWipeService(Terminal *terminal, Storage *storage, const Fun
 bool FullWipeService::start()
 {
     if (!this->terminal->askYesNoQuestion(TXT_WIPE_FULL_CONFIRMATION, TERMINAL_FIRST_CANVAS_LINE + 6, 5))
-    {
+    {        
         return false;
     }
 
@@ -36,6 +36,6 @@ void FullWipeService::loop()
     if (this->address >= (STORAGE_BASE + STORAGE_SIZE))
     {
         this->running = false;
-        this->reportCompletion(0);
+        this->reportCompletion();
     }
 }
