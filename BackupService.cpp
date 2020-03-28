@@ -23,9 +23,8 @@ bool BackupService::start()
     }
 
 #ifdef OPTION_BELLS_AND_WHISTLES
-    // Just for a show
-    char* messages[] = {"Read storage", "Prepare backup", "Copy to clipboard"};
-    this->terminal->nixStyleAnimate(messages, 3, TERMINAL_FIRST_CANVAS_LINE, TERMINAL_RIGHT_HALF_FIRST_COLUMN, 30);
+    // Just for a show    
+    this->terminal->nixStyleAnimate("Read storage|Prepare backup|Copy to clipboard", TERMINAL_FIRST_CANVAS_LINE, TERMINAL_RIGHT_HALF_FIRST_COLUMN, 30);
 
 #endif
 

@@ -70,7 +70,7 @@ public:
     void printBanner();
     void printHeaderMessage(char *message);
     void printStatusMessage(char *message);
-    void nixStyleAnimate(char **messages, byte messagesCount, byte line, byte column, byte areaWidth);
+    void nixStyleAnimate(char *messages, byte line, byte column, byte areaWidth);
     void print(char *text, byte line = NULL, byte column = NULL);
     void printMenuEntry(byte position, char *text, char *selectorColor = VT_FOREGROUND_WHITE);    
     void highlightMenuEntry(byte position);

@@ -159,19 +159,23 @@ void Terminal::printStatusMessage(char *message)
     VT100.clearLineAfter();
 }
 
-void Terminal::nixStyleAnimate(char **messages, byte messagesCount, byte line, byte column, byte areaWidth)
-{
-    for (byte ix = 0; ix < messagesCount; ix++)
+void Terminal::nixStyleAnimate(char *messages, byte line, byte column, byte areaWidth)
+{        
+    char *message = strtok(messages, "|");
+    byte ix=0;
+    while (message != NULL)    
     {
         VT100.setTextColor(TERMINAL_FOREGROUND_COLOR);
-        this->print(messages[ix], line + ix, column);
+        this->print(message, line + ix, column);
         delay(600);
         char buffer[TERMINAL_WIDTH];
         memset(buffer, 0, TERMINAL_WIDTH);
-        memset(buffer, '.', areaWidth - strlen(messages[ix]) - strlen(TXT_TERMINAL_STATUS_COMPLETED));
+        memset(buffer, '.', areaWidth - strlen(message) - strlen(TXT_TERMINAL_STATUS_COMPLETED));
         strcat(buffer, TXT_TERMINAL_STATUS_COMPLETED);
         this->print(VT_FOREGROUND_GREEN);
         this->print(buffer);
+        message = strtok(NULL, "|");
+        ix++;
     }
 }
 

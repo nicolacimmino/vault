@@ -217,8 +217,7 @@ void VaultController::retrievePassword(byte action)
 
 #ifdef OPTION_BELLS_AND_WHISTLES
     // Just for a show, the decryption is already done.
-    char *messages[] = {"Fetch record", "Decrypt", "Copy to clipboard"};
-    this->terminal->nixStyleAnimate(messages, 3, TERMINAL_FIRST_CANVAS_LINE, TERMINAL_RIGHT_HALF_FIRST_COLUMN, 30);
+    this->terminal->nixStyleAnimate("Fetch record|Decrypt|Copy to clipboard",TERMINAL_FIRST_CANVAS_LINE, TERMINAL_RIGHT_HALF_FIRST_COLUMN, 30);
 #endif
     this->terminal->print("Ready. Press button to type.", TERMINAL_FIRST_CANVAS_LINE + 9, TERMINAL_RIGHT_HALF_FIRST_COLUMN);
 
