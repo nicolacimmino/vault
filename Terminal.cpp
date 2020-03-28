@@ -165,13 +165,8 @@ void Terminal::alert(char *message, bool warning = false)
 
     if (warning)
     {
-        char *warningMessage = new char[TERMINAL_WIDTH];
-
-        strcpy(warningMessage, TXT_WARNING);
-        VT100.setCursor(TERMINAL_FIRST_CANVAS_LINE + 2, (TERMINAL_WIDTH - strlen(warningMessage)) / 2);
-        this->stream->print(warningMessage);
-
-        delete warningMessage;
+        VT100.setCursor(TERMINAL_FIRST_CANVAS_LINE + 2, (TERMINAL_WIDTH - strlen(TXT_WARNING)) / 2);
+        this->stream->print(TXT_WARNING);     
     }
 
     VT100.setCursor(TERMINAL_FIRST_CANVAS_LINE + 3, (TERMINAL_WIDTH - strlen(message)) / 2);
