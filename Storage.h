@@ -14,13 +14,11 @@
 
 class Storage
 {
-private:
-    uEEPROMLib eeprom;
+private:    
     bool isInternalEEPROMAddress(uint16_t address);
     bool isExternalEEPROMAddress(uint16_t address);
 
-public:
-    Storage();
+public:    
     byte read(uint16_t address);
     void write(uint16_t address, byte value);
 };
