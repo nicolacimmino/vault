@@ -111,7 +111,7 @@ void VaultController::selectPassword(byte index)
  */
 void VaultController::displayPasswordSelectionMenu()
 {
-    char label[ENCRYPTED_STORE_LABEL_SIZE];
+    char *label = new char[ENCRYPTED_STORE_LABEL_SIZE];
 
     this->terminal->clearScreen();
 
@@ -133,6 +133,8 @@ void VaultController::displayPasswordSelectionMenu()
     this->terminal->printStatusMessage(" ALT+A Add  |  ALT+W Wipe Password  |  ALT+L Lock  |  ALT+O Options");
 
     this->terminal->setMenuCallback(makeFunctor((Functor1<byte> *)0, *this, &VaultController::selectPassword));
+
+    delete label;
 }
 
 void VaultController::displayOptionsMenu()

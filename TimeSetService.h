@@ -10,8 +10,7 @@
 class TimeSetService
 {
 private:
-    Terminal *terminal;
-    uRTCLib rtc;
+    Terminal *terminal;    
 
 protected:
 public:

@@ -83,22 +83,24 @@ void EncryptedStore::getTokens(byte index, char *tokensList, SafeBuffer *plainTe
 
 bool EncryptedStore::getLabel(byte index, char *label)
 {
+    memset(label, 0, ENCRYPTED_STORE_LABEL_SIZE);
+    
     if (index > ENCRYPTED_STORE_MAX_ENTRIES)
     {
         return false;
     }
 
-    EncryptedEntry encryptedEntry;
-    EEPROM.get(this->getEncryptedEntryAddress(index), encryptedEntry);
+    EncryptedEntry *encryptedEntry = new EncryptedEntry();
+    EEPROM.get(this->getEncryptedEntryAddress(index), *encryptedEntry);
 
-    if (strlen(encryptedEntry.label) == 0)
+    if (strlen(encryptedEntry->label) != 0)
     {
-        return false;
+        memcpy(label, encryptedEntry->label, ENCRYPTED_STORE_LABEL_SIZE);
     }
 
-    memcpy(label, encryptedEntry.label, ENCRYPTED_STORE_LABEL_SIZE);
+    delete encryptedEntry;
 
-    return true;
+    return strlen(label) != 0;
 }
 
 void EncryptedStore::set(byte index, SafeBuffer *plainText, SafeBuffer *label)
@@ -121,7 +123,7 @@ void EncryptedStore::set(byte index, SafeBuffer *plainText, SafeBuffer *label)
     EEPROM.put(this->getEncryptedEntryAddress(index), *encryptedEntry);
 
     aes256CtrClean(ctx);
-    
+
     //memset(encryptedEntry, 0, sizeof(encryptedEntry));
     delete encryptedEntry;
     delete ctx;

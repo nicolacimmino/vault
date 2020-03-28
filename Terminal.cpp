@@ -6,7 +6,6 @@ void Terminal::init(Stream *stream)
     this->stream = stream;
     VT100.begin(*stream);
     this->lastActiveTime = millis();
-    this->rtc = uRTCLib(0x68);
 }
 
 void Terminal::resetInactivityTimer()
@@ -160,10 +159,10 @@ void Terminal::printStatusMessage(char *message)
 }
 
 void Terminal::nixStyleAnimate(char *messages, byte line, byte column, byte areaWidth)
-{        
+{
     char *message = strtok(messages, "|");
-    byte ix=0;
-    while (message != NULL)    
+    byte ix = 0;
+    while (message != NULL)
     {
         VT100.setTextColor(TERMINAL_FOREGROUND_COLOR);
         this->print(message, line + ix, column);
@@ -366,18 +365,21 @@ void Terminal::printHeader()
     }
     else
     {
-        this->rtc.refresh();
+        uRTCLib *rtc = new uRTCLib(0x68);
+        rtc->refresh();
 
         sprintf(headerMessage, TXT_UNLOCKED_TERMINAL_HEADER_PROTOTYPE,
                 this->getFreeRamBytes(),
-                this->rtc.hour(),
-                this->rtc.minute(),
-                this->rtc.second(),
-                this->rtc.year(),
-                this->rtc.month(),
-                this->rtc.day(),
+                rtc->hour(),
+                rtc->minute(),
+                rtc->second(),
+                rtc->year(),
+                rtc->month(),
+                rtc->day(),
                 this->keyFingerprint,
                 (this->clpIndicator ? "[CLP]" : "     "));
+
+        delete rtc;
     }
 
     VT100.setCursor(TERMINAL_HEADER_LINE, 1);
