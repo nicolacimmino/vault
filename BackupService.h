@@ -20,7 +20,7 @@ private:
 public:
     BackupService(const Functor1<byte> &reportProgress, const Functor1<byte> &reportCompletion);
     ~BackupService();
-    void start();
+    bool start();
     void loop();
 };
 

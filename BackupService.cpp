@@ -13,11 +13,13 @@ BackupService::~BackupService()
     delete this->asciiPrint;
 }
 
-void BackupService::start()
+bool BackupService::start()
 {
     this->running = true;
 
     this->backupAddress = STORAGE_BASE;
+
+    return true;
 }
 
 void BackupService::loop()

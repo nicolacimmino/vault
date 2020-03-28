@@ -172,17 +172,9 @@ void VaultController::processOptionsSelection(byte action)
 
 void VaultController::fullWipe()
 {
-
-    if (!this->terminal.askYesNoQuestion(TXT_WIPE_FULL_CONFIRMATION, TERMINAL_FIRST_CANVAS_LINE + 6, 5))
-    {
-        this->displayOptionsMenu();
-
-        return;
-    }
-
-    this->terminal.initProgress(TXT_WIPING);
-
     this->runningService = new FullWipeService(
+        &this->terminal,
+        &this->storage,
         makeFunctor((Functor1<byte> *)0, this->terminal, &Terminal::showProgress),
         makeFunctor((Functor1<byte> *)0, *this, &VaultController::fullWipeDone));
 

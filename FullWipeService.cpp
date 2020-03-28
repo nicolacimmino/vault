@@ -1,14 +1,25 @@
 #include "FullWipeService.h"
 
-FullWipeService::FullWipeService(const Functor1<byte> &reportProgress, const Functor1<byte> &reportCompletion)
+FullWipeService::FullWipeService(Terminal *terminal, Storage *storage, const Functor1<byte> &reportProgress, const Functor1<byte> &reportCompletion)
     : Service(reportProgress, reportCompletion)
 {
+    this->terminal = terminal;
+    this->storage = storage;
     this->address = STORAGE_BASE;
 }
 
-void FullWipeService::start()
+bool FullWipeService::start()
 {
+    if (!this->terminal->askYesNoQuestion(TXT_WIPE_FULL_CONFIRMATION, TERMINAL_FIRST_CANVAS_LINE + 6, 5))
+    {
+        return false;
+    }
+
+    this->terminal->initProgress(TXT_WIPING);
+
     this->running = true;
+
+    return true;
 }
 
 void FullWipeService::loop()
@@ -17,7 +28,7 @@ void FullWipeService::loop()
 
     for (uint16_t addressOffset = 0; addressOffset < WIPE_ADDRESSES_PER_LOOP; addressOffset++)
     {
-        this->storage.write(this->address + addressOffset, 0);
+        this->storage->write(this->address + addressOffset, 0);
     }
 
     this->address += WIPE_ADDRESSES_PER_LOOP;
