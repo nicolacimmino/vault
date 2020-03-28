@@ -9,9 +9,13 @@ byte Storage::read(uint16_t address)
 
     if (this->isExternalEEPROMAddress(address))
     {
-        uEEPROMLib eeprom = uEEPROMLib(0x57);
+        uEEPROMLib *eeprom = new uEEPROMLib(0x57);
 
-        return eeprom.eeprom_read(address - STORAGE_EXTERNAL_EEPROM_BASE);
+        byte data = eeprom->eeprom_read(address - STORAGE_EXTERNAL_EEPROM_BASE);
+
+        delete eeprom;
+
+        return;
     }
 
     return 0xFF;
@@ -26,9 +30,11 @@ void Storage::write(uint16_t address, byte value)
 
     if (this->isExternalEEPROMAddress(address))
     {
-        uEEPROMLib eeprom = uEEPROMLib(0x57);
+        uEEPROMLib *eeprom = new uEEPROMLib(0x57);
 
-        eeprom.eeprom_write(address - STORAGE_EXTERNAL_EEPROM_BASE, value);
+        eeprom->eeprom_write(address - STORAGE_EXTERNAL_EEPROM_BASE, value);
+
+        delete eeprom;
     }
 }
 

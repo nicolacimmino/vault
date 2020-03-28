@@ -3,7 +3,7 @@
 
 SafeBuffer::SafeBuffer(byte size)
 {
-    this->buffer = malloc(size + 1);
+    this->buffer = new byte[size + 1];
     this->bufferSize = size;
 
     memset(this->buffer, 0, this->bufferSize + 1);
@@ -12,7 +12,7 @@ SafeBuffer::SafeBuffer(byte size)
 SafeBuffer::~SafeBuffer()
 {
     this->wipe();
-    free(this->buffer);
+    delete this->buffer;
 }
 
 byte SafeBuffer::getBufferSize()
