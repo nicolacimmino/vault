@@ -1,8 +1,10 @@
 #include "BackupService.h"
 
-BackupService::BackupService(const Functor1<byte> &reportProgress, const Functor0 &reportCompletion)
+BackupService::BackupService(Terminal *terminal, Storage *storage, const Functor1<byte> &reportProgress, const Functor0 &reportCompletion)
     : Service(reportProgress, reportCompletion)
 {
+    this->terminal = terminal;
+    this->storage = storage;
     this->asciiPrint = new SafeBuffer(16);
     this->addressBuffer = new SafeBuffer(5);
 }
@@ -15,8 +17,23 @@ BackupService::~BackupService()
 
 bool BackupService::start()
 {
-    this->running = true;
 
+#ifdef OPTION_BELLS_AND_WHISTLES
+    // Just for a show
+    this->terminal->printStatusProgress("Read storage", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE, TERMINAL_RIGHT_HALF_FIRST_COLUMN, 30);
+    this->terminal->printStatusProgress("Prepare backup", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 1, TERMINAL_RIGHT_HALF_FIRST_COLUMN, 30);
+    this->terminal->printStatusProgress("Copy to clipboard", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 2, TERMINAL_RIGHT_HALF_FIRST_COLUMN, 30);
+#endif
+    this->terminal->print("Ready. Press button to type.", TERMINAL_FIRST_CANVAS_LINE + 3, TERMINAL_RIGHT_HALF_FIRST_COLUMN);
+
+    while (digitalRead(BUTTON_SENSE) == HIGH)
+    {
+        this->loop();
+    }
+
+    this->terminal->initProgress("Backup in progress.....");
+
+    this->running = true;
     this->backupAddress = STORAGE_BASE;
 
     return true;
@@ -35,7 +52,7 @@ void BackupService::loop()
             break;
         }
 
-        byte value = this->storage.read(actualBackupAddress);
+        byte value = this->storage->read(actualBackupAddress);
 
         if (addressOffset % BAKCUP_ADDRESSES_PER_LINE == 0)
         {

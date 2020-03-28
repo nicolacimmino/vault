@@ -15,10 +15,11 @@ private:
     SafeBuffer *asciiPrint;
     SafeBuffer *addressBuffer;
     uint16_t backupAddress;
-    Storage storage;
+    Storage *storage;
+    Terminal *terminal;
 
 public:
-    BackupService(const Functor1<byte> &reportProgress, const Functor0 &reportCompletion);
+    BackupService(Terminal *terminal, Storage *storage, const Functor1<byte> &reportProgress, const Functor0 &reportCompletion);
     ~BackupService();
     bool start();
     void loop();

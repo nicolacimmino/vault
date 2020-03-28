@@ -276,30 +276,15 @@ void VaultController::resetTerminal()
 
 void VaultController::backup()
 {
-#ifdef OPTION_BELLS_AND_WHISTLES
-    // Just for a show
-    this->terminal.printStatusProgress("Read storage", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE, TERMINAL_RIGHT_HALF_FIRST_COLUMN, 30);
-    this->terminal.printStatusProgress("Prepare backup", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 1, TERMINAL_RIGHT_HALF_FIRST_COLUMN, 30);
-    this->terminal.printStatusProgress("Copy to clipboard", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 2, TERMINAL_RIGHT_HALF_FIRST_COLUMN, 30);
-#endif
-    this->terminal.print("Ready. Press button to type.", TERMINAL_FIRST_CANVAS_LINE + 3, TERMINAL_RIGHT_HALF_FIRST_COLUMN);
-
-    this->notificationController.setClipboardArmed(true);
-
-    while (digitalRead(BUTTON_SENSE) == HIGH)
-    {
-        this->loop();
-    }
-
-    this->notificationController.setClipboardBusy(true);
-
-    this->terminal.initProgress("Backup in progress.....");
-
     this->runningService = new BackupService(
+        &this->terminal,
+        &this->storage,
         makeFunctor((Functor1<byte> *)0, this->terminal, &Terminal::showProgress),
         makeFunctor((Functor0 *)0, *this, &VaultController::displayPasswordSelectionMenu));
 
-    this->runningService->start();
+    if(!this->runningService->start()) {
+        this->displayOptionsMenu();
+    }
 }
 
 void VaultController::loop()
