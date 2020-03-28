@@ -11,7 +11,7 @@ FullWipeService::FullWipeService(Terminal *terminal, Storage *storage, const Fun
 bool FullWipeService::start()
 {
     if (!this->terminal->askYesNoQuestion(TXT_WIPE_FULL_CONFIRMATION, TERMINAL_FIRST_CANVAS_LINE + 6, 5))
-    {        
+    {
         return false;
     }
 
@@ -24,7 +24,7 @@ bool FullWipeService::start()
 
 void FullWipeService::loop()
 {
-    this->reportProgress((byte)floor(100.0 * (((float)this->address - STORAGE_BASE) / STORAGE_SIZE)));
+    this->reportProgress(((unsigned long)(this->address - STORAGE_BASE) * 100) / STORAGE_SIZE);
 
     for (uint16_t addressOffset = 0; addressOffset < WIPE_ADDRESSES_PER_LOOP; addressOffset++)
     {

@@ -24,10 +24,11 @@ bool BackupService::start()
 
 #ifdef OPTION_BELLS_AND_WHISTLES
     // Just for a show
-    this->terminal->printStatusProgress("Read storage", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE, TERMINAL_RIGHT_HALF_FIRST_COLUMN, 30);
-    this->terminal->printStatusProgress("Prepare backup", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 1, TERMINAL_RIGHT_HALF_FIRST_COLUMN, 30);
-    this->terminal->printStatusProgress("Copy to clipboard", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 2, TERMINAL_RIGHT_HALF_FIRST_COLUMN, 30);
+    char* messages[] = {"Read storage", "Prepare backup", "Copy to clipboard"};
+    this->terminal->nixStyleAnimate(messages, 3, TERMINAL_FIRST_CANVAS_LINE, TERMINAL_RIGHT_HALF_FIRST_COLUMN, 30);
+
 #endif
+
     this->terminal->print("Ready. Press button to type.", TERMINAL_FIRST_CANVAS_LINE + 3, TERMINAL_RIGHT_HALF_FIRST_COLUMN);
 
     this->running = true;
@@ -49,8 +50,8 @@ void BackupService::loop()
         this->backupStarted = true;
     }
 
-    this->reportProgress((byte)floor(100.0 * (((float)this->backupAddress - STORAGE_BASE) / STORAGE_SIZE)));
-
+    this->reportProgress(((unsigned long)(this->backupAddress - STORAGE_BASE) * 100) / STORAGE_SIZE);
+    
     for (uint16_t addressOffset = 0; addressOffset < BAKCUP_ADDRESSES_PER_LINE * BACKUP_LINES_PER_LOOP; addressOffset++)
     {
         uint16_t actualBackupAddress = this->backupAddress + addressOffset;

@@ -13,17 +13,19 @@
 #include "Service.h"
 #include "BackupService.h"
 #include "FullWipeService.h"
-#include "TimeSetSyncService.h"
+#include "TimeSetService.h"
 
 class VaultController
 {
 private:
-    Terminal terminal;
-    EncryptedStore encryptedStore;
+    Terminal *terminal;
+    EncryptedStore *encryptedStore;
     SafeBuffer *clipboard;
-    NotificationController notificationController;
+    NotificationController *notificationController;
+    Storage *storage;
+
     byte selectedPasswordIndex;
-    Storage storage;
+    
 
     void unlockEncryptedStore();
     void lockEnctryptedStore();

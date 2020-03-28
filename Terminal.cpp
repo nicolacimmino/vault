@@ -159,17 +159,20 @@ void Terminal::printStatusMessage(char *message)
     VT100.clearLineAfter();
 }
 
-void Terminal::printStatusProgress(char *message, uint32_t delaymS, byte *completedMessage, byte line, byte column, byte areaWidth)
+void Terminal::nixStyleAnimate(char **messages, byte messagesCount, byte line, byte column, byte areaWidth)
 {
-    VT100.setTextColor(TERMINAL_FOREGROUND_COLOR);
-    this->print(message, line, column);
-    delay(delaymS);
-    char buffer[TERMINAL_WIDTH];
-    memset(buffer, 0, TERMINAL_WIDTH);
-    memset(buffer, '.', areaWidth - strlen(message) - strlen(completedMessage));
-    strcat(buffer, completedMessage);
-    this->print(VT_FOREGROUND_GREEN);
-    this->print(buffer);
+    for (byte ix = 0; ix < messagesCount; ix++)
+    {
+        VT100.setTextColor(TERMINAL_FOREGROUND_COLOR);
+        this->print(messages[ix], line + ix, column);
+        delay(600);
+        char buffer[TERMINAL_WIDTH];
+        memset(buffer, 0, TERMINAL_WIDTH);
+        memset(buffer, '.', areaWidth - strlen(messages[ix]) - strlen(TXT_TERMINAL_STATUS_COMPLETED));
+        strcat(buffer, TXT_TERMINAL_STATUS_COMPLETED);
+        this->print(VT_FOREGROUND_GREEN);
+        this->print(buffer);
+    }
 }
 
 void Terminal::print(char *text, byte line = NULL, byte column = NULL)
@@ -408,15 +411,6 @@ void Terminal::showProgress(byte progressPercentile)
     this->print(progressMessage, TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 5, 5);
 
     this->resetInactivityTimer();
-}
-
-void Terminal::printBufferHex(byte *buffer, byte bufferSize)
-{
-    for (byte ix = 0; ix < bufferSize; ix++)
-    {
-        this->stream->print(buffer[ix], HEX);
-        this->stream->print(":");
-    }
 }
 
 /**

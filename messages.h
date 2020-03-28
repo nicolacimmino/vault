@@ -25,5 +25,6 @@ const char *const messages[] PROGMEM = {message0};
 #define TXT_ENTER_DATE "Enter Date/Time (yyyy-mm-dd hh:mm): "
 #define TXT_BACKUP_FULL_CONFIRMATION "Start full backup? (y/n)"
 #define TXT_BACKUP_IN_PROGRESS "Backup in progress....."
+#define TXT_TERMINAL_STATUS_COMPLETED "[OK]"
 
 #endif

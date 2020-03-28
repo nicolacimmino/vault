@@ -7,7 +7,7 @@
 #include <uRTCLib.h>
 #include "Terminal.h"
 
-class TimeSetSyncService
+class TimeSetService
 {
 private:
     Terminal *terminal;
@@ -15,8 +15,8 @@ private:
 
 protected:
 public:
-    TimeSetSyncService(Terminal *terminal);
-    void execute();
+    TimeSetService(Terminal *terminal);
+    bool start();
 };
 
 #endif

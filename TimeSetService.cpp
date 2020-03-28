@@ -1,12 +1,12 @@
-#include "TimeSetSyncService.h"
+#include "TimeSetService.h"
 
-TimeSetSyncService::TimeSetSyncService(Terminal *terminal)
+TimeSetService::TimeSetService(Terminal *terminal)
 {
     this->terminal = terminal;
     this->rtc = uRTCLib(0x68);
 }
 
-void TimeSetSyncService::execute()
+bool TimeSetService::start()
 {
     char buffer[TERMINAL_WIDTH];
     uint16_t year, month, day, hour, minute;
@@ -17,4 +17,6 @@ void TimeSetSyncService::execute()
     {
         this->rtc.set(0, minute, hour, 0, day, month, year % 100);
     }
+
+    return false;
 }

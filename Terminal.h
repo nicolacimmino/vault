@@ -70,10 +70,9 @@ public:
     void printBanner();
     void printHeaderMessage(char *message);
     void printStatusMessage(char *message);
-    void printStatusProgress(char *message, uint32_t delaymS, byte *completedMessage, byte line, byte column, byte areaWidth);
+    void nixStyleAnimate(char **messages, byte messagesCount, byte line, byte column, byte areaWidth);
     void print(char *text, byte line = NULL, byte column = NULL);
-    void printMenuEntry(byte position, char *text, char *selectorColor = VT_FOREGROUND_WHITE);
-    void printBufferHex(byte *buffer, byte bufferSize);
+    void printMenuEntry(byte position, char *text, char *selectorColor = VT_FOREGROUND_WHITE);    
     void highlightMenuEntry(byte position);
     bool readString(char *prompt, char *string, byte stringMaxSize, char mask = 0, byte line = NULL, byte column = NULL);
     bool readString(char *prompt, SafeBuffer *string, char mask = 0, byte line = NULL, byte column = NULL);

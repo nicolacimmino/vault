@@ -4,11 +4,15 @@
 VaultController::VaultController()
 {
     this->clipboard = new SafeBuffer(ENCRYPTED_STORE_DATA_SIZE);
+    this->terminal = new Terminal();
+    this->encryptedStore = new EncryptedStore();    
+    this->notificationController = new NotificationController();
+    this->storage = new Storage();
 }
 
 VaultController::~VaultController()
 {
-    delete this->clipboard;
+    delete this->clipboard;   
 }
 
 /**
@@ -20,11 +24,11 @@ void VaultController::unlockEncryptedStore()
 {
     SafeBuffer *masterPassword = new SafeBuffer(ENCRYPTED_STORE_MASTER_PASSWORD_MAX_SIZE);
 
-    if (this->terminal.readString(TXT_ENTER_MASTER_PASSWORD, masterPassword, TXT_PASSWORD_MASK, TERMINAL_FIRST_CANVAS_LINE + 2, 2))
+    if (this->terminal->readString(TXT_ENTER_MASTER_PASSWORD, masterPassword, TXT_PASSWORD_MASK, TERMINAL_FIRST_CANVAS_LINE + 2, 2))
     {
-        this->encryptedStore.unlock(masterPassword);
+        this->encryptedStore->unlock(masterPassword);
 
-        this->notificationController.setStoreLocked(false);
+        this->notificationController->setStoreLocked(false);
     }
 
     delete masterPassword;
@@ -37,22 +41,22 @@ void VaultController::unlockEncryptedStore()
  */
 void VaultController::addPassword()
 {
-    this->terminal.print("Select position: ", TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 1, 2);
+    this->terminal->print("Select position: ", TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 1, 2);
 
-    byte selectedIndex = this->terminal.waitKeySelection('a', 'a' + ENCRYPTED_STORE_MAX_ENTRIES);
+    byte selectedIndex = this->terminal->waitKeySelection('a', 'a' + ENCRYPTED_STORE_MAX_ENTRIES);
 
     if (selectedIndex != TERMINAL_OPERATION_ABORTED)
     {
-        this->terminal.clearCanvas();
+        this->terminal->clearCanvas();
 
         SafeBuffer *label = new SafeBuffer(ENCRYPTED_STORE_LABEL_SIZE);
         SafeBuffer *password = new SafeBuffer(ENCRYPTED_STORE_DATA_SIZE);
 
-        this->terminal.readString("Enter label: ", label, 0, TERMINAL_FIRST_CANVAS_LINE + 2, 2);
-        this->terminal.readString("Enter password: ", password, '*', TERMINAL_FIRST_CANVAS_LINE + 3, 2);
+        this->terminal->readString("Enter label: ", label, 0, TERMINAL_FIRST_CANVAS_LINE + 2, 2);
+        this->terminal->readString("Enter password: ", password, '*', TERMINAL_FIRST_CANVAS_LINE + 3, 2);
 
-        this->terminal.printStatusMessage(" Enctrypting......");
-        this->encryptedStore.set(selectedIndex, password, label);
+        this->terminal->printStatusMessage(" Enctrypting......");
+        this->encryptedStore->set(selectedIndex, password, label);
 
         delete label;
         delete password;
@@ -68,13 +72,13 @@ void VaultController::addPassword()
  */
 void VaultController::wipePassword()
 {
-    this->terminal.print("Select position to wipe: ", TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 1, 5);
+    this->terminal->print("Select position to wipe: ", TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 1, 5);
 
-    byte selectedIndex = this->terminal.waitKeySelection('a', 'a' + ENCRYPTED_STORE_MAX_ENTRIES);
+    byte selectedIndex = this->terminal->waitKeySelection('a', 'a' + ENCRYPTED_STORE_MAX_ENTRIES);
 
-    if (this->terminal.askYesNoQuestion(TXT_WIPE_PASSWORD_CONFIRMATION, TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 1, 5))
+    if (this->terminal->askYesNoQuestion(TXT_WIPE_PASSWORD_CONFIRMATION, TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 1, 5))
     {
-        this->encryptedStore.wipe(selectedIndex);
+        this->encryptedStore->wipe(selectedIndex);
     }
 
     this->displayPasswordSelectionMenu();
@@ -85,10 +89,10 @@ void VaultController::wipePassword()
  */
 void VaultController::lockEnctryptedStore()
 {
-    this->encryptedStore.lock();
+    this->encryptedStore->lock();
     this->clipboard->wipe();
 
-    this->notificationController.setStoreLocked(true);
+    this->notificationController->setStoreLocked(true);
 }
 
 /**
@@ -98,7 +102,7 @@ void VaultController::selectPassword(byte index)
 {
     char label[ENCRYPTED_STORE_LABEL_SIZE];
 
-    if (index >= ENCRYPTED_STORE_MAX_ENTRIES || this->encryptedStore.isPositionFree(index))
+    if (index >= ENCRYPTED_STORE_MAX_ENTRIES || this->encryptedStore->isPositionFree(index))
     {
         this->displayPasswordSelectionMenu();
         return;
@@ -116,37 +120,37 @@ void VaultController::displayPasswordSelectionMenu()
 {
     char label[ENCRYPTED_STORE_LABEL_SIZE];
 
-    this->terminal.clearScreen();
+    this->terminal->clearScreen();
 
     for (byte menuPosition = 0; menuPosition < ENCRYPTED_STORE_MAX_ENTRIES; menuPosition++)
     {
-        if (!this->encryptedStore.getLabel(menuPosition, label))
+        if (!this->encryptedStore->getLabel(menuPosition, label))
         {
             strcpy(label, "---");
         }
 
-        this->terminal.printMenuEntry(menuPosition, label);
+        this->terminal->printMenuEntry(menuPosition, label);
     }
 
-    this->terminal.clearHotkeys();
-    this->terminal.addHotkey('a', makeFunctor((Functor0 *)0, *this, &VaultController::addPassword));
-    this->terminal.addHotkey('w', makeFunctor((Functor0 *)0, *this, &VaultController::wipePassword));
-    this->terminal.addHotkey('l', makeFunctor((Functor0 *)0, *this, &VaultController::lockEnctryptedStore));
-    this->terminal.addHotkey('o', makeFunctor((Functor0 *)0, *this, &VaultController::displayOptionsMenu));
-    this->terminal.printStatusMessage(" ALT+A Add  |  ALT+W Wipe Password  |  ALT+L Lock  |  ALT+O Options");
+    this->terminal->clearHotkeys();
+    this->terminal->addHotkey('a', makeFunctor((Functor0 *)0, *this, &VaultController::addPassword));
+    this->terminal->addHotkey('w', makeFunctor((Functor0 *)0, *this, &VaultController::wipePassword));
+    this->terminal->addHotkey('l', makeFunctor((Functor0 *)0, *this, &VaultController::lockEnctryptedStore));
+    this->terminal->addHotkey('o', makeFunctor((Functor0 *)0, *this, &VaultController::displayOptionsMenu));
+    this->terminal->printStatusMessage(" ALT+A Add  |  ALT+W Wipe Password  |  ALT+L Lock  |  ALT+O Options");
 
-    this->terminal.setMenuCallback(makeFunctor((Functor1<byte> *)0, *this, &VaultController::selectPassword));
+    this->terminal->setMenuCallback(makeFunctor((Functor1<byte> *)0, *this, &VaultController::selectPassword));
 }
 
 void VaultController::displayOptionsMenu()
 {
-    this->terminal.clearCanvas();
-    this->terminal.printMenuEntry(0, "Backup");
-    this->terminal.printMenuEntry(1, "Full Wipe");
-    this->terminal.printMenuEntry(2, "Set Time");
-    this->terminal.printMenuEntry(3, "Back");
+    this->terminal->clearCanvas();
+    this->terminal->printMenuEntry(0, "Backup");
+    this->terminal->printMenuEntry(1, "Full Wipe");
+    this->terminal->printMenuEntry(2, "Set Time");
+    this->terminal->printMenuEntry(3, "Back");
 
-    this->terminal.setMenuCallback(makeFunctor((Functor1<byte> *)0, *this, &VaultController::processOptionsSelection));
+    this->terminal->setMenuCallback(makeFunctor((Functor1<byte> *)0, *this, &VaultController::processOptionsSelection));
 }
 
 void VaultController::processOptionsSelection(byte action)
@@ -173,9 +177,9 @@ void VaultController::processOptionsSelection(byte action)
 void VaultController::fullWipe()
 {
     this->runningService = new FullWipeService(
-        &this->terminal,
-        &this->storage,
-        makeFunctor((Functor1<byte> *)0, this->terminal, &Terminal::showProgress),
+        this->terminal,
+        this->storage,
+        makeFunctor((Functor1<byte> *)0, *this->terminal, &Terminal::showProgress),
         makeFunctor((Functor0 *)0, *this, &VaultController::resetTerminal));
 
     if (!this->runningService->start())
@@ -186,8 +190,8 @@ void VaultController::fullWipe()
 
 void VaultController::setTime()
 {
-    TimeSetSyncService service = TimeSetSyncService(&this->terminal);
-    service.execute();
+    TimeSetService service = TimeSetService(this->terminal);
+    service.start();
     this->displayOptionsMenu();
 }
 
@@ -199,15 +203,15 @@ void VaultController::retrievePassword(byte action)
     {
     case 0:
     {
-        this->encryptedStore.get(selectedPasswordIndex, clipboard);
+        this->encryptedStore->get(selectedPasswordIndex, clipboard);
         break;
     }
     case 1:
     {
         SafeBuffer *buffer = new SafeBuffer(TERMINAL_WIDTH);
 
-        this->terminal.readString(TXT_ENTER_TOKENS_POS, buffer, 0, TERMINAL_FIRST_CANVAS_LINE + 4, TERMINAL_RIGHT_HALF_FIRST_COLUMN);
-        this->encryptedStore.getTokens(selectedPasswordIndex, buffer->getBuffer(), clipboard);
+        this->terminal->readString(TXT_ENTER_TOKENS_POS, buffer, 0, TERMINAL_FIRST_CANVAS_LINE + 4, TERMINAL_RIGHT_HALF_FIRST_COLUMN);
+        this->encryptedStore->getTokens(selectedPasswordIndex, buffer->getBuffer(), clipboard);
 
         delete buffer;
         break;
@@ -223,11 +227,10 @@ void VaultController::retrievePassword(byte action)
 
 #ifdef OPTION_BELLS_AND_WHISTLES
     // Just for a show, the decryption is already done.
-    this->terminal.printStatusProgress("Fetch record", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 6, TERMINAL_RIGHT_HALF_FIRST_COLUMN, 30);
-    this->terminal.printStatusProgress("Decrypt", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 7, TERMINAL_RIGHT_HALF_FIRST_COLUMN, 30);
-    this->terminal.printStatusProgress("Copy to clipboard", 600, "[OK]", TERMINAL_FIRST_CANVAS_LINE + 8, TERMINAL_RIGHT_HALF_FIRST_COLUMN, 30);
+    char *messages[] = {"Fetch record", "Decrypt", "Copy to clipboard"};
+    this->terminal->nixStyleAnimate(messages, 3, TERMINAL_FIRST_CANVAS_LINE, TERMINAL_RIGHT_HALF_FIRST_COLUMN, 30);
 #endif
-    this->terminal.print("Ready. Press button to type.", TERMINAL_FIRST_CANVAS_LINE + 9, TERMINAL_RIGHT_HALF_FIRST_COLUMN);
+    this->terminal->print("Ready. Press button to type.", TERMINAL_FIRST_CANVAS_LINE + 9, TERMINAL_RIGHT_HALF_FIRST_COLUMN);
 
     while (clipboard->strlen() > 0)
     {
@@ -250,11 +253,11 @@ void VaultController::retrievePassword(byte action)
 
 void VaultController::displayPasswordActionMenu()
 {
-    this->terminal.printMenuEntry(TERMINAL_SECOND_LEVEL_MENU_FIRST_POSITION, "Copy to clipboard");
-    this->terminal.printMenuEntry(TERMINAL_SECOND_LEVEL_MENU_FIRST_POSITION + 1, "Partial copy to clipboard");
-    this->terminal.printMenuEntry(TERMINAL_SECOND_LEVEL_MENU_FIRST_POSITION + 2, "Back");
+    this->terminal->printMenuEntry(TERMINAL_SECOND_LEVEL_MENU_FIRST_POSITION, "Copy to clipboard");
+    this->terminal->printMenuEntry(TERMINAL_SECOND_LEVEL_MENU_FIRST_POSITION + 1, "Partial copy to clipboard");
+    this->terminal->printMenuEntry(TERMINAL_SECOND_LEVEL_MENU_FIRST_POSITION + 2, "Back");
 
-    this->terminal.setMenuCallback(makeFunctor((Functor1<byte> *)0, *this, &VaultController::retrievePassword));
+    this->terminal->setMenuCallback(makeFunctor((Functor1<byte> *)0, *this, &VaultController::retrievePassword));
 }
 
 void VaultController::resetTerminal()
@@ -269,17 +272,17 @@ void VaultController::resetTerminal()
     }
     delay(500);
 
-    this->terminal.init(&Serial);
+    this->terminal->init(&Serial);
 
-    this->terminal.setResetCallback(makeFunctor((Functor0 *)0, *this, &VaultController::resetTerminal));
+    this->terminal->setResetCallback(makeFunctor((Functor0 *)0, *this, &VaultController::resetTerminal));
 }
 
 void VaultController::backup()
 {
     this->runningService = new BackupService(
-        &this->terminal,
-        &this->storage,
-        makeFunctor((Functor1<byte> *)0, this->terminal, &Terminal::showProgress),
+        this->terminal,
+        this->storage,
+        makeFunctor((Functor1<byte> *)0, *this->terminal, &Terminal::showProgress),
         makeFunctor((Functor0 *)0, *this, &VaultController::displayPasswordSelectionMenu));
 
     if (!this->runningService->start())
@@ -301,21 +304,21 @@ void VaultController::loop()
         }
     }
 
-    this->terminal.setClpIndicator(this->clipboard->strlen() > 0);
-    this->terminal.setLclIndicator(encryptedStore.isLocked());
+    this->terminal->setClpIndicator(this->clipboard->strlen() > 0);
+    this->terminal->setLclIndicator(encryptedStore->isLocked());
 
-    if (encryptedStore.isLocked())
+    if (encryptedStore->isLocked())
     {
-        this->notificationController.setStoreLocked(true);
-        this->terminal.clearScreen();
-        this->terminal.printStatusMessage(" Locked.");
+        this->notificationController->setStoreLocked(true);
+        this->terminal->clearScreen();
+        this->terminal->printStatusMessage(" Locked.");
         this->unlockEncryptedStore();
         this->displayPasswordSelectionMenu();
-        this->terminal.setKeyFingerprint(encryptedStore.getKeyFingerprint());
-        this->notificationController.setStoreLocked(false);
+        this->terminal->setKeyFingerprint(encryptedStore->getKeyFingerprint());
+        this->notificationController->setStoreLocked(false);
     }
 
-    this->notificationController.setClipboardArmed(this->clipboard->strlen() > 0);
+    this->notificationController->setClipboardArmed(this->clipboard->strlen() > 0);
 
-    this->terminal.loop();
+    this->terminal->loop();
 }
