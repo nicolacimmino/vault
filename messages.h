@@ -23,5 +23,7 @@ const char *const messages[] PROGMEM = {message0};
 #define TXT_UNLOCKED_TERMINAL_HEADER_PROTOTYPE " Vault V0.1 - %d bytes free   %02u:%02u:%02u 20%02u-%02u-%02u   KFP: %04u     %s [ULK]"
 #define TXT_LOCKED_TERMINAL_HEADER_PROTOTYPE " Vault V0.1 - %d bytes free                                             [LCK]"
 #define TXT_ENTER_DATE "Enter Date/Time (yyyy-mm-dd hh:mm): "
+#define TXT_BACKUP_FULL_CONFIRMATION "Start full backup? (y/n)"
+#define TXT_BACKUP_IN_PROGRESS "Backup in progress....."
 
 #endif

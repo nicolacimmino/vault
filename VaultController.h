@@ -45,9 +45,7 @@ public:
     void wipePassword();
     void selectPassword(byte index);
     void retrievePassword(byte action);
-    void resetTerminal();        
-    void backupDone(byte arg);    
-    void fullWipeDone(byte arg);
+    void resetTerminal();            
 };
 
 #endif

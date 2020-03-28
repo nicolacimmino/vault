@@ -4,7 +4,9 @@
 #include "Service.h"
 #include "SafeBuffer.h"
 #include "Storage.h"
+#include "Terminal.h"
 #include <Keyboard.h>
+#include "hardware.h"
 
 #define BAKCUP_ADDRESSES_PER_LINE 16
 #define BACKUP_LINES_PER_LOOP 16
@@ -17,7 +19,8 @@ private:
     uint16_t backupAddress;
     Storage *storage;
     Terminal *terminal;
-
+    bool backupStarted = false;
+    
 public:
     BackupService(Terminal *terminal, Storage *storage, const Functor1<byte> &reportProgress, const Functor0 &reportCompletion);
     ~BackupService();

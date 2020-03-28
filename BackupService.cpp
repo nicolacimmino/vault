@@ -17,6 +17,10 @@ BackupService::~BackupService()
 
 bool BackupService::start()
 {
+    if (!this->terminal->askYesNoQuestion(TXT_BACKUP_FULL_CONFIRMATION, TERMINAL_FIRST_CANVAS_LINE + 6, 5))
+    {
+        return false;
+    }
 
 #ifdef OPTION_BELLS_AND_WHISTLES
     // Just for a show
@@ -26,13 +30,6 @@ bool BackupService::start()
 #endif
     this->terminal->print("Ready. Press button to type.", TERMINAL_FIRST_CANVAS_LINE + 3, TERMINAL_RIGHT_HALF_FIRST_COLUMN);
 
-    while (digitalRead(BUTTON_SENSE) == HIGH)
-    {
-        this->loop();
-    }
-
-    this->terminal->initProgress("Backup in progress.....");
-
     this->running = true;
     this->backupAddress = STORAGE_BASE;
 
@@ -41,6 +38,17 @@ bool BackupService::start()
 
 void BackupService::loop()
 {
+    if (!this->backupStarted && digitalRead(BUTTON_SENSE) == HIGH)
+    {
+        return;
+    }
+
+    if (!this->backupStarted)
+    {
+        this->terminal->initProgress(TXT_BACKUP_IN_PROGRESS);
+        this->backupStarted = true;
+    }
+
     this->reportProgress((byte)floor(100.0 * (((float)this->backupAddress - STORAGE_BASE) / STORAGE_SIZE)));
 
     for (uint16_t addressOffset = 0; addressOffset < BAKCUP_ADDRESSES_PER_LINE * BACKUP_LINES_PER_LOOP; addressOffset++)

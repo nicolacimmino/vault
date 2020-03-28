@@ -282,7 +282,8 @@ void VaultController::backup()
         makeFunctor((Functor1<byte> *)0, this->terminal, &Terminal::showProgress),
         makeFunctor((Functor0 *)0, *this, &VaultController::displayPasswordSelectionMenu));
 
-    if(!this->runningService->start()) {
+    if (!this->runningService->start())
+    {
         this->displayOptionsMenu();
     }
 }
