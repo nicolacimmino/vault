@@ -10,7 +10,16 @@ const char message0[] PROGMEM =
     "     \\/_/    \\_\\____/|______|_|     \e[32mSrc:\e[33m github.com/nicolacimmino/vault\r\n"
     "                \e[32m(c) Nicola 2020";
 
-const char *const messages[] PROGMEM = {message0};
+const char message1[] PROGMEM =
+    "\e[15C\e(0\x6c\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x6b\e(B\r\n"
+    "\e[15C\e(0\x78                                                \x78\e(B\r\n"
+    "\e[15C\e(0\x78                                                \x78\e(B\r\n"
+    "\e[15C\e(0\x78                                                \x78\e(B\r\n"
+    "\e[15C\e(0\x78                                                \x78\e(B\r\n"
+    "\e[15C\e(0\x78                                                \x78\e(B\r\n"
+    "\e[15C\e(0\x6d\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x6a\e(B\r\n";
+
+const char *const messages[] PROGMEM = {message0, message1};
 
 #define TXT_ENTER_MASTER_PASSWORD "Master password:"
 #define TXT_PASSWORD_MASK '*'

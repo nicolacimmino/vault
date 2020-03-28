@@ -9,6 +9,7 @@
 
 #define TERMINAL_MAX_HOTKEYS 5
 #define TERMINAL_WIDTH 80
+#define TERMINAL_ALERT_WIDTH 50
 #define TERMINAL_HEIGTH 24
 #define TERMINAL_FIRST_CANVAS_LINE 10
 #define TERMINAL_CANVAS_LINES 12
@@ -68,8 +69,7 @@ public:
     void clearCanvas();
     void printBanner();
     void printHeaderMessage(char *message);
-    void printStatusMessage(char *message);
-    void nixStyleAnimate(char *messages, byte line, byte column, byte areaWidth);
+    void printStatusMessage(char *message);    
     void print(char *text, byte line = NULL, byte column = NULL);
     void printMenuEntry(byte position, char *text, char *selectorColor = VT_FOREGROUND_WHITE);    
     void highlightMenuEntry(byte position);
@@ -81,6 +81,7 @@ public:
     void setLclIndicator(bool status);
     void setKeyFingerprint(int keyFingerprint);
     void initProgress(char *message);
+    void alert(char *message);
     void showProgress(byte progressPercentile);
     void loop();
 };
