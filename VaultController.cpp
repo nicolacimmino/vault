@@ -186,11 +186,14 @@ void VaultController::fullWipe()
         makeFunctor((Functor1<byte> *)0, this->terminal, &Terminal::showProgress),
         makeFunctor((Functor1<byte> *)0, *this, &VaultController::fullWipeDone));
 
-    this->runningService->start();    
+    this->runningService->start();
 }
 
 void VaultController::setTime()
 {
+    TimeSetSyncService service = TimeSetSyncService(&this->terminal);
+    service.execute();
+    this->displayOptionsMenu();
 }
 
 void VaultController::retrievePassword(byte action)
@@ -338,7 +341,7 @@ void VaultController::loop()
         this->unlockEncryptedStore();
         this->displayPasswordSelectionMenu();
         this->terminal.setKeyFingerprint(encryptedStore.getKeyFingerprint());
-        this->notificationController.setStoreLocked(false);     
+        this->notificationController.setStoreLocked(false);
     }
 
     this->notificationController.setClipboardArmed(this->clipboard->strlen() > 0);

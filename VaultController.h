@@ -13,6 +13,7 @@
 #include "Service.h"
 #include "BackupService.h"
 #include "FullWipeService.h"
+#include "TimeSetSyncService.h"
 
 class VaultController
 {
