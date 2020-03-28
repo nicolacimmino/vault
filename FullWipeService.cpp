@@ -9,13 +9,13 @@ FullWipeService::FullWipeService(Terminal *terminal, Storage *storage, const Fun
 }
 
 bool FullWipeService::start()
-{
-    if (!this->terminal->askYesNoQuestion(TXT_WIPE_FULL_CONFIRMATION, TERMINAL_FIRST_CANVAS_LINE + 6, 5))
+{    
+    if (!this->terminal->askYesNoQuestion(TXT_WIPE_FULL_CONFIRMATION, true))
     {
         return false;
     }
 
-    this->terminal->initProgress(TXT_WIPING);
+    this->terminal->alert(TXT_WIPING);
 
     this->running = true;
 

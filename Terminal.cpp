@@ -158,15 +158,24 @@ void Terminal::printStatusMessage(char *message)
     VT100.clearLineAfter();
 }
 
-void Terminal::alert(char *message)
+void Terminal::alert(char *message, bool warning = false)
 {
-    byte msgLen = strlen(message);
-
     VT100.setCursor(TERMINAL_FIRST_CANVAS_LINE + 1, 1);
     this->printMessage(1);
-    
-    VT100.setCursor(TERMINAL_FIRST_CANVAS_LINE + 4, (TERMINAL_WIDTH - msgLen) / 2);
-    this->stream->print(message);    
+
+    if (warning)
+    {
+        char *warningMessage = new char[TERMINAL_WIDTH];
+
+        strcpy(warningMessage, TXT_WARNING);
+        VT100.setCursor(TERMINAL_FIRST_CANVAS_LINE + 2, (TERMINAL_WIDTH - strlen(warningMessage)) / 2);
+        this->stream->print(warningMessage);
+
+        delete warningMessage;
+    }
+
+    VT100.setCursor(TERMINAL_FIRST_CANVAS_LINE + 3, (TERMINAL_WIDTH - strlen(message)) / 2);
+    this->stream->print(message);
 }
 
 void Terminal::print(char *text, byte line = NULL, byte column = NULL)
@@ -263,9 +272,9 @@ bool Terminal::readString(char *prompt, SafeBuffer *string, char mask = 0, byte 
     return true;
 }
 
-bool Terminal::askYesNoQuestion(char *question, byte line, byte column)
+bool Terminal::askYesNoQuestion(char *question, bool warning = false)
 {
-    this->print(question, line, column);
+    this->alert(question, warning);
 
     while (true)
     {
@@ -384,12 +393,6 @@ void Terminal::printHeader()
     VT100.clearLineAfter();
 }
 
-void Terminal::initProgress(char *message)
-{
-    this->print(message, TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 6, 5);
-    VT100.clearLineAfter();
-}
-
 void Terminal::showProgress(byte progressPercentile)
 {
     static byte lastProgress = 0;
@@ -405,7 +408,8 @@ void Terminal::showProgress(byte progressPercentile)
 
     sprintf(progressMessage, TXT_PROGRESS_PROTOTYPE, progressPercentile);
 
-    this->print(progressMessage, TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 5, 5);
+    VT100.setCursor(TERMINAL_FIRST_CANVAS_LINE + 5, (TERMINAL_WIDTH - strlen(progressMessage)) / 2);
+    this->stream->print(progressMessage);
 
     this->resetInactivityTimer();
 }

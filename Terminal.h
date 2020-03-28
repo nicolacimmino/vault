@@ -76,12 +76,11 @@ public:
     bool readString(char *prompt, char *string, byte stringMaxSize, char mask = 0, byte line = NULL, byte column = NULL);
     bool readString(char *prompt, SafeBuffer *string, char mask = 0, byte line = NULL, byte column = NULL);
     byte waitKeySelection(char rangeStart = 0, char rangeEnd = 255);
-    bool askYesNoQuestion(char *question, byte line, byte column);
+    bool askYesNoQuestion(char *question, bool warning = false);
     void setClpIndicator(bool status);
     void setLclIndicator(bool status);
-    void setKeyFingerprint(int keyFingerprint);
-    void initProgress(char *message);
-    void alert(char *message);
+    void setKeyFingerprint(int keyFingerprint);    
+    void alert(char *message, bool warning = false);
     void showProgress(byte progressPercentile);
     void loop();
 };

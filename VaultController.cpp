@@ -70,7 +70,7 @@ void VaultController::wipePassword()
 
     byte selectedIndex = this->terminal->waitKeySelection('a', 'a' + ENCRYPTED_STORE_MAX_ENTRIES);
 
-    if (this->terminal->askYesNoQuestion(TXT_WIPE_PASSWORD_CONFIRMATION, TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 1, 5))
+    if (this->terminal->askYesNoQuestion(TXT_WIPE_PASSWORD_CONFIRMATION, true))
     {
         this->encryptedStore->wipe(selectedIndex);
     }
@@ -252,6 +252,12 @@ void VaultController::displayPasswordActionMenu()
 void VaultController::resetTerminal()
 {
     Serial.begin(9600);
+
+    if (this->runningService)
+    {
+        delete this->runningService;
+        this->runningService = NULL;
+    }
 
     this->lockEnctryptedStore();
 

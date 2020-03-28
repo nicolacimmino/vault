@@ -11,21 +11,22 @@ const char message0[] PROGMEM =
     "                \e[32m(c) Nicola 2020";
 
 const char message1[] PROGMEM =
-    "\e[15C\e(0\x6c\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x6b\e(B\r\n"
-    "\e[15C\e(0\x78                                                \x78\e(B\r\n"
-    "\e[15C\e(0\x78                                                \x78\e(B\r\n"
-    "\e[15C\e(0\x78                                                \x78\e(B\r\n"
-    "\e[15C\e(0\x78                                                \x78\e(B\r\n"
-    "\e[15C\e(0\x78                                                \x78\e(B\r\n"
-    "\e[15C\e(0\x6d\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x6a\e(B\r\n";
+    "\e[13C\e(0\x6c\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x6b\e(B\r\n"
+    "\e[13C\e(0\x78                                                    \x78\e(B\r\n"
+    "\e[13C\e(0\x78                                                    \x78\e(B\r\n"
+    "\e[13C\e(0\x78                                                    \x78\e(B\r\n"
+    "\e[13C\e(0\x78                                                    \x78\e(B\r\n"
+    "\e[13C\e(0\x78                                                    \x78\e(B\r\n"
+    "\e[13C\e(0\x6d\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x71\x6a\e(B\r\n";
 
 const char *const messages[] PROGMEM = {message0, message1};
 
 #define TXT_ENTER_MASTER_PASSWORD "Master password:"
 #define TXT_PASSWORD_MASK '*'
 
-#define TXT_WIPE_FULL_CONFIRMATION VT_FOREGROUND_RED VT_TEXT_BLINK "WARNING! " VT_TEXT_DEFAULT VT_FOREGROUND_YELLOW "This will ERASE ALL data! Sure ? (y/n)"
-#define TXT_WIPE_PASSWORD_CONFIRMATION VT_FOREGROUND_RED VT_TEXT_BLINK "WARNING! " VT_TEXT_DEFAULT VT_FOREGROUND_YELLOW "This will ERASE the password! Sure ? (y/n)"
+#define TXT_WARNING VT_FOREGROUND_RED VT_TEXT_BLINK "                  WARNING!" VT_TEXT_DEFAULT VT_FOREGROUND_YELLOW 
+#define TXT_WIPE_FULL_CONFIRMATION "Erase all data?  (y/n)"
+#define TXT_WIPE_PASSWORD_CONFIRMATION "Erase password? (y/n)"
 #define TXT_WIPING "Wiping storage....."
 #define TXT_ENTER_TOKENS_POS "Enter tokens positions: "
 #define TXT_PROGRESS_PROTOTYPE "Done: %d%%"

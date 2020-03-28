@@ -17,7 +17,7 @@ BackupService::~BackupService()
 
 bool BackupService::start()
 {
-    if (!this->terminal->askYesNoQuestion(TXT_BACKUP_FULL_CONFIRMATION, TERMINAL_FIRST_CANVAS_LINE + 6, 5))
+    if (!this->terminal->askYesNoQuestion(TXT_BACKUP_FULL_CONFIRMATION))
     {
         return false;
     }
@@ -39,12 +39,12 @@ void BackupService::loop()
 
     if (!this->backupStarted)
     {
-        this->terminal->initProgress(TXT_BACKUP_IN_PROGRESS);
+        this->terminal->alert(TXT_BACKUP_IN_PROGRESS);
         this->backupStarted = true;
     }
 
     this->reportProgress(((unsigned long)(this->backupAddress - STORAGE_BASE) * 100) / STORAGE_SIZE);
-    
+
     for (uint16_t addressOffset = 0; addressOffset < BAKCUP_ADDRESSES_PER_LINE * BACKUP_LINES_PER_LOOP; addressOffset++)
     {
         uint16_t actualBackupAddress = this->backupAddress + addressOffset;
