@@ -1,5 +1,15 @@
 #include "Storage.h"
 
+Storage::Storage()
+{
+    this->eeprom = new uEEPROMLib(0x57);
+}
+
+Storage::~Storage()
+{
+    delete this->eeprom;
+}
+
 byte Storage::read(uint16_t address)
 {
     if (this->isInternalEEPROMAddress(address))
@@ -9,13 +19,7 @@ byte Storage::read(uint16_t address)
 
     if (this->isExternalEEPROMAddress(address))
     {
-        uEEPROMLib *eeprom = new uEEPROMLib(0x57);
-
-        byte data = eeprom->eeprom_read(address - STORAGE_EXTERNAL_EEPROM_BASE);
-
-        delete eeprom;
-
-        return;
+        return this->eeprom->eeprom_read(address - STORAGE_EXTERNAL_EEPROM_BASE);
     }
 
     return 0xFF;
@@ -30,11 +34,7 @@ void Storage::write(uint16_t address, byte value)
 
     if (this->isExternalEEPROMAddress(address))
     {
-        uEEPROMLib *eeprom = new uEEPROMLib(0x57);
-
-        eeprom->eeprom_write(address - STORAGE_EXTERNAL_EEPROM_BASE, value);
-
-        delete eeprom;
+        this->eeprom->eeprom_write(address - STORAGE_EXTERNAL_EEPROM_BASE, value);
     }
 }
 
