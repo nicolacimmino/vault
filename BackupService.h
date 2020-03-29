@@ -13,8 +13,6 @@
 class BackupService : public Service
 {
 private:
-    char *asciiPrint;
-    char *addressBuffer;
     uint16_t backupAddress;
     Storage *storage;
     Terminal *terminal;
@@ -22,7 +20,6 @@ private:
 
 public:
     BackupService(Terminal *terminal, Storage *storage, const Functor1<byte> &reportProgress, const Functor0 &reportCompletion);
-    ~BackupService();
     bool start();
     void loop();
 };
