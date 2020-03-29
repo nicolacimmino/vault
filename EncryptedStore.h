@@ -6,7 +6,6 @@
 #include "sha256.h"
 #include "NoiseSource.h"
 #include <EEPROM.h>
-#include "SafeBuffer.h"
 #include "Storage.h"
 #include "Functor.h"
 
@@ -33,20 +32,19 @@ private:
    
     byte key[ENCRYPTED_STORE_KEY_SIZE];    
     void generateIV(byte *iv);
-    uint16_t getEncryptedEntryAddress(byte index);
-    void safeStringCopy(char *destination, char *source, byte destinationSize);
+    uint16_t getEncryptedEntryAddress(byte index);    
     bool locked = true;
     Storage *storage;
 
 public:
     EncryptedStore(Storage *storage);
-    void unlock(SafeBuffer *masterPassword);
+    void unlock(char *masterPassword);
     void lock();
     bool isPositionFree(byte index);
-    void get(byte index, SafeBuffer *plainText);
-    void getTokens(byte index, char *tokensList, SafeBuffer *plainText);
+    void get(byte index, char *plainText);
+    void getTokens(byte index, char *tokensList, char *plainText);
     bool getLabel(byte index, char *label);
-    void set(byte index, SafeBuffer *plainText, SafeBuffer *label);
+    void set(byte index, char *plainText, char *label);
     void wipe(byte index);
     bool isLocked();    
     int getKeyFingerprint();    

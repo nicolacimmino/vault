@@ -203,20 +203,6 @@ void Terminal::highlightMenuEntry(byte position)
 
 bool Terminal::readString(char *prompt, char *string, byte stringMaxSize, char mask = 0, byte line = NULL, byte column = NULL)
 {
-    SafeBuffer *safeStringBuffer = new SafeBuffer(stringMaxSize);
-    safeStringBuffer->strcpy(string);
-
-    bool response = this->readString(prompt, safeStringBuffer, mask, line, column);
-
-    strcpy(string, safeStringBuffer->getBuffer());
-
-    delete safeStringBuffer;
-
-    return response;
-}
-
-bool Terminal::readString(char *prompt, SafeBuffer *string, char mask = 0, byte line = NULL, byte column = NULL)
-{
     this->print(prompt, line, column);
 
     VT100.cursorOn();
@@ -231,7 +217,7 @@ bool Terminal::readString(char *prompt, SafeBuffer *string, char mask = 0, byte 
 
             if (nextChar == '\r')
             {
-                string->setChar(ix, 0);
+                string[ix] = 0;
                 break;
             }
 
@@ -245,12 +231,12 @@ bool Terminal::readString(char *prompt, SafeBuffer *string, char mask = 0, byte 
                 continue;
             }
 
-            if (ix == string->getBufferSize() - 1)
+            if (ix == stringMaxSize - 1)
             {
                 continue;
             }
 
-            string->setChar(ix, nextChar);
+            string[ix] = nextChar;
             ix++;
 
             this->stream->print(mask ? mask : nextChar);

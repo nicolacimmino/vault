@@ -5,8 +5,8 @@ BackupService::BackupService(Terminal *terminal, Storage *storage, const Functor
 {
     this->terminal = terminal;
     this->storage = storage;
-    this->asciiPrint = new SafeBuffer(16);
-    this->addressBuffer = new SafeBuffer(5);
+    this->asciiPrint = new char[16];
+    this->addressBuffer = new char[5];
 }
 
 BackupService::~BackupService()
@@ -58,18 +58,18 @@ void BackupService::loop()
 
         if (addressOffset % BAKCUP_ADDRESSES_PER_LINE == 0)
         {
-            sprintf(addressBuffer->getBuffer(), "%04X ", actualBackupAddress);
-            Keyboard.print(addressBuffer->getBuffer());
+            sprintf(addressBuffer, "%04X ", actualBackupAddress);
+            Keyboard.print(addressBuffer);            
         }
 
         Keyboard.print(value >> 4, HEX);
         Keyboard.print(value & 0xF, HEX);
-        asciiPrint->setChar(addressOffset % BAKCUP_ADDRESSES_PER_LINE, value > 31 && value < 127 ? (char)value : '.');
+        asciiPrint[addressOffset % BAKCUP_ADDRESSES_PER_LINE] = (value > 31 && value < 127) ? (char)value : '.';
 
         if (addressOffset % BAKCUP_ADDRESSES_PER_LINE == 15)
         {
             Keyboard.print("\t");
-            Keyboard.print(asciiPrint->getBuffer());
+            Keyboard.print(asciiPrint);
             Keyboard.print("\n");
             continue;
         }

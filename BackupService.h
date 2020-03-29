@@ -2,7 +2,6 @@
 #define __VAULT_BACKUP_SERVICE_H__
 
 #include "Service.h"
-#include "SafeBuffer.h"
 #include "Storage.h"
 #include "Terminal.h"
 #include <Keyboard.h>
@@ -14,13 +13,13 @@
 class BackupService : public Service
 {
 private:
-    SafeBuffer *asciiPrint;
-    SafeBuffer *addressBuffer;
+    char *asciiPrint;
+    char *addressBuffer;
     uint16_t backupAddress;
     Storage *storage;
     Terminal *terminal;
     bool backupStarted = false;
-    
+
 public:
     BackupService(Terminal *terminal, Storage *storage, const Functor1<byte> &reportProgress, const Functor0 &reportCompletion);
     ~BackupService();

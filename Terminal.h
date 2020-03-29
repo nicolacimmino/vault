@@ -2,7 +2,6 @@
 #define ___PGEN_TERMINAL_H__
 
 #include <Functor.h>
-#include "SafeBuffer.h"
 #include "VT100.h"
 #include "messages.h"
 #include <uRTCLib.h>
@@ -74,7 +73,6 @@ public:
     void printMenuEntry(byte position, char *text, char *selectorColor = VT_FOREGROUND_WHITE);    
     void highlightMenuEntry(byte position);
     bool readString(char *prompt, char *string, byte stringMaxSize, char mask = 0, byte line = NULL, byte column = NULL);
-    bool readString(char *prompt, SafeBuffer *string, char mask = 0, byte line = NULL, byte column = NULL);
     byte waitKeySelection(char rangeStart = 0, char rangeEnd = 255);
     bool askYesNoQuestion(char *question, bool warning = false);
     void setClpIndicator(bool status);

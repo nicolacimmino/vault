@@ -5,11 +5,11 @@ EncryptedStore::EncryptedStore(Storage *storage)
     this->storage = storage;
 }
 
-void EncryptedStore::unlock(SafeBuffer *masterPassword)
+void EncryptedStore::unlock(char *masterPassword)
 {
     Sha256Class *sha256 = new Sha256Class();
     sha256->init();
-    sha256->print(masterPassword->getBuffer());
+    sha256->print(masterPassword);
     memcpy(this->key, sha256->result(), ENCRYPTED_STORE_KEY_SIZE);
 
     this->locked = false;
@@ -37,11 +37,11 @@ void EncryptedStore::wipe(byte index)
 }
 
 bool EncryptedStore::isPositionFree(byte index)
-{    
+{
     return this->storage->read(this->getEncryptedEntryAddress(index)) == 0;
 }
 
-void EncryptedStore::get(byte index, SafeBuffer *plainText)
+void EncryptedStore::get(byte index, char *plainText)
 {
     EncryptedEntry *encryptedEntry = new EncryptedEntry();
     EEPROM.get(this->getEncryptedEntryAddress(index), *encryptedEntry);
@@ -54,17 +54,18 @@ void EncryptedStore::get(byte index, SafeBuffer *plainText)
         aes256CtrDecrypt(ctx, encryptedEntry->cipher + ix, ENCRYPTED_STORE_BLOCK_SIZE);
     }
 
-    plainText->strcpy(encryptedEntry->cipher);
+    strcpy(plainText, encryptedEntry->cipher);
 
-    //memset(encryptedEntry->cipher, 0, sizeof(*encryptedEntry));
+    memset(encryptedEntry->cipher, 0, sizeof(*encryptedEntry));
+
     delete ctx;
     delete encryptedEntry;
 }
 
-void EncryptedStore::getTokens(byte index, char *tokensList, SafeBuffer *plainText)
+void EncryptedStore::getTokens(byte index, char *tokensList, char *plainText)
 {
     byte ix = 0;
-    SafeBuffer *password = new SafeBuffer(ENCRYPTED_STORE_DATA_SIZE);
+    char *password = new char[ENCRYPTED_STORE_DATA_SIZE];
 
     this->get(index, password);
 
@@ -72,7 +73,7 @@ void EncryptedStore::getTokens(byte index, char *tokensList, SafeBuffer *plainTe
     while (token != NULL)
     {
         int tokenIndex = atoi(token) - 1;
-        plainText->setChar(ix, password->getChar(tokenIndex));
+        plainText[ix] = password[tokenIndex];
         token = strtok(NULL, ",");
         ix++;
     }
@@ -102,7 +103,7 @@ bool EncryptedStore::getLabel(byte index, char *label)
     return strlen(label) != 0;
 }
 
-void EncryptedStore::set(byte index, SafeBuffer *plainText, SafeBuffer *label)
+void EncryptedStore::set(byte index, char *plainText, char *label)
 {
     EncryptedEntry *encryptedEntry = new EncryptedEntry();
     this->generateIV(encryptedEntry->iv);
@@ -110,8 +111,8 @@ void EncryptedStore::set(byte index, SafeBuffer *plainText, SafeBuffer *label)
     aes256CtrCtx_t *ctx = new aes256CtrCtx_t();
     aes256CtrInit(ctx, this->key, encryptedEntry->iv, ENCRYPTED_STORE_IV_SIZE);
 
-    this->safeStringCopy(encryptedEntry->cipher, plainText->getBuffer(), plainText->getBufferSize());
-    this->safeStringCopy(encryptedEntry->label, label->getBuffer(), label->getBufferSize());
+    strcpy(encryptedEntry->cipher, plainText);
+    strcpy(encryptedEntry->label, label);
 
     for (int ix = 0; ix < ENCRYPTED_STORE_DATA_SIZE; ix += ENCRYPTED_STORE_BLOCK_SIZE)
     {
@@ -126,13 +127,7 @@ void EncryptedStore::set(byte index, SafeBuffer *plainText, SafeBuffer *label)
     memset(encryptedEntry, 0, sizeof(encryptedEntry));
 
     delete encryptedEntry;
-    delete ctx;    
-}
-
-void EncryptedStore::safeStringCopy(char *destination, char *source, byte destinationSize)
-{
-    memset(destination, 0, destinationSize);
-    memcpy(destination, source, min(strlen(source), destinationSize - 1));
+    delete ctx;
 }
 
 void EncryptedStore::generateIV(byte *iv)

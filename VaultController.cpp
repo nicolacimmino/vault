@@ -16,9 +16,9 @@ VaultController::VaultController()
  */
 void VaultController::unlockEncryptedStore()
 {
-    SafeBuffer *masterPassword = new SafeBuffer(ENCRYPTED_STORE_MASTER_PASSWORD_MAX_SIZE);
+    char *masterPassword = new char[ENCRYPTED_STORE_MASTER_PASSWORD_MAX_SIZE];
 
-    if (this->terminal->readString(TXT_ENTER_MASTER_PASSWORD, masterPassword, TXT_PASSWORD_MASK, TERMINAL_FIRST_CANVAS_LINE + 2, 2))
+    if (this->terminal->readString(TXT_ENTER_MASTER_PASSWORD, masterPassword, ENCRYPTED_STORE_MASTER_PASSWORD_MAX_SIZE, TXT_PASSWORD_MASK, TERMINAL_FIRST_CANVAS_LINE + 2, 2))
     {
         this->encryptedStore->unlock(masterPassword);
 
@@ -43,11 +43,11 @@ void VaultController::addPassword()
     {
         this->terminal->clearCanvas();
 
-        SafeBuffer *label = new SafeBuffer(ENCRYPTED_STORE_LABEL_SIZE);
-        SafeBuffer *password = new SafeBuffer(ENCRYPTED_STORE_DATA_SIZE);
+        char *label = new char[ENCRYPTED_STORE_LABEL_SIZE];
+        char *password = new char[ENCRYPTED_STORE_DATA_SIZE];
 
-        this->terminal->readString("Enter label: ", label, 0, TERMINAL_FIRST_CANVAS_LINE + 2, 2);
-        this->terminal->readString("Enter password: ", password, '*', TERMINAL_FIRST_CANVAS_LINE + 3, 2);
+        this->terminal->readString("Enter label: ", label, ENCRYPTED_STORE_LABEL_SIZE, 0, TERMINAL_FIRST_CANVAS_LINE + 2, 2);
+        this->terminal->readString("Enter password: ", password, ENCRYPTED_STORE_DATA_SIZE, '*', TERMINAL_FIRST_CANVAS_LINE + 3, 2);
 
         this->terminal->printStatusMessage(" Enctrypting......");
         this->encryptedStore->set(selectedIndex, password, label);
@@ -200,7 +200,7 @@ void VaultController::retrievePassword(byte action)
         return;
     }
 
-    SafeBuffer *clipboard = new SafeBuffer(ENCRYPTED_STORE_DATA_SIZE);
+    char *clipboard = new char[ENCRYPTED_STORE_DATA_SIZE];
 
     if (action == 0)
     {
@@ -209,30 +209,30 @@ void VaultController::retrievePassword(byte action)
 
     if (action == 1)
     {
-        SafeBuffer *buffer = new SafeBuffer(TERMINAL_WIDTH);
+        char *buffer = new char[TERMINAL_WIDTH];
 
-        this->terminal->readString(TXT_ENTER_TOKENS_POS, buffer, 0, TERMINAL_FIRST_CANVAS_LINE + 4, TERMINAL_RIGHT_HALF_FIRST_COLUMN);
-        this->encryptedStore->getTokens(selectedPasswordIndex, buffer->getBuffer(), clipboard);
+        this->terminal->readString(TXT_ENTER_TOKENS_POS, buffer, TERMINAL_WIDTH, 0, TERMINAL_FIRST_CANVAS_LINE + 4, TERMINAL_RIGHT_HALF_FIRST_COLUMN);
+        this->encryptedStore->getTokens(selectedPasswordIndex, buffer, clipboard);
 
         delete buffer;
     }
 
     this->terminal->alert("Ready. Press button to type.");
 
-    while (clipboard->strlen() > 0)
+    while (strlen(clipboard) > 0)
     {
         if (digitalRead(BUTTON_SENSE) == LOW)
         {
-            for (byte ix = 0; ix < clipboard->strlen(); ix++)
+            for (byte ix = 0; ix < strlen(clipboard); ix++)
             {
-                Keyboard.print(clipboard->getBuffer()[ix]);
+                Keyboard.print(clipboard[ix]);
                 delay(300);
             }
 
-            clipboard->wipe();
+            memset(clipboard, 0, ENCRYPTED_STORE_DATA_SIZE);
         }
 
-        loop();
+        this->loop();
     }
 
     delete clipboard;

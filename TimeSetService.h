@@ -3,14 +3,13 @@
 
 #include <Functor.h>
 #include <Arduino.h>
-#include "SafeBuffer.h"
 #include <uRTCLib.h>
 #include "Terminal.h"
 
 class TimeSetService
 {
 private:
-    Terminal *terminal;    
+    Terminal *terminal;
 
 protected:
 public:
