@@ -6,6 +6,13 @@ VaultController::VaultController()
     this->terminal = new Terminal();
     this->encryptedStore = new EncryptedStore();
     this->notificationController = new NotificationController();
+
+    pinMode(BUTTON_SENSE, INPUT_PULLUP);
+
+    this->resetTerminal();
+
+    Keyboard.begin();
+
 }
 
 /**
@@ -141,8 +148,7 @@ void VaultController::displayOptionsMenu()
     this->terminal->clearCanvas();
     this->terminal->printMenuEntry(0, "Backup");
     this->terminal->printMenuEntry(1, "Full Wipe");
-    this->terminal->printMenuEntry(2, "Set Time");
-    this->terminal->printMenuEntry(3, "Back");
+    this->terminal->printMenuEntry(2, "Back");
 
     this->terminal->setMenuCallback(makeFunctor((Functor1<byte> *)0, *this, &VaultController::processOptionsSelection));
 }
@@ -158,9 +164,6 @@ void VaultController::processOptionsSelection(byte action)
         this->fullWipe();
         break;
     case 2:
-        this->setTime();
-        break;
-    case 3:
         this->displayPasswordSelectionMenu();
         break;
     default:
@@ -171,7 +174,7 @@ void VaultController::processOptionsSelection(byte action)
 void VaultController::fullWipe()
 {
     this->runningService = new FullWipeService(
-        this->terminal,        
+        this->terminal,
         makeFunctor((Functor1<byte> *)0, *this->terminal, &Terminal::showProgress),
         makeFunctor((Functor0 *)0, *this, &VaultController::resetTerminal));
 
@@ -179,13 +182,6 @@ void VaultController::fullWipe()
     {
         this->displayOptionsMenu();
     }
-}
-
-void VaultController::setTime()
-{
-    TimeSetService service = TimeSetService(this->terminal);
-    service.start();
-    this->displayOptionsMenu();
 }
 
 void VaultController::retrievePassword(byte action)
@@ -273,7 +269,7 @@ void VaultController::resetTerminal()
 void VaultController::backup()
 {
     this->runningService = new BackupService(
-        this->terminal,        
+        this->terminal,
         makeFunctor((Functor1<byte> *)0, *this->terminal, &Terminal::showProgress),
         makeFunctor((Functor0 *)0, *this, &VaultController::displayPasswordSelectionMenu));
 

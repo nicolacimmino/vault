@@ -3,7 +3,6 @@
 #define __VAULT_CONTROLLER_H__
 
 #include "hardware.h"
-#include "options.h"
 #include <Functor.h>
 #include "Terminal.h"
 #include "EncryptedStore.h"
@@ -12,7 +11,6 @@
 #include "Service.h"
 #include "BackupService.h"
 #include "FullWipeService.h"
-#include "TimeSetService.h"
 
 class VaultController
 {

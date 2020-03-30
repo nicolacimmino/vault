@@ -346,21 +346,10 @@ void Terminal::printHeader()
     }
     else
     {
-        uRTCLib *rtc = new uRTCLib(0x68);
-        rtc->refresh();
-
         sprintf(headerMessage, TXT_UNLOCKED_TERMINAL_HEADER_PROTOTYPE,
-                this->getFreeRamBytes(),
-                rtc->hour(),
-                rtc->minute(),
-                rtc->second(),
-                rtc->year(),
-                rtc->month(),
-                rtc->day(),
+                this->getFreeRamBytes(),     
                 this->keyFingerprint,
-                (this->clpIndicator ? "[CLP]" : "     "));
-
-        delete rtc;
+                (this->clpIndicator ? "[CLP]" : "     "));        
     }
 
     VT100.setCursor(TERMINAL_HEADER_LINE, 1);

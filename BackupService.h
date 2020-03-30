@@ -8,7 +8,7 @@
 #include <EEPROM.h>
 
 #define BAKCUP_ADDRESSES_PER_LINE 16
-#define BACKUP_LINES_PER_LOOP 16
+#define BACKUP_LINES_PER_LOOP 4
 
 class BackupService : public Service
 {
