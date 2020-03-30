@@ -13,7 +13,7 @@ bool BackupService::start()
         return false;
     }
 
-    this->terminal->alert("Ready. Press button to type.");
+    this->terminal->alert(TXT_PRESS_BUTTON);
 
     this->running = true;
     this->backupAddress = STORAGE_BASE;

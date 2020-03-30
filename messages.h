@@ -36,5 +36,6 @@ const char *const messages[] PROGMEM = {message0, message1};
 #define TXT_BACKUP_FULL_CONFIRMATION "Start full backup? (y/n)"
 #define TXT_BACKUP_IN_PROGRESS "Backup in progress....."
 #define TXT_TERMINAL_STATUS_COMPLETED "[OK]"
+#define TXT_PRESS_BUTTON "Ready. Press button to type."
 
 #endif
