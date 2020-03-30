@@ -8,5 +8,7 @@
 #define LED_RED 7
 #define LED_YELLOW 9
 #define LED_GREEN 10
+#define STORAGE_BASE 0
+#define STORAGE_SIZE 1024
 
 #endif

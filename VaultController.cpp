@@ -4,8 +4,7 @@
 VaultController::VaultController()
 {
     this->terminal = new Terminal();
-    this->storage = new Storage();
-    this->encryptedStore = new EncryptedStore(this->storage);
+    this->encryptedStore = new EncryptedStore();
     this->notificationController = new NotificationController();
 }
 
@@ -172,8 +171,7 @@ void VaultController::processOptionsSelection(byte action)
 void VaultController::fullWipe()
 {
     this->runningService = new FullWipeService(
-        this->terminal,
-        this->storage,
+        this->terminal,        
         makeFunctor((Functor1<byte> *)0, *this->terminal, &Terminal::showProgress),
         makeFunctor((Functor0 *)0, *this, &VaultController::resetTerminal));
 
@@ -275,8 +273,7 @@ void VaultController::resetTerminal()
 void VaultController::backup()
 {
     this->runningService = new BackupService(
-        this->terminal,
-        this->storage,
+        this->terminal,        
         makeFunctor((Functor1<byte> *)0, *this->terminal, &Terminal::showProgress),
         makeFunctor((Functor0 *)0, *this, &VaultController::displayPasswordSelectionMenu));
 

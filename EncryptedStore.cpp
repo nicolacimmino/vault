@@ -1,10 +1,5 @@
 #include "EncryptedStore.h"
 
-EncryptedStore::EncryptedStore(Storage *storage)
-{
-    this->storage = storage;
-}
-
 void EncryptedStore::unlock(char *masterPassword)
 {
     Sha256Class *sha256 = new Sha256Class();
@@ -32,13 +27,13 @@ void EncryptedStore::wipe(byte index)
 {
     for (byte ix = 0; ix < sizeof(EncryptedEntry); ix++)
     {
-        this->storage->write(this->getEncryptedEntryAddress(index) + ix, 0);
+        EEPROM.write(this->getEncryptedEntryAddress(index) + ix, 0);
     }
 }
 
 bool EncryptedStore::isPositionFree(byte index)
 {
-    return this->storage->read(this->getEncryptedEntryAddress(index)) == 0;
+    return EEPROM.read(this->getEncryptedEntryAddress(index)) == 0;
 }
 
 void EncryptedStore::get(byte index, char *plainText)

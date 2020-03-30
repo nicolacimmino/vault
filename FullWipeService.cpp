@@ -1,10 +1,9 @@
 #include "FullWipeService.h"
 
-FullWipeService::FullWipeService(Terminal *terminal, Storage *storage, const Functor1<byte> &reportProgress, const Functor0 &reportCompletion)
+FullWipeService::FullWipeService(Terminal *terminal, const Functor1<byte> &reportProgress, const Functor0 &reportCompletion)
     : Service(reportProgress, reportCompletion)
 {
-    this->terminal = terminal;
-    this->storage = storage;
+    this->terminal = terminal;    
     this->address = STORAGE_BASE;
 }
 
@@ -28,7 +27,7 @@ void FullWipeService::loop()
 
     for (uint16_t addressOffset = 0; addressOffset < WIPE_ADDRESSES_PER_LOOP; addressOffset++)
     {
-        this->storage->write(this->address + addressOffset, 0);
+        EEPROM.write(this->address + addressOffset, 0);
     }
 
     this->address += WIPE_ADDRESSES_PER_LOOP;

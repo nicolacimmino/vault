@@ -9,7 +9,6 @@
 #include "EncryptedStore.h"
 #include <Keyboard.h>
 #include "NotificationController.h"
-#include "Storage.h"
 #include "Service.h"
 #include "BackupService.h"
 #include "FullWipeService.h"
@@ -20,8 +19,7 @@ class VaultController
 private:
     Terminal *terminal;
     EncryptedStore *encryptedStore;
-    NotificationController *notificationController;
-    Storage *storage;
+    NotificationController *notificationController;    
 
     byte selectedPasswordIndex;
 

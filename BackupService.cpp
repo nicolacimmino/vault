@@ -1,10 +1,9 @@
 #include "BackupService.h"
 
-BackupService::BackupService(Terminal *terminal, Storage *storage, const Functor1<byte> &reportProgress, const Functor0 &reportCompletion)
+BackupService::BackupService(Terminal *terminal, const Functor1<byte> &reportProgress, const Functor0 &reportCompletion)
     : Service(reportProgress, reportCompletion)
 {
-    this->terminal = terminal;
-    this->storage = storage;
+    this->terminal = terminal;    
 }
 
 bool BackupService::start()
@@ -46,7 +45,7 @@ void BackupService::loop()
             break;
         }
 
-        byte value = this->storage->read(actualBackupAddress);
+        byte value = EEPROM.read(actualBackupAddress);
 
         if (addressOffset % BAKCUP_ADDRESSES_PER_LINE == 0)
         {

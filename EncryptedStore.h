@@ -6,7 +6,6 @@
 #include "sha256.h"
 #include "NoiseSource.h"
 #include <EEPROM.h>
-#include "Storage.h"
 #include "Functor.h"
 
 #define ENCRYPTED_STORE_MASTER_PASSWORD_MAX_SIZE 64
@@ -34,10 +33,8 @@ private:
     void generateIV(byte *iv);
     uint16_t getEncryptedEntryAddress(byte index);    
     bool locked = true;
-    Storage *storage;
-
-public:
-    EncryptedStore(Storage *storage);
+    
+public:    
     void unlock(char *masterPassword);
     void lock();
     bool isPositionFree(byte index);
