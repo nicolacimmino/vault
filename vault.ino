@@ -15,7 +15,6 @@
 //
 
 #include "hardware.h"
-#include "options.h"
 #include "VaultController.h"
 
 VaultController *vaultController;

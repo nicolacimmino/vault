@@ -1,5 +1,4 @@
 
-#include "options.h"
 
 #ifndef __VAULT_HARDWARE_H__
 #define __VAULT_HARDWARE_H__
