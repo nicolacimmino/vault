@@ -52,8 +52,7 @@ private:
     byte lastHotkeyIndex = 0;
     Functor1<byte> menuCallback;
     Functor0 resetCallback;
-    uint32_t lastActiveTime;
-    bool clpIndicator = false;
+    uint32_t lastActiveTime;    
     bool lckIndicator = false;
     int keyFingerprint = 0;
 
@@ -74,8 +73,7 @@ public:
     void highlightMenuEntry(byte position);
     bool readString(char *prompt, char *string, byte stringMaxSize, char mask = 0, byte line = NULL, byte column = NULL);
     byte waitKeySelection(char rangeStart = 0, char rangeEnd = 255);
-    bool askYesNoQuestion(char *question, bool warning = false);
-    void setClpIndicator(bool status);
+    bool askYesNoQuestion(char *question, bool warning = false);    
     void setLclIndicator(bool status);
     void setKeyFingerprint(int keyFingerprint);    
     void alert(char *message, bool warning = false);

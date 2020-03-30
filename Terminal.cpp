@@ -314,16 +314,6 @@ void Terminal::setKeyFingerprint(int keyFingerprint)
     this->keyFingerprint = keyFingerprint;
 }
 
-void Terminal::setClpIndicator(bool status)
-{
-    if (status == this->clpIndicator)
-    {
-        return;
-    }
-
-    this->clpIndicator = status;
-    this->printHeader();
-}
 void Terminal::setLclIndicator(bool status)
 {
     if (status == this->lckIndicator)
@@ -346,11 +336,10 @@ void Terminal::printHeader()
     }
     else
     {
-        sprintf(headerMessage, TXT_UNLOCKED_TERMINAL_HEADER_PROTOTYPE,
-                this->getFreeRamBytes(),   
+        sprintf(headerMessage, TXT_UNLOCKED_TERMINAL_HEADER_PROTOTYPE,                   
                 NoiseSource::instance()->getRandomPoolFillStatus(),
                 this->keyFingerprint,
-                (this->clpIndicator ? "[CLP]" : "     "));        
+                this->getFreeRamBytes());        
     }
 
     VT100.setCursor(TERMINAL_HEADER_LINE, 1);

@@ -291,8 +291,7 @@ void VaultController::loop()
             this->runningService = NULL;
         }
     }
-
-    //this->terminal->setClpIndicator(this->clipboard->strlen() > 0);
+    
     this->terminal->setLclIndicator(encryptedStore->isLocked());
 
     if (encryptedStore->isLocked())
@@ -305,8 +304,6 @@ void VaultController::loop()
         this->terminal->setKeyFingerprint(encryptedStore->getKeyFingerprint());
         this->notificationController->setStoreLocked(false);
     }
-
-    //this->notificationController->setClipboardArmed(this->clipboard->strlen() > 0);
 
     this->terminal->loop();
 }
