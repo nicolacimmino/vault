@@ -22,6 +22,8 @@
 #include <avr/wdt.h>
 #include <CRC32.h>
 
+#define NOISE_SOURCE_POOL_SIZE 32
+
 class NoiseSource
 {
 public:
@@ -29,13 +31,15 @@ public:
     void collectNoise();
     bool isRandomNumberReady();
     byte getRandomNumber();
-    
+    byte getRandomPoolFillStatus();
+
 private:
     NoiseSource();
     static NoiseSource* theInstance;        
     CRC32 crc;    
     bool randomNumberReady = false;
-    byte randomNumber;
+    byte randomNumberPool[NOISE_SOURCE_POOL_SIZE];
+    byte randomNumberPoolIx = 0;
 };
 
 #endif

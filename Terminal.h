@@ -4,6 +4,7 @@
 #include <Functor.h>
 #include "VT100.h"
 #include "messages.h"
+#include "NoiseSource.h"
 
 #define TERMINAL_MAX_HOTKEYS 5
 #define TERMINAL_WIDTH 80

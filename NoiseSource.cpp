@@ -62,7 +62,7 @@ ISR(WDT_vect)
  * counter. The jitter of the interrupt process makes this random. 
  */
 void NoiseSource::collectNoise()
-{    
+{
     static byte noiseBuffer = 0;
     static byte collectedBits = 0;
 
@@ -71,27 +71,45 @@ void NoiseSource::collectNoise()
 
     if (collectedBits == 8)
     {
+        collectedBits = 0;
+
+        if (this->randomNumberPoolIx >= NOISE_SOURCE_POOL_SIZE)
+        {
+            return;
+        }
+
         /**
           * We pass here the collected 8 bits into a CRC-32, note that this
-          * CRC-32 is forever running so it acts as randomness extrector and
+          * CRC-32 is forever running so it acts as randomness extractor and
           * de-bias of the input source.
         */
         this->crc.update(noiseBuffer & 0xFF);
-        this->randomNumber = this->crc.finalize() & 0xFF;
-        
+        this->randomNumberPool[this->randomNumberPoolIx] = this->crc.finalize() & 0xFF;
+
+        this->randomNumberPoolIx++;
+
         this->randomNumberReady = true;
-        collectedBits = 0;
     }
 }
 
 bool NoiseSource::isRandomNumberReady()
 {
-    return this->randomNumberReady;
+    return this->randomNumberPoolIx > 0;
 }
 
 byte NoiseSource::getRandomNumber()
 {
-    this->randomNumberReady = false;
+    if (this->randomNumberPoolIx == 0)
+    {
+        return 0;
+    }
 
-    return this->randomNumber;
+    this->randomNumberPoolIx--;
+
+    return this->randomNumberPool[this->randomNumberPoolIx];
+}
+
+byte NoiseSource::getRandomPoolFillStatus()
+{
+    return (100 *this->randomNumberPoolIx) / NOISE_SOURCE_POOL_SIZE;
 }

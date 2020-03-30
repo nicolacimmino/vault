@@ -347,7 +347,8 @@ void Terminal::printHeader()
     else
     {
         sprintf(headerMessage, TXT_UNLOCKED_TERMINAL_HEADER_PROTOTYPE,
-                this->getFreeRamBytes(),     
+                this->getFreeRamBytes(),   
+                NoiseSource::instance()->getRandomPoolFillStatus(),
                 this->keyFingerprint,
                 (this->clpIndicator ? "[CLP]" : "     "));        
     }

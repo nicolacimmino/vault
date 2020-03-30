@@ -30,7 +30,7 @@ const char *const messages[] PROGMEM = {message0, message1};
 #define TXT_WIPING "Wiping storage....."
 #define TXT_ENTER_TOKENS_POS "Enter tokens positions: "
 #define TXT_PROGRESS_PROTOTYPE "Done: %d%%"
-#define TXT_UNLOCKED_TERMINAL_HEADER_PROTOTYPE " Vault V0.1 - %d bytes free                         KFP: %04u     %s [ULK]"
+#define TXT_UNLOCKED_TERMINAL_HEADER_PROTOTYPE " Vault V0.1 - %4d bytes free    EPOOL: %3d%%          KFP: %04u     %s [ULK]"
 #define TXT_LOCKED_TERMINAL_HEADER_PROTOTYPE " Vault V0.1 - %d bytes free                                             [LCK]"
 #define TXT_ENTER_DATE "Enter Date/Time (yyyy-mm-dd hh:mm): "
 #define TXT_BACKUP_FULL_CONFIRMATION "Start full backup? (y/n)"
