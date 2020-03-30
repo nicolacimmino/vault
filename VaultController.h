@@ -11,13 +11,14 @@
 #include "Service.h"
 #include "BackupService.h"
 #include "FullWipeService.h"
+#include "RestoreBackupService.h"
 
 class VaultController
 {
 private:
     Terminal *terminal;
     EncryptedStore *encryptedStore;
-    NotificationController *notificationController;    
+    NotificationController *notificationController;
 
     byte selectedPasswordIndex;
 
@@ -30,6 +31,7 @@ private:
     void setLedStatus(bool green, bool yellow, bool red);
     void setTime();
     void backup();
+    void restoreBackup();
     void fullWipe();
     Service *runningService = NULL;
 

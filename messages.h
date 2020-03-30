@@ -34,7 +34,9 @@ const char *const messages[] PROGMEM = {message0, message1};
 #define TXT_LOCKED_TERMINAL_HEADER_PROTOTYPE " Vault V0.1                                                    RAM: %4d bytes"
 #define TXT_ENTER_DATE "Enter Date/Time (yyyy-mm-dd hh:mm): "
 #define TXT_BACKUP_FULL_CONFIRMATION "Start full backup? (y/n)"
+#define TXT_BACKUP_RESTORE_CONFIRMATION "Start restore? (y/n)"
 #define TXT_BACKUP_IN_PROGRESS "Backup in progress....."
+#define TXT_BACKUP_RESTORE_IN_PROGRESS "Backup restore in progress....."
 #define TXT_TERMINAL_STATUS_COMPLETED "[OK]"
 #define TXT_PRESS_BUTTON "Ready. Press button to type."
 

@@ -48,7 +48,7 @@ private:
     };
 
     Stream *stream;
-    terminalHotkey hotkeys[TERMINAL_MAX_HOTKEYS];
+    terminalHotkey hotkeys[TERMINAL_MAX_HOTKEYS];    
     byte lastHotkeyIndex = 0;
     Functor1<byte> menuCallback;
     Functor0 resetCallback;

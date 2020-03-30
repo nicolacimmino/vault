@@ -12,7 +12,6 @@ VaultController::VaultController()
     this->resetTerminal();
 
     Keyboard.begin();
-
 }
 
 /**
@@ -147,8 +146,9 @@ void VaultController::displayOptionsMenu()
 {
     this->terminal->clearCanvas();
     this->terminal->printMenuEntry(0, "Backup");
-    this->terminal->printMenuEntry(1, "Full Wipe");
-    this->terminal->printMenuEntry(2, "Back");
+    this->terminal->printMenuEntry(1, "Restore Backup");
+    this->terminal->printMenuEntry(2, "Full Wipe");
+    this->terminal->printMenuEntry(3, "Back");
 
     this->terminal->setMenuCallback(makeFunctor((Functor1<byte> *)0, *this, &VaultController::processOptionsSelection));
 }
@@ -161,9 +161,12 @@ void VaultController::processOptionsSelection(byte action)
         this->backup();
         break;
     case 1:
-        this->fullWipe();
+        this->restoreBackup();
         break;
     case 2:
+        this->fullWipe();
+        break;
+    case 3:
         this->displayPasswordSelectionMenu();
         break;
     default:
@@ -279,6 +282,19 @@ void VaultController::backup()
     }
 }
 
+void VaultController::restoreBackup()
+{
+    this->runningService = new RestoreBackupService(
+        this->terminal,
+        makeFunctor((Functor1<byte> *)0, *this->terminal, &Terminal::showProgress),
+        makeFunctor((Functor0 *)0, *this, &VaultController::displayPasswordSelectionMenu));
+
+    if (!this->runningService->start())
+    {
+        this->displayOptionsMenu();
+    }
+}
+
 void VaultController::loop()
 {
     if (this->runningService)
@@ -291,7 +307,7 @@ void VaultController::loop()
             this->runningService = NULL;
         }
     }
-    
+
     this->terminal->setLclIndicator(encryptedStore->isLocked());
 
     if (encryptedStore->isLocked())
