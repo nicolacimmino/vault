@@ -25,51 +25,36 @@ void RestoreBackupService::loop()
     char *line = new char[64];
     memset(line, 0, 64);
 
-    while (true)
+    Serial.write(FLOW_CONTROL_XON);
+    Serial.flush();
+
+    while (!Serial.available())
     {
-        
-        Serial.write(0x11);
-        Serial.flush();
-
-        while (!Serial.available())
-        {
-            //delay(1);
-        }
-
-        Serial.readBytesUntil('\r', line, 64);
-
-        Serial.write(0x13);
-        Serial.flush();
-
-        uint16_t address = strtol(strtok(line, " ."), NULL, 16);
-
-        if (address < this->backupRestoreAddress)
-        {
-            continue;
-        }
-
-        this->backupRestoreAddress = address;
-
-        byte offset = 0;
-
-        while (char *token = strtok(NULL, " ."))
-        {
-            byte value = strtol(token, NULL, 16);
-
-            EEPROM.write(this->backupRestoreAddress + offset, value);
-            offset++;
-        }
-
-        this->reportProgress(((unsigned long)(this->backupRestoreAddress + offset + 1 - STORAGE_BASE) * 100) / STORAGE_SIZE);
-
-        if (this->backupRestoreAddress >= (STORAGE_BASE + STORAGE_SIZE))
-        {
-            this->running = false;
-            this->reportCompletion();
-
-            delete line;
-
-            return;
-        }
+        delay(1);
     }
+
+    Serial.readBytesUntil('\r', line, 64);
+
+    Serial.write(FLOW_CONTROL_XOFF);
+    Serial.flush();
+
+    this->backupRestoreAddress = strtol(strtok(line, " ."), NULL, 16);
+
+    while (char *token = strtok(NULL, " ."))
+    {
+        byte value = strtol(token, NULL, 16);
+
+        EEPROM.write(this->backupRestoreAddress, value);
+        this->backupRestoreAddress++;
+    }
+
+    this->reportProgress(((unsigned long)(this->backupRestoreAddress - STORAGE_BASE) * 100) / STORAGE_SIZE);
+
+    if (this->backupRestoreAddress >= (STORAGE_BASE + STORAGE_SIZE))
+    {
+        this->running = false;
+        this->reportCompletion();
+    }
+
+    delete line;
 }

@@ -9,6 +9,8 @@
 
 #define BAKCUP_ADDRESSES_PER_LINE 16
 #define BACKUP_LINES_PER_LOOP 4
+#define FLOW_CONTROL_XON 0x11
+#define FLOW_CONTROL_XOFF 0x13
 
 class RestoreBackupService : public Service
 {

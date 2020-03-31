@@ -321,5 +321,8 @@ void VaultController::loop()
         this->notificationController->setStoreLocked(false);
     }
 
-    this->terminal->loop();
+    if (!this->runningService)
+    {
+        this->terminal->loop();
+    }
 }
