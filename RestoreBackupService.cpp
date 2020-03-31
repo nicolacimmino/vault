@@ -12,7 +12,6 @@ bool RestoreBackupService::start()
     {
         return false;
     }
-
     this->running = true;
     this->backupRestoreAddress = STORAGE_BASE;
 
@@ -23,31 +22,54 @@ bool RestoreBackupService::start()
 
 void RestoreBackupService::loop()
 {
-    while (!Serial.available())
+    char *line = new char[64];
+    memset(line, 0, 64);
+
+    while (true)
     {
-        delay(1);
-    }
+        
+        Serial.write(0x11);
+        Serial.flush();
 
-    char *line = new char[128];
-    
-    Serial.readBytesUntil('\n', line, 127);
+        while (!Serial.available())
+        {
+            //delay(1);
+        }
 
-    this->backupRestoreAddress = strtol(strtok(line, ' '), NULL, 16);
-    byte offset = 0;
+        Serial.readBytesUntil('\r', line, 64);
 
-    while (byte value = strtol(strtok(NULL, '.'), NULL, 16))
-    {
-        EEPROM.write(this->backupRestoreAddress + offset, value);
-        offset++;
-    }
+        Serial.write(0x13);
+        Serial.flush();
 
-    delete line;
+        uint16_t address = strtol(strtok(line, " ."), NULL, 16);
 
-    this->reportProgress(((unsigned long)(this->backupRestoreAddress - STORAGE_BASE) * 100) / STORAGE_SIZE);
+        if (address < this->backupRestoreAddress)
+        {
+            continue;
+        }
 
-    if (this->backupRestoreAddress >= (STORAGE_BASE + STORAGE_SIZE))
-    {
-        this->running = false;
-        this->reportCompletion();
+        this->backupRestoreAddress = address;
+
+        byte offset = 0;
+
+        while (char *token = strtok(NULL, " ."))
+        {
+            byte value = strtol(token, NULL, 16);
+
+            EEPROM.write(this->backupRestoreAddress + offset, value);
+            offset++;
+        }
+
+        this->reportProgress(((unsigned long)(this->backupRestoreAddress + offset + 1 - STORAGE_BASE) * 100) / STORAGE_SIZE);
+
+        if (this->backupRestoreAddress >= (STORAGE_BASE + STORAGE_SIZE))
+        {
+            this->running = false;
+            this->reportCompletion();
+
+            delete line;
+
+            return;
+        }
     }
 }
