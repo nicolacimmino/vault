@@ -27,6 +27,7 @@
 #define TERMINAL_SECOND_LEVEL_MENU_FIRST_POSITION TERMINAL_CANVAS_LINES
 #define TERMINAL_LEFT_MENU_FIRST_COLUMN 5
 #define TERMINAL_RIGHT_MENU_FIRST_COLUMN TERMINAL_RIGHT_HALF_FIRST_COLUMN
+#define TEMRINAL_KEY_FINGERPRINT_DISPLAY_TIMEOUT 1000
 
 #define TERMINAL_KEY_ESC 0x1B
 #define TERMINAL_KEY_BACKSPACE 0x7F
@@ -40,6 +41,7 @@ private:
     bool checkInactivityTimer();
     int getFreeRamBytes();    
     byte maxMenuPosition = 0;
+    unsigned long showKeyFingerprintUntil=0;
 
     struct terminalHotkey
     {
@@ -78,6 +80,7 @@ public:
     void setKeyFingerprint(int keyFingerprint);    
     void alert(char *message, bool warning = false);
     void showProgress(byte progressPercentile);
+    void showKeyFingerprint();
     void loop();
 };
 

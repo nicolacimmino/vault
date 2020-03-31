@@ -166,7 +166,7 @@ void Terminal::alert(char *message, bool warning = false)
     if (warning)
     {
         VT100.setCursor(TERMINAL_FIRST_CANVAS_LINE + 2, (TERMINAL_WIDTH - strlen(TXT_WARNING)) / 2);
-        this->stream->print(TXT_WARNING);     
+        this->stream->print(TXT_WARNING);
     }
 
     VT100.setCursor(TERMINAL_FIRST_CANVAS_LINE + 3, (TERMINAL_WIDTH - strlen(message)) / 2);
@@ -336,10 +336,19 @@ void Terminal::printHeader()
     }
     else
     {
-        sprintf(headerMessage, TXT_UNLOCKED_TERMINAL_HEADER_PROTOTYPE,                   
-                NoiseSource::instance()->getRandomPoolFillStatus(),
-                this->keyFingerprint,
-                this->getFreeRamBytes());        
+        if (millis() < this->showKeyFingerprintUntil)
+        {
+            sprintf(headerMessage, TXT_UNLOCKED_TERMINAL_HEADER_PROTOTYPE,
+                    NoiseSource::instance()->getRandomPoolFillStatus(),
+                    this->keyFingerprint,
+                    this->getFreeRamBytes());
+        }
+        else
+        {
+            sprintf(headerMessage, TXT_UNLOCKED_TERMINAL_HEADER_PROTOTYPE_NOKFP,
+                    NoiseSource::instance()->getRandomPoolFillStatus(),
+                    this->getFreeRamBytes());
+        }
     }
 
     VT100.setCursor(TERMINAL_HEADER_LINE, 1);
@@ -351,6 +360,11 @@ void Terminal::printHeader()
     VT100.setBackgroundColor(TERMINAL_BACKGROUND_COLOR);
     VT100.setTextColor(TERMINAL_FOREGROUND_COLOR);
     VT100.clearLineAfter();
+}
+
+void Terminal::showKeyFingerprint()
+{
+    this->showKeyFingerprintUntil = millis() + TEMRINAL_KEY_FINGERPRINT_DISPLAY_TIMEOUT;
 }
 
 void Terminal::showProgress(byte progressPercentile)

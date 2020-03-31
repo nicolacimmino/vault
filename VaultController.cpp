@@ -133,9 +133,10 @@ void VaultController::displayPasswordSelectionMenu()
     this->terminal->clearHotkeys();
     this->terminal->addHotkey('a', makeFunctor((Functor0 *)0, *this, &VaultController::addPassword));
     this->terminal->addHotkey('w', makeFunctor((Functor0 *)0, *this, &VaultController::wipePassword));
+    this->terminal->addHotkey('k', makeFunctor((Functor0 *)0, *this->terminal, &Terminal::showKeyFingerprint));
     this->terminal->addHotkey('l', makeFunctor((Functor0 *)0, *this, &VaultController::lockEnctryptedStore));
     this->terminal->addHotkey('o', makeFunctor((Functor0 *)0, *this, &VaultController::displayOptionsMenu));
-    this->terminal->printStatusMessage(" ALT+A Add  |  ALT+W Wipe Password  |  ALT+L Lock  |  ALT+O Options");
+    this->terminal->printStatusMessage(" ALT+A Add  |  ALT+W Wipe  |  ALT + K KFP  |  ALT+L Lock  |  ALT+O Options");
 
     this->terminal->setMenuCallback(makeFunctor((Functor1<byte> *)0, *this, &VaultController::selectPassword));
 

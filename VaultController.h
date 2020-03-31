@@ -19,7 +19,7 @@ private:
     Terminal *terminal;
     EncryptedStore *encryptedStore;
     NotificationController *notificationController;
-
+    
     byte selectedPasswordIndex;
 
     void unlockEncryptedStore();
@@ -42,7 +42,7 @@ public:
     void wipePassword();
     void selectPassword(byte index);
     void retrievePassword(byte action);
-    void resetTerminal();
+    void resetTerminal();    
 };
 
 #endif
