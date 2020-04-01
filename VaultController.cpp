@@ -23,7 +23,7 @@ void VaultController::unlockEncryptedStore()
 {
     char *masterPassword = new char[ENCRYPTED_STORE_MASTER_PASSWORD_MAX_SIZE];
 
-    if (this->terminal->readString(TXT_ENTER_MASTER_PASSWORD, masterPassword, ENCRYPTED_STORE_MASTER_PASSWORD_MAX_SIZE, TXT_PASSWORD_MASK, TERMINAL_FIRST_CANVAS_LINE + 2, 2))
+    if (this->terminal->askQuestion(TXT_ENTER_MASTER_PASSWORD, masterPassword, ENCRYPTED_STORE_MASTER_PASSWORD_MAX_SIZE, TXT_PASSWORD_MASK, TERMINAL_FIRST_CANVAS_LINE + 2, 2))
     {
         this->encryptedStore->unlock(masterPassword);
 
@@ -51,8 +51,8 @@ void VaultController::addPassword()
         char *label = new char[ENCRYPTED_STORE_LABEL_SIZE];
         char *password = new char[ENCRYPTED_STORE_DATA_SIZE];
 
-        this->terminal->readString("Enter label: ", label, ENCRYPTED_STORE_LABEL_SIZE, 0, TERMINAL_FIRST_CANVAS_LINE + 2, 2);
-        this->terminal->readString("Enter password: ", password, ENCRYPTED_STORE_DATA_SIZE, '*', TERMINAL_FIRST_CANVAS_LINE + 3, 2);
+        this->terminal->askQuestion("Enter label: ", label, ENCRYPTED_STORE_LABEL_SIZE, 0, TERMINAL_FIRST_CANVAS_LINE + 2, 2);
+        this->terminal->askQuestion("Enter password: ", password, ENCRYPTED_STORE_DATA_SIZE, '*', TERMINAL_FIRST_CANVAS_LINE + 3, 2);
 
         this->terminal->printStatusMessage(" Enctrypting......");
         this->encryptedStore->set(selectedIndex, password, label);
@@ -209,7 +209,7 @@ void VaultController::retrievePassword(byte action)
     {
         char *buffer = new char[TERMINAL_WIDTH];
 
-        this->terminal->readString(TXT_ENTER_TOKENS_POS, buffer, TERMINAL_WIDTH, 0, TERMINAL_FIRST_CANVAS_LINE + 4, TERMINAL_RIGHT_HALF_FIRST_COLUMN);
+        this->terminal->askQuestion(TXT_ENTER_TOKENS_POS, buffer, TERMINAL_WIDTH, 0, TERMINAL_FIRST_CANVAS_LINE + 4, TERMINAL_RIGHT_HALF_FIRST_COLUMN);
         this->encryptedStore->getTokens(selectedPasswordIndex, buffer, clipboard);
 
         delete buffer;

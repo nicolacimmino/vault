@@ -31,6 +31,8 @@
 
 #define TERMINAL_KEY_ESC 0x1B
 #define TERMINAL_KEY_BACKSPACE 0x7F
+#define TERMINAL_XON 0x11
+#define TERMINAL_XOFF 0x13
 
 class Terminal
 {
@@ -73,7 +75,7 @@ public:
     void print(char *text, byte line = NULL, byte column = NULL);
     void printMenuEntry(byte position, char *text, char *selectorColor = VT_FOREGROUND_WHITE);    
     void highlightMenuEntry(byte position);
-    bool readString(char *prompt, char *string, byte stringMaxSize, char mask = 0, byte line = NULL, byte column = NULL);
+    bool askQuestion(char *prompt, char *string, byte stringMaxSize, char mask = 0, byte line = NULL, byte column = NULL);
     byte waitKeySelection(char rangeStart = 0, char rangeEnd = 255);
     bool askYesNoQuestion(char *question, bool warning = false);    
     void setLclIndicator(bool status);
@@ -81,6 +83,8 @@ public:
     void alert(char *message, bool warning = false);
     void showProgress(byte progressPercentile);
     void showKeyFingerprint();
+    void flowControl(bool on);
+    void readLine(char *line, byte bufferSize);
     void loop();
 };
 

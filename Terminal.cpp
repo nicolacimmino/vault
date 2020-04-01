@@ -201,7 +201,25 @@ void Terminal::highlightMenuEntry(byte position)
     this->printMenuEntry(position, "", VT_FOREGROUND_GREEN);
 }
 
-bool Terminal::readString(char *prompt, char *string, byte stringMaxSize, char mask = 0, byte line = NULL, byte column = NULL)
+void Terminal::flowControl(bool on)
+{
+    Serial.write(on ? TERMINAL_XON : TERMINAL_XOFF);
+    Serial.flush();
+}
+
+void Terminal::readLine(char *line, byte bufferSize)
+{
+    while (!Serial.available())
+    {
+        delay(1);
+    }
+
+    size_t bytesRead = Serial.readBytesUntil('\r', line, bufferSize);
+
+    line[bytesRead] = 0;
+}
+
+bool Terminal::askQuestion(char *prompt, char *string, byte stringMaxSize, char mask = 0, byte line = NULL, byte column = NULL)
 {
     this->print(prompt, line, column);
 
