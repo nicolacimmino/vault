@@ -85,7 +85,7 @@ public:
     void showKeyFingerprint();
     void flowControl(bool on);
     void readLine(char *line, byte bufferSize);
-    void loop();
+    void loop(bool noTerminalInput = false);
 };
 
 #endif

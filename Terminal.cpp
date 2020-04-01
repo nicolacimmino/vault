@@ -64,14 +64,21 @@ void Terminal::clearInputBuffer()
     }
 }
 
-void Terminal::loop()
+void Terminal::loop(bool noTerminalInput = false)
 {
-    static bool alt = false;
-
     if (millis() % 300 == 0)
     {
         this->printHeader();
     }
+
+    this->checkInactivityTimer();
+
+    if (noTerminalInput)
+    {
+        return;
+    }
+
+    static bool alt = false;
 
     while (this->stream->available())
     {
@@ -112,8 +119,6 @@ void Terminal::loop()
             this->menuCallback(menuIndex);
         }
     }
-
-    this->checkInactivityTimer();
 }
 
 void Terminal::clearScreen()
