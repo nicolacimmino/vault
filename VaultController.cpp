@@ -2,9 +2,9 @@
 #include "VaultController.h"
 
 VaultController::VaultController()
-{
-    this->terminal = new Terminal();
+{    
     this->encryptedStore = new EncryptedStore();
+    this->terminal = new Terminal(this->encryptedStore);
     this->notificationController = new NotificationController();
 
     pinMode(BUTTON_SENSE, INPUT_PULLUP);
@@ -308,9 +308,7 @@ void VaultController::loop()
             this->runningService = NULL;
         }
     }
-
-    this->terminal->setLclIndicator(encryptedStore->isLocked());
-
+    
     if (encryptedStore->isLocked())
     {
         this->notificationController->setStoreLocked(true);
@@ -318,7 +316,6 @@ void VaultController::loop()
         this->terminal->printStatusMessage(" Locked.");
         this->unlockEncryptedStore();
         this->displayPasswordSelectionMenu();
-        this->terminal->setKeyFingerprint(encryptedStore->getKeyFingerprint());
         this->notificationController->setStoreLocked(false);
     }
 

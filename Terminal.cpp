@@ -1,6 +1,11 @@
 
 #include "Terminal.h"
 
+Terminal::Terminal(EncryptedStore *encryptedStore)
+{
+    this->encryptedStore = encryptedStore;
+}
+
 void Terminal::init(Stream *stream)
 {
     this->stream = stream;
@@ -332,28 +337,12 @@ void Terminal::printMessage(uint8_t messageId)
     this->stream->print(buffer);
 }
 
-void Terminal::setKeyFingerprint(int keyFingerprint)
-{
-    this->keyFingerprint = keyFingerprint;
-}
-
-void Terminal::setLclIndicator(bool status)
-{
-    if (status == this->lckIndicator)
-    {
-        return;
-    }
-
-    this->lckIndicator = status;
-    this->printHeader();
-}
-
 void Terminal::printHeader()
 {
     char headerMessage[TERMINAL_WIDTH];
     memset(headerMessage, 0, TERMINAL_WIDTH);
 
-    if (this->lckIndicator)
+    if (this->encryptedStore->isLocked())
     {
         sprintf(headerMessage, TXT_LOCKED_TERMINAL_HEADER_PROTOTYPE, this->getFreeRamBytes());
     }
@@ -363,7 +352,7 @@ void Terminal::printHeader()
         {
             sprintf(headerMessage, TXT_UNLOCKED_TERMINAL_HEADER_PROTOTYPE,
                     NoiseSource::instance()->getRandomPoolFillStatus(),
-                    this->keyFingerprint,
+                    this->encryptedStore->getKeyFingerprint(),
                     this->getFreeRamBytes());
         }
         else

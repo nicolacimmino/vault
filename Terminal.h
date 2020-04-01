@@ -5,6 +5,7 @@
 #include "VT100.h"
 #include "messages.h"
 #include "NoiseSource.h"
+#include "EncryptedStore.h"
 
 #define TERMINAL_MAX_HOTKEYS 5
 #define TERMINAL_WIDTH 80
@@ -44,6 +45,7 @@ private:
     int getFreeRamBytes();    
     byte maxMenuPosition = 0;
     unsigned long showKeyFingerprintUntil=0;
+    EncryptedStore *encryptedStore;
 
     struct terminalHotkey
     {
@@ -57,10 +59,9 @@ private:
     Functor1<byte> menuCallback;
     Functor0 resetCallback;
     uint32_t lastActiveTime;    
-    bool lckIndicator = false;
-    int keyFingerprint = 0;
-
+    
 public:
+    Terminal(EncryptedStore *enctryptedStore);
     void init(Stream *stream);
     void clearHotkeys();
     void clearInputBuffer();
@@ -77,9 +78,7 @@ public:
     void highlightMenuEntry(byte position);
     bool askQuestion(char *prompt, char *string, byte stringMaxSize, char mask = 0, byte line = NULL, byte column = NULL);
     byte waitKeySelection(char rangeStart = 0, char rangeEnd = 255);
-    bool askYesNoQuestion(char *question, bool warning = false);    
-    void setLclIndicator(bool status);
-    void setKeyFingerprint(int keyFingerprint);    
+    bool askYesNoQuestion(char *question, bool warning = false);        
     void alert(char *message, bool warning = false);
     void showProgress(byte progressPercentile);
     void showKeyFingerprint();
