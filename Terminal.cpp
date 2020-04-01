@@ -6,10 +6,18 @@ Terminal::Terminal(EncryptedStore *encryptedStore)
     this->encryptedStore = encryptedStore;
 }
 
-void Terminal::init(Stream *stream)
+void Terminal::init()
 {
-    this->stream = stream;
-    VT100.begin(*stream);
+    Serial.begin(TERMINAL_SERIAL_SPEED);
+
+    while (!Serial)
+    {
+        ;
+    }
+    delay(500);
+
+    this->stream = &Serial;
+    VT100.begin(*this->stream);
     this->lastActiveTime = millis();
 }
 
@@ -217,6 +225,17 @@ void Terminal::flowControl(bool on)
     Serial.flush();
 }
 
+bool Terminal::clientRequestedAbort()
+{
+    if (this->stream->peek() == TERMINAL_KEY_ESC)
+    {
+        this->stream->read();
+        return true;
+    }
+
+    return false;
+}
+
 void Terminal::readLine(char *line, byte bufferSize)
 {
     while (!Serial.available())
@@ -235,6 +254,7 @@ bool Terminal::askQuestion(char *prompt, char *string, byte stringMaxSize, char 
 
     VT100.cursorOn();
     byte ix = 0;
+    bool alt = false;
     while (true)
     {
         if (this->stream->available())
@@ -242,6 +262,24 @@ bool Terminal::askQuestion(char *prompt, char *string, byte stringMaxSize, char 
             this->resetInactivityTimer();
 
             char nextChar = this->stream->read();
+
+            if (nextChar == (char)27)
+            {
+                alt = true;
+                continue;
+            }
+
+            if (alt)
+            {
+                if (nextChar == 'q' && this->resetCallback)
+                {
+                    this->resetCallback();
+
+                    return false;
+                }
+
+                alt = false;
+            }
 
             if (nextChar == '\r')
             {
@@ -298,11 +336,11 @@ bool Terminal::askYesNoQuestion(char *question, bool warning = false)
     }
 }
 
-byte Terminal::waitKeySelection(char rangeStart = 0, char rangeEnd = 255)
+char Terminal::waitKeySelection()
 {
     while (true)
     {
-        if (!this->checkInactivityTimer())
+        if (!this->checkInactivityTimer() || this->clientRequestedAbort())
         {
             return TERMINAL_OPERATION_ABORTED;
         }
@@ -314,19 +352,7 @@ byte Terminal::waitKeySelection(char rangeStart = 0, char rangeEnd = 255)
 
         this->resetInactivityTimer();
 
-        char key = this->stream->read();
-
-        if (key == TERMINAL_KEY_ESC)
-        {
-            return TERMINAL_OPERATION_ABORTED;
-        }
-
-        if (rangeStart && (key > rangeEnd || key < rangeStart))
-        {
-            continue;
-        }
-
-        return (byte)(key - rangeStart);
+        return this->stream->read();
     }
 }
 

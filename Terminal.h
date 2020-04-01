@@ -7,6 +7,7 @@
 #include "NoiseSource.h"
 #include "EncryptedStore.h"
 
+#define TERMINAL_SERIAL_SPEED 9600
 #define TERMINAL_MAX_HOTKEYS 5
 #define TERMINAL_WIDTH 80
 #define TERMINAL_ALERT_WIDTH 50
@@ -62,7 +63,7 @@ private:
     
 public:
     Terminal(EncryptedStore *enctryptedStore);
-    void init(Stream *stream);
+    void init();
     void clearHotkeys();
     void clearInputBuffer();
     void addHotkey(char key, const Functor0 &action);
@@ -77,7 +78,7 @@ public:
     void printMenuEntry(byte position, char *text, char *selectorColor = VT_FOREGROUND_WHITE);    
     void highlightMenuEntry(byte position);
     bool askQuestion(char *prompt, char *string, byte stringMaxSize, char mask = 0, byte line = NULL, byte column = NULL);
-    byte waitKeySelection(char rangeStart = 0, char rangeEnd = 255);
+    char waitKeySelection();
     bool askYesNoQuestion(char *question, bool warning = false);        
     void alert(char *message, bool warning = false);
     void showProgress(byte progressPercentile);
@@ -85,6 +86,7 @@ public:
     void flowControl(bool on);
     void readLine(char *line, byte bufferSize);
     void loop(bool noTerminalInput = false);
+    bool clientRequestedAbort();
 };
 
 #endif

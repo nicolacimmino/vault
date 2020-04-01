@@ -15,8 +15,8 @@ protected:
 
 public:
     Service(const Functor1<byte> &reportProgress, const Functor0 &reportCompletion);
-    virtual bool start() = 0;
-    virtual void loop() = 0;
+    virtual bool start(byte arg = 0) = 0;
+    virtual bool loop() = 0;
     bool isRunning();
 };
 

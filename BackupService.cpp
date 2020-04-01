@@ -6,10 +6,12 @@ BackupService::BackupService(Terminal *terminal, const Functor1<byte> &reportPro
     this->terminal = terminal;    
 }
 
-bool BackupService::start()
+bool BackupService::start(byte arg = 0)
 {
     if (!this->terminal->askYesNoQuestion(TXT_BACKUP_FULL_CONFIRMATION))
     {
+        this->reportCompletion();
+        
         return false;
     }
 
@@ -21,11 +23,15 @@ bool BackupService::start()
     return true;
 }
 
-void BackupService::loop()
+bool BackupService::loop()
 {
+    if(!this->running) {
+        return false;
+    }
+
     if (!this->backupStarted && digitalRead(BUTTON_SENSE) == HIGH)
     {
-        return;
+        return true;
     }
 
     if (!this->backupStarted)
@@ -68,5 +74,9 @@ void BackupService::loop()
     {
         this->running = false;
         this->reportCompletion();
+
+        return false;
     }
+
+    return true;
 }

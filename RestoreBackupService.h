@@ -18,8 +18,8 @@ private:
 
 public:
     RestoreBackupService(Terminal *terminal, const Functor1<byte> &reportProgress, const Functor0 &reportCompletion);
-    bool start();
-    void loop();
+    bool start(byte arg = 0);
+    bool loop();
 };
 
 #endif

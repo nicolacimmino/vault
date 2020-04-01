@@ -6,12 +6,15 @@ RestoreBackupService::RestoreBackupService(Terminal *terminal, const Functor1<by
     this->terminal = terminal;
 }
 
-bool RestoreBackupService::start()
+bool RestoreBackupService::start(byte arg = 0)
 {
     if (!this->terminal->askYesNoQuestion(TXT_BACKUP_RESTORE_CONFIRMATION, true))
     {
+        this->reportCompletion();
+        
         return false;
     }
+
     this->running = true;
     this->backupRestoreAddress = STORAGE_BASE;
 
@@ -20,8 +23,13 @@ bool RestoreBackupService::start()
     return true;
 }
 
-void RestoreBackupService::loop()
+bool RestoreBackupService::loop()
 {
+    if (!this->running)
+    {
+        return false;
+    }
+
     char *line = new char[BACKUP_LINE_SIZE];
 
     this->terminal->flowControl(true);
@@ -41,7 +49,11 @@ void RestoreBackupService::loop()
     {
         this->running = false;
         this->reportCompletion();
+
+        return false;
     }
 
     delete line;
+
+    return true;
 }

@@ -3,14 +3,16 @@
 FullWipeService::FullWipeService(Terminal *terminal, const Functor1<byte> &reportProgress, const Functor0 &reportCompletion)
     : Service(reportProgress, reportCompletion)
 {
-    this->terminal = terminal;    
+    this->terminal = terminal;
     this->address = STORAGE_BASE;
 }
 
-bool FullWipeService::start()
-{    
+bool FullWipeService::start(byte arg = 0)
+{
     if (!this->terminal->askYesNoQuestion(TXT_WIPE_FULL_CONFIRMATION, true))
     {
+        this->reportCompletion();
+        
         return false;
     }
 
@@ -21,8 +23,13 @@ bool FullWipeService::start()
     return true;
 }
 
-void FullWipeService::loop()
+bool FullWipeService::loop()
 {
+    if (!this->running)
+    {
+        return false;
+    }
+
     this->reportProgress(((unsigned long)(this->address - STORAGE_BASE) * 100) / STORAGE_SIZE);
 
     for (uint16_t addressOffset = 0; addressOffset < WIPE_ADDRESSES_PER_LOOP; addressOffset++)
@@ -36,5 +43,9 @@ void FullWipeService::loop()
     {
         this->running = false;
         this->reportCompletion();
+
+        return false;
     }
+
+    return true;
 }

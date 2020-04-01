@@ -73,16 +73,19 @@ void EncryptedStore::getTokens(byte index, char *tokensList, char *plainText)
         ix++;
     }
 
+    plainText[ix]=0;
+    
     delete password;
 }
 
-bool EncryptedStore::getLabel(byte index, char *label)
+void EncryptedStore::getLabel(byte index, char *label, char *emptyLabel)
 {
     memset(label, 0, ENCRYPTED_STORE_LABEL_SIZE);
+    strcpy(label, emptyLabel);
 
     if (index > ENCRYPTED_STORE_MAX_ENTRIES)
     {
-        return false;
+        return;
     }
 
     EncryptedEntry *encryptedEntry = new EncryptedEntry();
@@ -95,7 +98,7 @@ bool EncryptedStore::getLabel(byte index, char *label)
 
     delete encryptedEntry;
 
-    return strlen(label) != 0;
+    return;
 }
 
 void EncryptedStore::set(byte index, char *plainText, char *label)
@@ -110,8 +113,7 @@ void EncryptedStore::set(byte index, char *plainText, char *label)
     strcpy(encryptedEntry->label, label);
 
     for (int ix = 0; ix < ENCRYPTED_STORE_DATA_SIZE; ix += ENCRYPTED_STORE_BLOCK_SIZE)
-    {
-        Serial.print((char)(encryptedEntry->cipher[ix]));
+    {        
         aes256CtrEncrypt(ctx, encryptedEntry->cipher + ix, ENCRYPTED_STORE_BLOCK_SIZE);
     }
 

@@ -12,6 +12,9 @@
 #include "BackupService.h"
 #include "FullWipeService.h"
 #include "RestoreBackupService.h"
+#include "RetrievePasswordService.h"
+#include "AddPasswordService.h"
+#include "UnlockEncryptedStoreService.h"
 
 class VaultController
 {
@@ -22,7 +25,7 @@ private:
     
     byte selectedPasswordIndex;
 
-    void unlockEncryptedStore();
+    void startStoreUnlockService();
     void lockEnctryptedStore();
     void displayPasswordSelectionMenu();
     void displayPasswordActionMenu();
@@ -33,13 +36,13 @@ private:
     void backup();
     void restoreBackup();
     void fullWipe();
-    Service *runningService = NULL;
+    Service *activeService = NULL;
 
 public:
     VaultController();
     void loop();
     void addPassword();
-    void wipePassword();
+    void deletePassword();
     void selectPassword(byte index);
     void retrievePassword(byte action);
     void resetTerminal();    

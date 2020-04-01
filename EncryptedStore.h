@@ -40,7 +40,7 @@ public:
     bool isPositionFree(byte index);
     void get(byte index, char *plainText);
     void getTokens(byte index, char *tokensList, char *plainText);
-    bool getLabel(byte index, char *label);
+    void getLabel(byte index, char *label, char *emptyLabel);
     void set(byte index, char *plainText, char *label);
     void wipe(byte index);
     bool isLocked();    
