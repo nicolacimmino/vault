@@ -15,6 +15,7 @@
 #include "RetrievePasswordService.h"
 #include "AddPasswordService.h"
 #include "UnlockEncryptedStoreService.h"
+#include "DeletePasswordService.h"
 
 class VaultController
 {

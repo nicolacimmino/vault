@@ -8,36 +8,14 @@ VaultController::VaultController()
     this->notificationController = new NotificationController();
 
     pinMode(BUTTON_SENSE, INPUT_PULLUP);
-  
+
     this->terminal->init();
 
-    this->terminal->setResetCallback(makeFunctor((Functor0 *)0, *this, &VaultController::resetTerminal));
+    this->terminal->setResetCallback(makeFunctor((Functor0 *)0, *this, &VaultController::resetVault));
 
-    this->resetTerminal();
+    this->resetVault();
 
     Keyboard.begin();
-}
-
-/**
- * Wipe a password.
- * 
- * Asks the user the position to wipe.
- */
-void VaultController::deletePassword()
-{
-    this->terminal->print(TXT_SELECT_POSITION, TERMINAL_FIRST_CANVAS_LINE + TERMINAL_CANVAS_LINES - 1, 5);
-
-    char selection = this->terminal->waitKeySelection();
-
-    if (selection != TERMINAL_OPERATION_ABORTED && selection >= 'a' && selection <= 'a' + ENCRYPTED_STORE_MAX_ENTRIES)
-    {
-        if (this->terminal->askYesNoQuestion(TXT_DELETE_PASSWORD_CONFIRMATION, true))
-        {
-            this->encryptedStore->wipe(selection - 'a');
-        }
-    }
-
-    this->displayPasswordSelectionMenu();
 }
 
 /**
@@ -137,7 +115,7 @@ void VaultController::displayPasswordActionMenu()
     this->terminal->setMenuCallback(makeFunctor((Functor1<byte> *)0, *this, &VaultController::retrievePassword));
 }
 
-void VaultController::resetTerminal()
+void VaultController::resetVault()
 {
     if (this->activeService)
     {
@@ -187,6 +165,22 @@ void VaultController::retrievePassword(byte action)
         makeFunctor((Functor0 *)0, *this, &VaultController::displayPasswordSelectionMenu));
 
     this->activeService->start(action);
+}
+
+/**
+ * Delete a password.
+ * 
+ * Asks the user the position to wipe.
+ */
+void VaultController::deletePassword()
+{
+    this->activeService = new DeletePasswordService(
+        this->terminal,
+        this->encryptedStore,
+        makeFunctor((Functor1<byte> *)0, *this->terminal, &Terminal::showProgress),
+        makeFunctor((Functor0 *)0, *this, &VaultController::displayPasswordSelectionMenu));
+
+    this->activeService->start();
 }
 
 void VaultController::backup()
