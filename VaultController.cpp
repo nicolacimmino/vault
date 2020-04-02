@@ -65,15 +65,15 @@ void VaultController::displayPasswordSelectionMenu()
 void VaultController::displayOptionsMenu()
 {
     this->terminal->clearCanvas();
+    this->terminal->setMenuCallback(NULL);
+
     this->terminal->printMenuEntry(0, "Backup", VT_FOREGROUND_WHITE, makeFunctor((Functor0 *)0, *this, &VaultController::backup));
     this->terminal->printMenuEntry(1, "Restore Backup", VT_FOREGROUND_WHITE, makeFunctor((Functor0 *)0, *this, &VaultController::restoreBackup));
     this->terminal->printMenuEntry(2, "Full Wipe", VT_FOREGROUND_WHITE, makeFunctor((Functor0 *)0, *this, &VaultController::fullWipe));
     this->terminal->printMenuEntry(3, "Back", VT_FOREGROUND_WHITE, makeFunctor((Functor0 *)0, *this, &VaultController::displayPasswordSelectionMenu));
 
     this->terminal->clearHotkeys();
-    this->terminal->printStatusMessage(" Options ");
-
-    this->terminal->setMenuCallback(NULL);
+    this->terminal->printStatusMessage(" Options ");    
 }
 
 void VaultController::displayPasswordActionMenu()
@@ -83,15 +83,16 @@ void VaultController::displayPasswordActionMenu()
 
     char statusMessage[TERMINAL_WIDTH];
     sprintf(statusMessage, TXT_SELECTED_PASSWORD_LABEL, label);
-
-    this->terminal->clearHotkeys();
     this->terminal->printStatusMessage(statusMessage);
 
+    this->terminal->clearHotkeys();
+    this->terminal->setMenuCallback(NULL);
+    
     this->terminal->printMenuEntry(TERMINAL_SECOND_LEVEL_MENU_FIRST_POSITION, TXT_MENU_PASSWORD_TO_CLIPBOARD, VT_FOREGROUND_WHITE, makeFunctor((Functor0 *)0, *this, &VaultController::retrievePasswordFull));
     this->terminal->printMenuEntry(TERMINAL_SECOND_LEVEL_MENU_FIRST_POSITION + 1, TXT_MENU_PASSWORD_TO_CLIPBOARD_PARTIAL, VT_FOREGROUND_WHITE, makeFunctor((Functor0 *)0, *this, &VaultController::retrievePasswordPartial));
     this->terminal->printMenuEntry(TERMINAL_SECOND_LEVEL_MENU_FIRST_POSITION + 2, TXT_MENU_BACK, VT_FOREGROUND_WHITE, makeFunctor((Functor0 *)0, *this, &VaultController::displayPasswordSelectionMenu));
 
-    this->terminal->setMenuCallback(NULL);
+    
 }
 
 void VaultController::resetVault()
