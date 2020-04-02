@@ -130,15 +130,16 @@ void Terminal::loop(bool noTerminalInput = false)
             byte menuIndex = key - 'a';
             this->highlightMenuEntry(menuIndex);
 
-            if(this->menuCallback) {
+            if (this->menuCallback)
+            {
                 this->menuCallback(menuIndex);
             }
-            
+
             if (this->menuCallbacks[menuIndex])
             {
                 this->menuCallbacks[menuIndex]();
             }
-        }        
+        }
     }
 }
 
@@ -226,7 +227,7 @@ void Terminal::printMenuEntry(byte position, char *text, char *selectorColor = V
 
 void Terminal::highlightMenuEntry(byte position)
 {
-    this->printMenuEntry(position, "", VT_FOREGROUND_GREEN);
+    this->printMenuEntry(position, "", VT_FOREGROUND_GREEN, this->menuCallbacks[position]);
 }
 
 void Terminal::flowControl(bool on)
