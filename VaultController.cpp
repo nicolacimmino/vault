@@ -65,36 +65,15 @@ void VaultController::displayPasswordSelectionMenu()
 void VaultController::displayOptionsMenu()
 {
     this->terminal->clearCanvas();
-    this->terminal->printMenuEntry(0, "Backup");
-    this->terminal->printMenuEntry(1, "Restore Backup");
-    this->terminal->printMenuEntry(2, "Full Wipe");
-    this->terminal->printMenuEntry(3, "Back");
+    this->terminal->printMenuEntry(0, "Backup", VT_FOREGROUND_WHITE, makeFunctor((Functor0 *)0, *this, &VaultController::backup));
+    this->terminal->printMenuEntry(1, "Restore Backup", VT_FOREGROUND_WHITE, makeFunctor((Functor0 *)0, *this, &VaultController::restoreBackup));
+    this->terminal->printMenuEntry(2, "Full Wipe", VT_FOREGROUND_WHITE, makeFunctor((Functor0 *)0, *this, &VaultController::fullWipe));
+    this->terminal->printMenuEntry(3, "Back", VT_FOREGROUND_WHITE, makeFunctor((Functor0 *)0, *this, &VaultController::displayPasswordSelectionMenu));
 
     this->terminal->clearHotkeys();
     this->terminal->printStatusMessage(" Options ");
 
-    this->terminal->setMenuCallback(makeFunctor((Functor1<byte> *)0, *this, &VaultController::processOptionsSelection));
-}
-
-void VaultController::processOptionsSelection(byte action)
-{
-    switch (action)
-    {
-    case 0:
-        this->backup();
-        break;
-    case 1:
-        this->restoreBackup();
-        break;
-    case 2:
-        this->fullWipe();
-        break;
-    case 3:
-        this->displayPasswordSelectionMenu();
-        break;
-    default:
-        return;
-    }
+    this->terminal->setMenuCallback(NULL);
 }
 
 void VaultController::displayPasswordActionMenu()

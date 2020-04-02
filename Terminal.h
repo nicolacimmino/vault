@@ -30,6 +30,7 @@
 #define TERMINAL_LEFT_MENU_FIRST_COLUMN 5
 #define TERMINAL_RIGHT_MENU_FIRST_COLUMN TERMINAL_RIGHT_HALF_FIRST_COLUMN
 #define TEMRINAL_KEY_FINGERPRINT_DISPLAY_TIMEOUT 1000
+#define TERMINAL_MENU_MAX_ENTRIES 16 
 
 #define TERMINAL_KEY_ESC 0x1B
 #define TERMINAL_KEY_BACKSPACE 0x7F
@@ -55,6 +56,7 @@ private:
 
     Stream *stream;
     terminalHotkey hotkeys[TERMINAL_MAX_HOTKEYS];    
+    Functor0 menuCallbacks[TERMINAL_MENU_MAX_ENTRIES];
     byte lastHotkeyIndex = 0;
     Functor1<byte> menuCallback;
     Functor0 resetCallback;
@@ -74,7 +76,7 @@ public:
     void printHeaderMessage(char *message);
     void printStatusMessage(char *message);    
     void print(char *text, byte line = NULL, byte column = NULL);
-    void printMenuEntry(byte position, char *text, char *selectorColor = VT_FOREGROUND_WHITE);    
+    void printMenuEntry(byte position, char *text, char *selectorColor = VT_FOREGROUND_WHITE, Functor0 callback = NULL);    
     void highlightMenuEntry(byte position);
     bool askQuestion(char *prompt, char *string, byte stringMaxSize, char mask = 0, byte line = NULL, byte column = NULL, bool noTimeout = false);
     char waitKeySelection();

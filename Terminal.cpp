@@ -125,12 +125,20 @@ void Terminal::loop(bool noTerminalInput = false)
             continue;
         }
 
-        if (key >= 'a' && (key <= 'a' + this->maxMenuPosition) && this->menuCallback)
+        if (key >= 'a' && (key <= 'a' + this->maxMenuPosition))
         {
             byte menuIndex = key - 'a';
             this->highlightMenuEntry(menuIndex);
-            this->menuCallback(menuIndex);
-        }
+
+            if(this->menuCallback) {
+                this->menuCallback(menuIndex);
+            }
+            
+            if (this->menuCallbacks[menuIndex])
+            {
+                this->menuCallbacks[menuIndex]();
+            }
+        }        
     }
 }
 
@@ -201,8 +209,10 @@ void Terminal::print(char *text, byte line = NULL, byte column = NULL)
     this->stream->print(text);
 }
 
-void Terminal::printMenuEntry(byte position, char *text, char *selectorColor = VT_FOREGROUND_WHITE)
+void Terminal::printMenuEntry(byte position, char *text, char *selectorColor = VT_FOREGROUND_WHITE, Functor0 callback = NULL)
 {
+    this->menuCallbacks[position] = callback;
+
     this->maxMenuPosition = max(this->maxMenuPosition, position);
 
     byte line = (position % TERMINAL_SECOND_LEVEL_MENU_FIRST_POSITION) + TERMINAL_FIRST_CANVAS_LINE;
