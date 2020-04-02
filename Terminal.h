@@ -40,8 +40,7 @@ class Terminal
 {
 private:
     void printMessage(uint8_t messageId);
-    void printHeader();
-    void resetInactivityTimer();
+    void printHeader();    
     bool checkInactivityTimer();
     int getFreeRamBytes();    
     byte maxMenuPosition = 0;
@@ -77,7 +76,7 @@ public:
     void print(char *text, byte line = NULL, byte column = NULL);
     void printMenuEntry(byte position, char *text, char *selectorColor = VT_FOREGROUND_WHITE);    
     void highlightMenuEntry(byte position);
-    bool askQuestion(char *prompt, char *string, byte stringMaxSize, char mask = 0, byte line = NULL, byte column = NULL);
+    bool askQuestion(char *prompt, char *string, byte stringMaxSize, char mask = 0, byte line = NULL, byte column = NULL, bool noTimeout = false);
     char waitKeySelection();
     bool askYesNoQuestion(char *question, bool warning = false);        
     void alert(char *message, bool warning = false);
@@ -87,6 +86,7 @@ public:
     void readLine(char *line, byte bufferSize);
     void loop(bool noTerminalInput = false);
     bool clientRequestedAbort();
+    void resetInactivityTimer();
 };
 
 #endif

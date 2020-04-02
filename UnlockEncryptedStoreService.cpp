@@ -12,7 +12,7 @@ bool UnlockEncryptedStoreService::start(byte arg = 0)
 {
     char *masterPassword = new char[ENCRYPTED_STORE_MASTER_PASSWORD_MAX_SIZE];
 
-    if (this->terminal->askQuestion(TXT_ENTER_MASTER_PASSWORD, masterPassword, ENCRYPTED_STORE_MASTER_PASSWORD_MAX_SIZE, TXT_PASSWORD_MASK, TERMINAL_FIRST_CANVAS_LINE + 2, 2) == true)
+    if (this->terminal->askQuestion(TXT_ENTER_MASTER_PASSWORD, masterPassword, ENCRYPTED_STORE_MASTER_PASSWORD_MAX_SIZE, TXT_PASSWORD_MASK, TERMINAL_FIRST_CANVAS_LINE + 2, 2, true) == true)
     {
         this->encryptedStore->unlock(masterPassword);
 
@@ -21,8 +21,6 @@ bool UnlockEncryptedStoreService::start(byte arg = 0)
 
     delete masterPassword;
 
-    this->notificationController->setStoreLocked(false);
-    
     this->reportCompletion();
 
     return false;

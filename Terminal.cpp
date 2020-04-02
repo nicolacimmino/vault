@@ -248,7 +248,7 @@ void Terminal::readLine(char *line, byte bufferSize)
     line[bytesRead] = 0;
 }
 
-bool Terminal::askQuestion(char *prompt, char *string, byte stringMaxSize, char mask = 0, byte line = NULL, byte column = NULL)
+bool Terminal::askQuestion(char *prompt, char *string, byte stringMaxSize, char mask = 0, byte line = NULL, byte column = NULL, bool noTimeout = false)
 {
     this->print(prompt, line, column);
 
@@ -308,7 +308,7 @@ bool Terminal::askQuestion(char *prompt, char *string, byte stringMaxSize, char 
             this->stream->print(mask ? mask : nextChar);
         }
 
-        if (!this->checkInactivityTimer())
+        if (!noTimeout && !this->checkInactivityTimer())
         {
             return false;
         }
