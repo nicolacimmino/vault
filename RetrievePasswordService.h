@@ -9,6 +9,8 @@
 #include "EncryptedStore.h"
 
 #define BACKUP_LINE_SIZE 64
+#define RETRIEVE_PASSWORD_ACTION_FULL 0
+#define RETRIEVE_PASSWORD_ACTION_PARTIAL 1
 
 class RetrievePasswordService : public Service
 {

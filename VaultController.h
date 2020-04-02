@@ -23,14 +23,14 @@ private:
     Terminal *terminal;
     EncryptedStore *encryptedStore;
     NotificationController *notificationController;
-    
+
     byte selectedPasswordIndex;
 
     void startStoreUnlockService();
     void lockEnctryptedStore();
     void displayPasswordSelectionMenu();
     void displayPasswordActionMenu();
-    void displayOptionsMenu();    
+    void displayOptionsMenu();
     void setLedStatus(bool green, bool yellow, bool red);
     void setTime();
     void backup();
@@ -45,7 +45,9 @@ public:
     void deletePassword();
     void selectPassword(byte index);
     void retrievePassword(byte action);
-    void resetVault();    
+    void retrievePasswordFull();
+    void retrievePasswordPartial();
+    void resetVault();
 };
 
 #endif

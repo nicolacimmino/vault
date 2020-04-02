@@ -13,18 +13,18 @@ bool RetrievePasswordService::start(byte arg = 0)
     if (arg != 0 && arg != 1)
     {
         this->reportCompletion();
-        
+
         return false;
     }
 
     char *clipboard = new char[ENCRYPTED_STORE_DATA_SIZE];
 
-    if (arg == 0)
+    if (arg == RETRIEVE_PASSWORD_ACTION_FULL)
     {
         this->encryptedStore->get(selectedPasswordIndex, clipboard);
     }
 
-    if (arg == 1)
+    if (arg == RETRIEVE_PASSWORD_ACTION_PARTIAL)
     {
         char *buffer = new char[TERMINAL_WIDTH];
 
