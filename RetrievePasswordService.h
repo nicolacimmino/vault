@@ -11,6 +11,7 @@
 #define BACKUP_LINE_SIZE 64
 #define RETRIEVE_PASSWORD_ACTION_FULL 0
 #define RETRIEVE_PASSWORD_ACTION_PARTIAL 1
+#define RETRIEVE_PASSWORD_ACTION_SHOW 2
 
 class RetrievePasswordService : public Service
 {
@@ -18,7 +19,8 @@ private:
     Terminal *terminal;
     EncryptedStore *encryptedStore;
     byte selectedPasswordIndex;
-
+    void typeClipboard(char *clipboard);
+    
 public:
     RetrievePasswordService(Terminal *terminal, EncryptedStore *encryptedStore, byte selectedPasswordIndex, const Functor1<byte> &reportProgress, const Functor0 &reportCompletion);
     bool start(byte arg = 0);

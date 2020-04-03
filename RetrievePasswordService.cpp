@@ -10,16 +10,10 @@ RetrievePasswordService::RetrievePasswordService(Terminal *terminal, EncryptedSt
 
 bool RetrievePasswordService::start(byte arg = 0)
 {
-    if (arg != 0 && arg != 1)
-    {
-        this->reportCompletion();
-
-        return false;
-    }
-
     char *clipboard = new char[ENCRYPTED_STORE_DATA_SIZE];
+    memset(clipboard, 0, ENCRYPTED_STORE_DATA_SIZE);
 
-    if (arg == RETRIEVE_PASSWORD_ACTION_FULL)
+    if (arg == RETRIEVE_PASSWORD_ACTION_FULL || arg == RETRIEVE_PASSWORD_ACTION_SHOW)
     {
         this->encryptedStore->get(selectedPasswordIndex, clipboard);
     }
@@ -34,6 +28,25 @@ bool RetrievePasswordService::start(byte arg = 0)
         delete buffer;
     }
 
+    if (arg == RETRIEVE_PASSWORD_ACTION_SHOW)
+    {
+        terminal->alert(clipboard);
+        terminal->waitKeySelection();
+    }
+    else
+    {
+        this->typeClipboard(clipboard);
+    }
+
+    delete clipboard;
+
+    this->reportCompletion();
+
+    return false;
+}
+
+void RetrievePasswordService::typeClipboard(char *clipboard)
+{
     this->terminal->alert("Ready. Press button to type.");
 
     while (strlen(clipboard) > 0)
@@ -54,12 +67,6 @@ bool RetrievePasswordService::start(byte arg = 0)
             break;
         }
     }
-
-    delete clipboard;
-
-    this->reportCompletion();
-
-    return false;
 }
 
 bool RetrievePasswordService::loop()

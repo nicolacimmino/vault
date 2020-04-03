@@ -73,7 +73,7 @@ void VaultController::displayOptionsMenu()
     this->terminal->printMenuEntry(3, "Back", VT_FOREGROUND_WHITE, makeFunctor((Functor0 *)0, *this, &VaultController::displayPasswordSelectionMenu));
 
     this->terminal->clearHotkeys();
-    this->terminal->printStatusMessage(" Options ");    
+    this->terminal->printStatusMessage(" Options ");
 }
 
 void VaultController::displayPasswordActionMenu()
@@ -87,12 +87,12 @@ void VaultController::displayPasswordActionMenu()
 
     this->terminal->clearHotkeys();
     this->terminal->setMenuCallback(NULL);
-    
-    this->terminal->printMenuEntry(TERMINAL_SECOND_LEVEL_MENU_FIRST_POSITION, TXT_MENU_PASSWORD_TO_CLIPBOARD, VT_FOREGROUND_WHITE, makeFunctor((Functor0 *)0, *this, &VaultController::retrievePasswordFull));
-    this->terminal->printMenuEntry(TERMINAL_SECOND_LEVEL_MENU_FIRST_POSITION + 1, TXT_MENU_PASSWORD_TO_CLIPBOARD_PARTIAL, VT_FOREGROUND_WHITE, makeFunctor((Functor0 *)0, *this, &VaultController::retrievePasswordPartial));
-    this->terminal->printMenuEntry(TERMINAL_SECOND_LEVEL_MENU_FIRST_POSITION + 2, TXT_MENU_BACK, VT_FOREGROUND_WHITE, makeFunctor((Functor0 *)0, *this, &VaultController::displayPasswordSelectionMenu));
 
-    
+    this->terminal->printMenuEntry(MENU_L2_FIRST_POS, TXT_MENU_PASSWORD_TO_CLIPBOARD, VT_FOREGROUND_WHITE, makeFunctor((Functor0 *)0, *this, &VaultController::retrievePasswordFull));
+    this->terminal->printMenuEntry(MENU_L2_FIRST_POS + 1, TXT_MENU_PASSWORD_TO_CLIPBOARD_PARTIAL, VT_FOREGROUND_WHITE, makeFunctor((Functor0 *)0, *this, &VaultController::retrievePasswordPartial));
+    this->terminal->printMenuEntry(MENU_L2_FIRST_POS + 2, TXT_MENU_PASSWORD_SHOW, VT_FOREGROUND_WHITE, makeFunctor((Functor0 *)0, *this, &VaultController::retrievePasswordShow));
+    this->terminal->printMenuEntry(MENU_L2_FIRST_POS + 3, TXT_MENU_BACK, VT_FOREGROUND_WHITE, makeFunctor((Functor0 *)0, *this, &VaultController::displayPasswordSelectionMenu));
+
 }
 
 void VaultController::resetVault()
@@ -133,6 +133,11 @@ void VaultController::fullWipe()
     this->activeService->start();
 }
 
+void VaultController::retrievePasswordShow()
+{
+    this->retrievePassword(RETRIEVE_PASSWORD_ACTION_SHOW);
+}
+
 void VaultController::retrievePasswordFull()
 {
     this->retrievePassword(RETRIEVE_PASSWORD_ACTION_FULL);
@@ -144,7 +149,7 @@ void VaultController::retrievePasswordPartial()
 }
 
 void VaultController::retrievePassword(byte action)
-{ 
+{
     this->activeService = new RetrievePasswordService(
         this->terminal,
         this->encryptedStore,

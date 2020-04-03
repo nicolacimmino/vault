@@ -43,6 +43,7 @@ const char *const messages[] PROGMEM = {message0, message1};
 #define TXT_SELECTED_PASSWORD_LABEL " Selected: %s"
 #define TXT_MENU_PASSWORD_TO_CLIPBOARD "Copy to clipboard"
 #define TXT_MENU_PASSWORD_TO_CLIPBOARD_PARTIAL "Partial copy to clipboard"
+#define TXT_MENU_PASSWORD_SHOW "Show only"
 #define TXT_MENU_BACK "Back"
 #define TXT_SELECT_POSITION "Select position: "
 #define TXT_ENTER_LABEL "Enter label: "

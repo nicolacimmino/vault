@@ -47,6 +47,7 @@ public:
     void retrievePassword(byte action);
     void retrievePasswordFull();
     void retrievePasswordPartial();
+    void retrievePasswordShow();
     void resetVault();
 };
 

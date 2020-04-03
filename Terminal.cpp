@@ -216,8 +216,8 @@ void Terminal::printMenuEntry(byte position, char *text, char *selectorColor = V
 
     this->maxMenuPosition = max(this->maxMenuPosition, position);
 
-    byte line = (position % TERMINAL_SECOND_LEVEL_MENU_FIRST_POSITION) + TERMINAL_FIRST_CANVAS_LINE;
-    byte column = (position < TERMINAL_SECOND_LEVEL_MENU_FIRST_POSITION) ? TERMINAL_LEFT_MENU_FIRST_COLUMN : TERMINAL_RIGHT_MENU_FIRST_COLUMN;
+    byte line = (position % MENU_L2_FIRST_POS) + TERMINAL_FIRST_CANVAS_LINE;
+    byte column = (position < MENU_L2_FIRST_POS) ? TERMINAL_LEFT_MENU_FIRST_COLUMN : TERMINAL_RIGHT_MENU_FIRST_COLUMN;
 
     char buffer[TERMINAL_WIDTH];
     sprintf(buffer, "%s[%c]%s  %s", selectorColor, 'A' + position, VT_FOREGROUND_YELLOW, text);
