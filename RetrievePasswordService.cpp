@@ -22,7 +22,7 @@ bool RetrievePasswordService::start(byte arg = 0)
     {
         char *buffer = new char[TERMINAL_WIDTH];
 
-        this->terminal->askQuestion(TXT_ENTER_TOKENS_POS, buffer, TERMINAL_WIDTH, 0, TERMINAL_FIRST_CANVAS_LINE + 4, TERMINAL_RIGHT_HALF_FIRST_COLUMN);
+        this->terminal->askQuestion(TXT_ENTER_TOKENS_POS, buffer, TERMINAL_WIDTH, 0, TERMINAL_FIRST_CANVAS_LINE + 5, TERMINAL_RIGHT_HALF_FIRST_COLUMN);
         this->encryptedStore->getTokens(selectedPasswordIndex, buffer, clipboard);
 
         delete buffer;
