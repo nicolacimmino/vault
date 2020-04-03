@@ -6,6 +6,7 @@
 #include <Keyboard.h>
 #include "hardware.h"
 #include <EEPROM.h>
+#include <ADCTouch.h>
 
 #define BAKCUP_ADDRESSES_PER_LINE 16
 #define BACKUP_LINES_PER_LOOP 4
@@ -16,6 +17,7 @@ private:
     uint16_t backupAddress;    
     Terminal *terminal;
     bool backupStarted = false;
+    int touchRef;
 
 public:
     BackupService(Terminal *terminal, const Functor1<byte> &reportProgress, const Functor0 &reportCompletion);

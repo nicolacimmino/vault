@@ -35,7 +35,7 @@ bool RetrievePasswordService::start(byte arg = 0)
     }
     else
     {
-        this->typeClipboard(clipboard);
+        this->typeClipboard(clipboard, (arg == RETRIEVE_PASSWORD_ACTION_PARTIAL) ? PASSWORD_TYPE_INTERDIGIT_DELAY_PARTIAL : 0);
     }
 
     delete clipboard;
@@ -45,21 +45,24 @@ bool RetrievePasswordService::start(byte arg = 0)
     return false;
 }
 
-void RetrievePasswordService::typeClipboard(char *clipboard)
+void RetrievePasswordService::typeClipboard(char *clipboard, uint16_t interDigitDelay)
 {
-    this->terminal->alert("Ready. Press button to type.");
+    this->terminal->alert(TXT_TOUCH_TO_TYPE);
 
-    while (strlen(clipboard) > 0)
-    {
-        if (digitalRead(BUTTON_SENSE) == LOW)
+    int ref = ADCTouch.read(A1, 500);
+
+    while (true)
+    {        
+        if (ADCTouch.read(A1) - ref > TOUCH_THRESHOLD)
         {
             for (byte ix = 0; ix < strlen(clipboard); ix++)
             {
                 Keyboard.print(clipboard[ix]);
-                delay(300);
+                delay(interDigitDelay);
             }
 
             memset(clipboard, 0, ENCRYPTED_STORE_DATA_SIZE);
+            break;
         }
 
         if (this->terminal->clientRequestedAbort())

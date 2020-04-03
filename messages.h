@@ -24,7 +24,7 @@ const char *const messages[] PROGMEM = {message0, message1};
 #define TXT_ENTER_MASTER_PASSWORD "Master password:"
 #define TXT_PASSWORD_MASK '*'
 
-#define TXT_WARNING VT_FOREGROUND_RED VT_TEXT_BLINK "                  WARNING!" VT_TEXT_DEFAULT VT_FOREGROUND_YELLOW 
+#define TXT_WARNING VT_FOREGROUND_RED VT_TEXT_BLINK "                  WARNING!" VT_TEXT_DEFAULT VT_FOREGROUND_YELLOW
 #define TXT_WIPE_FULL_CONFIRMATION "Erase all data?  (y/n)"
 #define TXT_DELETE_PASSWORD_CONFIRMATION "Delete password? (y/n)"
 #define TXT_WIPING "Wiping storage....."
@@ -39,7 +39,7 @@ const char *const messages[] PROGMEM = {message0, message1};
 #define TXT_BACKUP_IN_PROGRESS "Backup in progress....."
 #define TXT_BACKUP_RESTORE_IN_PROGRESS "Backup restore in progress....."
 #define TXT_TERMINAL_STATUS_COMPLETED "[OK]"
-#define TXT_PRESS_BUTTON "Ready. Press button to type."
+#define TXT_TOUCH_TO_START_BACKUP "Focus on a text editor and touch to start."
 #define TXT_SELECTED_PASSWORD_LABEL " Selected: %s"
 #define TXT_MENU_PASSWORD_TO_CLIPBOARD "Copy to clipboard"
 #define TXT_MENU_PASSWORD_TO_CLIPBOARD_PARTIAL "Partial copy to clipboard"
@@ -50,5 +50,7 @@ const char *const messages[] PROGMEM = {message0, message1};
 #define TXT_ENTER_PASSWORD "Enter password: "
 #define TXT_ENCRYPTING " Enctrypting......"
 #define TXT_EMPTY_LABEL "---"
+#define TXT_TOUCH_TO_TYPE "Focus on password field and touch to type."
+#define TOUCH_THRESHOLD 40
 
 #endif

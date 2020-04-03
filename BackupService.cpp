@@ -11,14 +11,16 @@ bool BackupService::start(byte arg = 0)
     if (!this->terminal->askYesNoQuestion(TXT_BACKUP_FULL_CONFIRMATION))
     {
         this->reportCompletion();
-        
+
         return false;
     }
 
-    this->terminal->alert(TXT_PRESS_BUTTON);
+    this->terminal->alert(TXT_TOUCH_TO_START_BACKUP);
 
     this->running = true;
     this->backupAddress = STORAGE_BASE;
+
+    this->touchRef = ADCTouch.read(A1, 500);
 
     return true;
 }
@@ -29,7 +31,7 @@ bool BackupService::loop()
         return false;
     }
 
-    if (!this->backupStarted && digitalRead(BUTTON_SENSE) == HIGH)
+    if (!this->backupStarted && ADCTouch.read(A1) - this->touchRef < TOUCH_THRESHOLD)
     {
         return true;
     }
