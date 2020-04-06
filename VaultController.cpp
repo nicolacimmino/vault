@@ -153,6 +153,7 @@ void VaultController::retrievePassword(byte action)
     this->activeService = new RetrievePasswordService(
         this->terminal,
         this->encryptedStore,
+        this->notificationController,
         this->selectedPasswordIndex,
         makeFunctor((Functor1<byte> *)0, *this->terminal, &Terminal::showProgress),
         makeFunctor((Functor0 *)0, *this, &VaultController::displayPasswordSelectionMenu));

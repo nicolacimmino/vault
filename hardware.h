@@ -10,4 +10,7 @@
 #define STORAGE_BASE 0
 #define STORAGE_SIZE 1024
 
+#define NEOPIXEL_NOTIFICATION
+//#define LED_NOTIFICATION
+
 #endif

@@ -8,6 +8,7 @@
 #include <EEPROM.h>
 #include "EncryptedStore.h"
 #include <ADCTouch.h>
+#include "NotificationController.h"
 
 #define BACKUP_LINE_SIZE 64
 #define RETRIEVE_PASSWORD_ACTION_FULL 0
@@ -20,11 +21,12 @@ class RetrievePasswordService : public Service
 private:
     Terminal *terminal;
     EncryptedStore *encryptedStore;
+    NotificationController *notificationController;
     byte selectedPasswordIndex;
     void typeClipboard(char *clipboard, uint16_t interDigitDelay);
 
 public:
-    RetrievePasswordService(Terminal *terminal, EncryptedStore *encryptedStore, byte selectedPasswordIndex, const Functor1<byte> &reportProgress, const Functor0 &reportCompletion);
+    RetrievePasswordService(Terminal *terminal, EncryptedStore *encryptedStore, NotificationController *notificationController, byte selectedPasswordIndex, const Functor1<byte> &reportProgress, const Functor0 &reportCompletion);
     bool start(byte arg = 0);
     bool loop();
 };

@@ -1,15 +1,18 @@
 #include "RetrievePasswordService.h"
 
-RetrievePasswordService::RetrievePasswordService(Terminal *terminal, EncryptedStore *encryptedStore, byte selectedPasswordIndex, const Functor1<byte> &reportProgress, const Functor0 &reportCompletion)
+RetrievePasswordService::RetrievePasswordService(Terminal *terminal, EncryptedStore *encryptedStore, NotificationController *notificationController, byte selectedPasswordIndex, const Functor1<byte> &reportProgress, const Functor0 &reportCompletion)
     : Service(reportProgress, reportCompletion)
 {
     this->terminal = terminal;
     this->encryptedStore = encryptedStore;
+    this->notificationController = notificationController;
     this->selectedPasswordIndex = selectedPasswordIndex;
 }
 
 bool RetrievePasswordService::start(byte arg = 0)
 {
+    this->notificationController->setClipboardBusy(true);
+
     char *clipboard = new char[ENCRYPTED_STORE_DATA_SIZE];
     memset(clipboard, 0, ENCRYPTED_STORE_DATA_SIZE);
 
@@ -40,6 +43,8 @@ bool RetrievePasswordService::start(byte arg = 0)
 
     delete clipboard;
 
+    this->notificationController->setClipboardBusy(false);
+
     this->reportCompletion();
 
     return false;
@@ -52,7 +57,9 @@ void RetrievePasswordService::typeClipboard(char *clipboard, uint16_t interDigit
     int ref = ADCTouch.read(A1, 500);
 
     while (true)
-    {        
+    {      
+        this->notificationController->loop();
+          
         if (ADCTouch.read(A1) - ref > TOUCH_THRESHOLD)
         {
             for (byte ix = 0; ix < strlen(clipboard); ix++)
