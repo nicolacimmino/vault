@@ -7,6 +7,8 @@ VaultController::VaultController()
     this->terminal = new Terminal(this->encryptedStore);
     this->notificationController = new NotificationController();
 
+    this->notificationController->setStoreLocked(true);
+    
     pinMode(BUTTON_SENSE, INPUT_PULLUP);
 
     this->terminal->init();
