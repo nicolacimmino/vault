@@ -37,7 +37,7 @@ const char *const messages[] PROGMEM = {message0, message1};
 #define TXT_BACKUP_FULL_CONFIRMATION "Start full backup? (y/n)"
 #define TXT_BACKUP_RESTORE_CONFIRMATION "Start restore? (y/n)"
 #define TXT_BACKUP_IN_PROGRESS "Backup in progress....."
-#define TXT_BACKUP_RESTORE_IN_PROGRESS "Backup restore in progress....."
+#define TXT_BACKUP_RESTORE_IN_PROGRESS "Paste backup data....."
 #define TXT_TERMINAL_STATUS_COMPLETED "[OK]"
 #define TXT_TOUCH_TO_START_BACKUP "Focus on a text editor and touch to start."
 #define TXT_SELECTED_PASSWORD_LABEL " Selected: %s"
