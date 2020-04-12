@@ -10,7 +10,7 @@ NotificationController::NotificationController()
 
 #ifdef NEOPIXEL_NOTIFICATION
     FastLED.addLeds<WS2812B, 4, GRB>(this->led, 2);
-    FastLED.setBrightness(50);
+    FastLED.setBrightness(100);
 #endif
 
     this->loop();
@@ -26,18 +26,17 @@ void NotificationController::setStoreLocked(bool locked)
 
 void NotificationController::setClipboardBusy(bool busy)
 {
-    this->ledYellowBlink = busy;
+    this->ledYellow = busy;
 
     this->loop();
 }
 
 void NotificationController::loop()
 {
-    bool ledYellowState = this->ledYellowBlink && ((millis() % 1000) < 500);
-
+    
 #ifdef LED_NOTIFICATION
     digitalWrite(LED_RED, this->ledRed);
-    digitalWrite(LED_YELLOW, ledYellowState);
+    digitalWrite(LED_YELLOW, this->ledYellow);
     digitalWrite(LED_GREEN, this->ledGreen);
 #endif
 
@@ -47,17 +46,17 @@ void NotificationController::loop()
 
     if (this->ledRed)
     {
-        this->led[0] = CRGB::Red;
+        this->led[0] = CRGB::DarkBlue;
     }
 
     if (this->ledGreen)
     {
-        this->led[0] = CRGB::Green;
+        this->led[0] = CRGB::Violet;
     }
 
-    if (ledYellowState)
+    if (this->ledYellow)
     {
-        this->led[0] = CRGB::Yellow;
+        this->led[0] = CRGB::CRGB(255, 155, 32);
     }
 
     FastLED.show();

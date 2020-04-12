@@ -13,7 +13,7 @@ class NotificationController
 {
 private:
     bool ledRed = false;    
-    bool ledYellowBlink = false;
+    bool ledYellow = false;
     bool ledGreen = false;
 #ifdef NEOPIXEL_NOTIFICATION
     CRGB led[1];
