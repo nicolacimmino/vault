@@ -10,7 +10,7 @@ NotificationController::NotificationController()
 
 #ifdef NEOPIXEL_NOTIFICATION
     FastLED.addLeds<WS2812B, 4, GRB>(this->led, 2);
-    FastLED.setBrightness(100);
+    FastLED.setBrightness(255);
 #endif
 
     this->loop();
