@@ -18,43 +18,45 @@ NotificationController::NotificationController()
 
 void NotificationController::setStoreLocked(bool locked)
 {
-    this->ledRed = locked;
-    this->ledGreen = !locked;
+    if (locked)
+    {
+        this->status |= NOTFICATION_LOCKED;
+    }
+    else
+    {
+        this->status &= ~NOTFICATION_LOCKED;
+    }
 
     this->loop();
 }
 
 void NotificationController::setClipboardBusy(bool busy)
 {
-    this->ledYellow = busy;
+    if (busy)
+    {
+        this->status |= NOTFICATION_CLIPBOARD_BUSY;
+    }
+    else
+    {
+        this->status &= ~NOTFICATION_CLIPBOARD_BUSY;
+    }
 
     this->loop();
 }
 
 void NotificationController::loop()
 {
-    
+
 #ifdef LED_NOTIFICATION
-    digitalWrite(LED_RED, this->ledRed);
-    digitalWrite(LED_YELLOW, this->ledYellow);
-    digitalWrite(LED_GREEN, this->ledGreen);
+    digitalWrite(LED_RED, this->status & NOTFICATION_LOCKED);
+    digitalWrite(LED_YELLOW, this->status & NOTFICATION_CLIPBOARD_BUSY);
+    digitalWrite(LED_GREEN, !(this->status & NOTFICATION_LOCKED));
 #endif
 
 #ifdef NEOPIXEL_NOTIFICATION
+    this->led[0] = (this->status & NOTFICATION_LOCKED) ? CRGB::DarkBlue : CRGB::DarkViolet;
 
-    this->led[0] = CRGB::Black;
-
-    if (this->ledRed)
-    {
-        this->led[0] = CRGB::DarkBlue;
-    }
-
-    if (this->ledGreen)
-    {
-        this->led[0] = CRGB::Violet;
-    }
-
-    if (this->ledYellow)
+    if (this->status & NOTFICATION_CLIPBOARD_BUSY)
     {
         this->led[0] = CRGB::CRGB(255, 155, 32);
     }

@@ -9,12 +9,13 @@
 #include <FastLED.h>
 #endif
 
+#define NOTFICATION_LOCKED 1
+#define NOTFICATION_CLIPBOARD_BUSY 2
+
 class NotificationController
 {
 private:
-    bool ledRed = false;    
-    bool ledYellow = false;
-    bool ledGreen = false;
+    byte status = 0;        
 #ifdef NEOPIXEL_NOTIFICATION
     CRGB led[1];
 #endif
