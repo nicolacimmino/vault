@@ -259,6 +259,14 @@ void Terminal::readLine(char *line, byte bufferSize)
     line[bytesRead] = 0;
 }
 
+void Terminal::flushInput()
+{
+    while (this->stream->available())
+    {
+        this->stream->read();
+    }
+}
+
 bool Terminal::askQuestion(char *prompt, char *string, byte stringMaxSize, char mask = 0, byte line = NULL, byte column = NULL, bool noTimeout = false)
 {
     this->print(prompt, line, column);

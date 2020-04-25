@@ -11,6 +11,7 @@
 
 #define NOTFICATION_LOCKED 1
 #define NOTFICATION_CLIPBOARD_BUSY 2
+#define NOTFICATION_IDLE 4
 
 class NotificationController
 {
@@ -23,6 +24,7 @@ private:
 public:
     NotificationController();    
     void setClipboardBusy(bool busy);
+    void setIdle(bool idle);
     void setStoreLocked(bool locked);
     void loop();
 };

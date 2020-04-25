@@ -44,6 +44,20 @@ void NotificationController::setClipboardBusy(bool busy)
     this->loop();
 }
 
+void NotificationController::setIdle(bool idle)
+{
+    if (idle)
+    {
+        this->status |= NOTFICATION_IDLE;
+    }
+    else
+    {
+        this->status &= ~NOTFICATION_IDLE;
+    }
+
+    this->loop();
+}
+
 void NotificationController::loop()
 {
 
@@ -59,6 +73,11 @@ void NotificationController::loop()
     if (this->status & NOTFICATION_CLIPBOARD_BUSY)
     {
         this->led[0] = CRGB::CRGB(255, 155, 32);
+    }
+
+    if (this->status & NOTFICATION_IDLE)
+    {
+        this->led[0].fadeLightBy((millis()/12) % 255);
     }
 
     FastLED.show();

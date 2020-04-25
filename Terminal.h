@@ -89,6 +89,7 @@ public:
     void loop(bool noTerminalInput = false);
     bool clientRequestedAbort();
     void resetInactivityTimer();
+    void flushInput();
 };
 
 #endif
