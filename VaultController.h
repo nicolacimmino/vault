@@ -26,7 +26,7 @@ private:
 
     byte selectedPasswordIndex;
 
-    void startStoreUnlockService();
+    void unlockEncryptedStore();
     void lockEnctryptedStore();
     void displayPasswordSelectionMenu();
     void displayPasswordActionMenu();

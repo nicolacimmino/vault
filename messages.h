@@ -40,15 +40,26 @@ const char *const messages[] PROGMEM = {message0, message1};
 #define TXT_BACKUP_RESTORE_IN_PROGRESS "Paste backup data....."
 #define TXT_TERMINAL_STATUS_COMPLETED "[OK]"
 #define TXT_TOUCH_TO_START_BACKUP "Focus on a text editor and touch to start."
-#define TXT_SELECTED_PASSWORD_LABEL " Selected: %s"
+#define TXT_SELECTED_PASSWORD_LABEL "Selected: %s"
 #define TXT_MENU_PASSWORD_TO_CLIPBOARD "Copy to clipboard"
 #define TXT_MENU_PASSWORD_TO_CLIPBOARD_PARTIAL "Partial copy to clipboard"
 #define TXT_MENU_PASSWORD_SHOW "Show only"
 #define TXT_MENU_BACK "Back"
+#define TXT_MENU_FULL_WIPE "Full Wipe"
+#define TXT_MENU_BACKUP_RESTORE "Restore Backup"
+#define TXT_MENU_BACKUP "Backup"
+#define TXT_MENU_OPTIONS "Options"
+#define HOTKEY_ADD 'a'
+#define HOTKEY_DEL 'd'
+#define HOTKEY_KFP 'k'
+#define HOTKEY_LCK 'l'
+#define HOTKEY_OPT 'o'
+#define MENU_HOTKEYS "ALT+A Add  |  ALT+D Delete  |  ALT + K KFP  |  ALT+L Lock  |  ALT+O Options"
 #define TXT_SELECT_POSITION "Select position: "
 #define TXT_ENTER_LABEL "Enter label: "
 #define TXT_ENTER_PASSWORD "Enter password: "
-#define TXT_ENCRYPTING " Enctrypting......"
+#define TXT_ENCRYPTING "Enctrypting......"
+#define TXT_STATUS_LOCKED "Locked."
 #define TXT_EMPTY_LABEL "---"
 #define TXT_TOUCH_TO_TYPE "Focus on password field and touch to type."
 #define TOUCH_THRESHOLD 40

@@ -177,6 +177,7 @@ void Terminal::printStatusMessage(char *message)
     VT100.setCursor(TERMINAL_STATUS_LINE, 1);
     VT100.setBackgroundColor(TERMINAL_STATUS_LINE_BACKGROUND_COLOR);
     VT100.setTextColor(TERMINAL_STATUS_LINE_FOREGROUND_COLOR);
+    this->stream->print(" ");
     this->stream->print(message);
     VT100.clearLineAfter();
     VT100.setCursor(TERMINAL_STATUS_LINE, TERMINAL_WIDTH + 1);

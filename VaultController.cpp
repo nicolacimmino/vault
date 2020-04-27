@@ -8,7 +8,7 @@ VaultController::VaultController()
     this->notificationController = new NotificationController();
 
     this->notificationController->setStoreLocked(true);
-    
+
     pinMode(BUTTON_SENSE, INPUT_PULLUP);
 
     this->terminal->init();
@@ -18,6 +18,28 @@ VaultController::VaultController()
     this->resetVault();
 
     Keyboard.begin();
+}
+
+void VaultController::unlockEncryptedStore()
+{
+    this->activeService = new UnlockEncryptedStoreService(
+        this->terminal,
+        this->encryptedStore,
+        this->notificationController,
+        makeFunctor((Functor1<byte> *)0, *this->terminal, &Terminal::showProgress),
+        makeFunctor((Functor0 *)0, *this, &VaultController::displayPasswordSelectionMenu));
+
+    this->activeService->start();
+}
+
+void VaultController::lockEnctryptedStore()
+{
+    this->encryptedStore->lock();
+
+    this->notificationController->setStoreLocked(true);
+
+    this->terminal->clearScreen();
+    this->terminal->printStatusMessage(TXT_STATUS_LOCKED);
 }
 
 /**
@@ -52,12 +74,12 @@ void VaultController::displayPasswordSelectionMenu()
     }
 
     this->terminal->clearHotkeys();
-    this->terminal->addHotkey('a', makeFunctor((Functor0 *)0, *this, &VaultController::addPassword));
-    this->terminal->addHotkey('d', makeFunctor((Functor0 *)0, *this, &VaultController::deletePassword));
-    this->terminal->addHotkey('k', makeFunctor((Functor0 *)0, *this->terminal, &Terminal::showKeyFingerprint));
-    this->terminal->addHotkey('l', makeFunctor((Functor0 *)0, *this, &VaultController::lockEnctryptedStore));
-    this->terminal->addHotkey('o', makeFunctor((Functor0 *)0, *this, &VaultController::displayOptionsMenu));
-    this->terminal->printStatusMessage(" ALT+A Add  |  ALT+D Delete  |  ALT + K KFP  |  ALT+L Lock  |  ALT+O Options");
+    this->terminal->addHotkey(HOTKEY_ADD, makeFunctor((Functor0 *)0, *this, &VaultController::addPassword));
+    this->terminal->addHotkey(HOTKEY_DEL, makeFunctor((Functor0 *)0, *this, &VaultController::deletePassword));
+    this->terminal->addHotkey(HOTKEY_KFP, makeFunctor((Functor0 *)0, *this->terminal, &Terminal::showKeyFingerprint));
+    this->terminal->addHotkey(HOTKEY_LCK, makeFunctor((Functor0 *)0, *this, &VaultController::lockEnctryptedStore));
+    this->terminal->addHotkey(HOTKEY_OPT, makeFunctor((Functor0 *)0, *this, &VaultController::displayOptionsMenu));
+    this->terminal->printStatusMessage(MENU_HOTKEYS);
 
     this->terminal->setMenuCallback(makeFunctor((Functor1<byte> *)0, *this, &VaultController::selectPassword));
 
@@ -69,13 +91,28 @@ void VaultController::displayOptionsMenu()
     this->terminal->clearCanvas();
     this->terminal->setMenuCallback(NULL);
 
-    this->terminal->printMenuEntry(0, "Backup", VT_FOREGROUND_WHITE, makeFunctor((Functor0 *)0, *this, &VaultController::backup));
-    this->terminal->printMenuEntry(1, "Restore Backup", VT_FOREGROUND_WHITE, makeFunctor((Functor0 *)0, *this, &VaultController::restoreBackup));
-    this->terminal->printMenuEntry(2, "Full Wipe", VT_FOREGROUND_WHITE, makeFunctor((Functor0 *)0, *this, &VaultController::fullWipe));
-    this->terminal->printMenuEntry(3, "Back", VT_FOREGROUND_WHITE, makeFunctor((Functor0 *)0, *this, &VaultController::displayPasswordSelectionMenu));
+    this->terminal->printMenuEntry(MENU_L1_FIRST_POS,
+                                   TXT_MENU_BACKUP,
+                                   VT_FOREGROUND_WHITE,
+                                   makeFunctor((Functor0 *)0, *this, &VaultController::backup));
+
+    this->terminal->printMenuEntry(MENU_L1_FIRST_POS + 1,
+                                   TXT_MENU_BACKUP_RESTORE,
+                                   VT_FOREGROUND_WHITE,
+                                   makeFunctor((Functor0 *)0, *this, &VaultController::restoreBackup));
+
+    this->terminal->printMenuEntry(MENU_L1_FIRST_POS + 2,
+                                   TXT_MENU_FULL_WIPE,
+                                   VT_FOREGROUND_WHITE,
+                                   makeFunctor((Functor0 *)0, *this, &VaultController::fullWipe));
+
+    this->terminal->printMenuEntry(MENU_L1_FIRST_POS + 3,
+                                   TXT_MENU_BACK,
+                                   VT_FOREGROUND_WHITE,
+                                   makeFunctor((Functor0 *)0, *this, &VaultController::displayPasswordSelectionMenu));
 
     this->terminal->clearHotkeys();
-    this->terminal->printStatusMessage(" Options ");
+    this->terminal->printStatusMessage(TXT_MENU_OPTIONS);
 }
 
 void VaultController::displayPasswordActionMenu()
@@ -90,11 +127,25 @@ void VaultController::displayPasswordActionMenu()
     this->terminal->clearHotkeys();
     this->terminal->setMenuCallback(NULL);
 
-    this->terminal->printMenuEntry(MENU_L2_FIRST_POS, TXT_MENU_PASSWORD_TO_CLIPBOARD, VT_FOREGROUND_WHITE, makeFunctor((Functor0 *)0, *this, &VaultController::retrievePasswordFull));
-    this->terminal->printMenuEntry(MENU_L2_FIRST_POS + 1, TXT_MENU_PASSWORD_TO_CLIPBOARD_PARTIAL, VT_FOREGROUND_WHITE, makeFunctor((Functor0 *)0, *this, &VaultController::retrievePasswordPartial));
-    this->terminal->printMenuEntry(MENU_L2_FIRST_POS + 2, TXT_MENU_PASSWORD_SHOW, VT_FOREGROUND_WHITE, makeFunctor((Functor0 *)0, *this, &VaultController::retrievePasswordShow));
-    this->terminal->printMenuEntry(MENU_L2_FIRST_POS + 3, TXT_MENU_BACK, VT_FOREGROUND_WHITE, makeFunctor((Functor0 *)0, *this, &VaultController::displayPasswordSelectionMenu));
+    this->terminal->printMenuEntry(MENU_L2_FIRST_POS,
+                                   TXT_MENU_PASSWORD_TO_CLIPBOARD,
+                                   VT_FOREGROUND_WHITE,
+                                   makeFunctor((Functor0 *)0, *this, &VaultController::retrievePasswordFull));
 
+    this->terminal->printMenuEntry(MENU_L2_FIRST_POS + 1,
+                                   TXT_MENU_PASSWORD_TO_CLIPBOARD_PARTIAL,
+                                   VT_FOREGROUND_WHITE,
+                                   makeFunctor((Functor0 *)0, *this, &VaultController::retrievePasswordPartial));
+
+    this->terminal->printMenuEntry(MENU_L2_FIRST_POS + 2,
+                                   TXT_MENU_PASSWORD_SHOW,
+                                   VT_FOREGROUND_WHITE,
+                                   makeFunctor((Functor0 *)0, *this, &VaultController::retrievePasswordShow));
+
+    this->terminal->printMenuEntry(MENU_L2_FIRST_POS + 3,
+                                   TXT_MENU_BACK,
+                                   VT_FOREGROUND_WHITE,
+                                   makeFunctor((Functor0 *)0, *this, &VaultController::displayPasswordSelectionMenu));
 }
 
 void VaultController::resetVault()
@@ -106,23 +157,6 @@ void VaultController::resetVault()
     }
 
     this->lockEnctryptedStore();
-}
-
-/**
- * Unlock the store.
- * 
- * Get the user master password and use it to unlock the store.
- */
-void VaultController::startStoreUnlockService()
-{
-    this->activeService = new UnlockEncryptedStoreService(
-        this->terminal,
-        this->encryptedStore,
-        this->notificationController,
-        makeFunctor((Functor1<byte> *)0, *this->terminal, &Terminal::showProgress),
-        makeFunctor((Functor0 *)0, *this, &VaultController::displayPasswordSelectionMenu));
-
-    this->activeService->start();
 }
 
 void VaultController::fullWipe()
@@ -215,19 +249,6 @@ void VaultController::addPassword()
     this->activeService->start();
 }
 
-/**
- * Lock the store and wipe the clipboard.
- */
-void VaultController::lockEnctryptedStore()
-{
-    this->encryptedStore->lock();
-
-    this->notificationController->setStoreLocked(true);
-
-    this->terminal->clearScreen();
-    this->terminal->printStatusMessage(" Locked.");
-}
-
 void VaultController::loop()
 {
     if (this->activeService)
@@ -243,7 +264,7 @@ void VaultController::loop()
 
     if (encryptedStore->isLocked())
     {
-        this->startStoreUnlockService();
+        this->unlockEncryptedStore();
     }
 
     this->terminal->loop(this->activeService != NULL);
