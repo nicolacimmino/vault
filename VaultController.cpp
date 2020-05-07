@@ -7,7 +7,7 @@ VaultController::VaultController()
     this->terminal = new Terminal(this->encryptedStore);
     this->notificationController = new NotificationController();
 
-    this->notificationController->setStoreLocked(true);
+    this->notificationController->setStoreLocked(true, 0);
 
     pinMode(BUTTON_SENSE, INPUT_PULLUP);
 
@@ -36,7 +36,7 @@ void VaultController::lockEnctryptedStore()
 {
     this->encryptedStore->lock();
 
-    this->notificationController->setStoreLocked(true);
+    this->notificationController->setStoreLocked(true, 0);
 
     this->terminal->clearScreen();
     this->terminal->printStatusMessage(TXT_STATUS_LOCKED);

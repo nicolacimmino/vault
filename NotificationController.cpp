@@ -16,15 +16,17 @@ NotificationController::NotificationController()
     this->loop();
 }
 
-void NotificationController::setStoreLocked(bool locked)
+void NotificationController::setStoreLocked(bool locked, int kfp)
 {
     if (locked)
     {
         this->status |= NOTFICATION_LOCKED;
+        this->kfp = 0;
     }
     else
     {
         this->status &= ~NOTFICATION_LOCKED;
+        this->kfp = kfp;
     }
 
     this->loop();
@@ -68,7 +70,7 @@ void NotificationController::loop()
 #endif
 
 #ifdef NEOPIXEL_NOTIFICATION
-    this->led[0] = (this->status & NOTFICATION_LOCKED) ? CRGB::DarkBlue : CRGB::DarkViolet;
+    this->led[0] = (this->status & NOTFICATION_LOCKED) ? CRGB::DarkBlue : (CRGB)CHSV(this->kfp % 255, 255, 255);
 
     if (this->status & NOTFICATION_CLIPBOARD_BUSY)
     {

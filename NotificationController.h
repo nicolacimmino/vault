@@ -16,6 +16,7 @@
 class NotificationController
 {
 private:
+    int kfp = 0;
     byte status = 0;        
 #ifdef NEOPIXEL_NOTIFICATION
     CRGB led[1];
@@ -25,7 +26,7 @@ public:
     NotificationController();    
     void setClipboardBusy(bool busy);
     void setIdle(bool idle);
-    void setStoreLocked(bool locked);
+    void setStoreLocked(bool locked, int kfp);
     void loop();
 };
 

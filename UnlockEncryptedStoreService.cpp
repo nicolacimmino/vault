@@ -31,7 +31,7 @@ bool UnlockEncryptedStoreService::start(byte arg = 0)
     {
         this->encryptedStore->unlock(masterPassword);
 
-        this->notificationController->setStoreLocked(false);
+        this->notificationController->setStoreLocked(false, this->encryptedStore->getKeyFingerprint());
     }
 
     delete masterPassword;
