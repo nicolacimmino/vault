@@ -54,13 +54,18 @@ void RetrievePasswordService::typeClipboard(char *clipboard, uint16_t interDigit
 {
     this->terminal->alert(TXT_TOUCH_TO_TYPE);
 
+#ifndef HW_BUTTON
     int ref = ADCTouch.read(A1, 500);
-
+#endif
     while (true)
     {      
         this->notificationController->loop();
-          
+
+#ifndef HW_BUTTON          
         if (ADCTouch.read(A1) - ref > TOUCH_THRESHOLD)
+#else 
+        if (digitalRead(BUTTON_PIN) == LOW)
+#endif
         {
             for (byte ix = 0; ix < strlen(clipboard); ix++)
             {

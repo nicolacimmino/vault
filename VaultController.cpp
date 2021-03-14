@@ -9,7 +9,9 @@ VaultController::VaultController()
 
     this->notificationController->setStoreLocked(true, 0);
 
-    pinMode(BUTTON_SENSE, INPUT_PULLUP);
+#ifdef HW_BUTTON
+    pinMode(BUTTON_PIN, INPUT_PULLUP);
+#endif
 
     this->terminal->init();
 
