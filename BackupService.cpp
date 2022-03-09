@@ -19,9 +19,9 @@ bool BackupService::start(byte arg = 0)
 
     this->running = true;
     this->backupAddress = STORAGE_BASE;
-
+#ifndef HW_BUTTON
     this->touchRef = ADCTouch.read(A1, 500);
-
+#endif
     return true;
 }
 
@@ -31,7 +31,13 @@ bool BackupService::loop()
         return false;
     }
 
-    if (!this->backupStarted && ADCTouch.read(A1) - this->touchRef < TOUCH_THRESHOLD)
+#ifndef HW_BUTTON
+bool buttonPressed = ADCTouch.read(A1) - this->touchRef < TOUCH_THRESHOLD;
+#else
+bool buttonPressed = (digitalRead(BUTTON_PIN) == LOW);
+#endif
+
+    if (!this->backupStarted && !buttonPressed)
     {
         return true;
     }

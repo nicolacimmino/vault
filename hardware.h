@@ -10,8 +10,8 @@
 #define STORAGE_BASE 0
 #define STORAGE_SIZE 1024
 
-//#define NEOPIXEL_NOTIFICATION
-#define LED_NOTIFICATION
+#define NEOPIXEL_NOTIFICATION
+//#define LED_NOTIFICATION
 
 // If defined a pushbutton between BUTTON_PIN and ground is used
 // otherwise capacitive sensing on A1.

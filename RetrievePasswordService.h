@@ -7,7 +7,9 @@
 #include "hardware.h"
 #include <EEPROM.h>
 #include "EncryptedStore.h"
+#ifndef HW_BUTTON
 #include <ADCTouch.h>
+#endif
 #include "NotificationController.h"
 
 #define BACKUP_LINE_SIZE 64

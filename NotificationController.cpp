@@ -70,7 +70,7 @@ void NotificationController::loop()
 #endif
 
 #ifdef NEOPIXEL_NOTIFICATION
-    this->led[0] = (this->status & NOTFICATION_LOCKED) ? CRGB::DarkBlue : (CRGB)CHSV(this->kfp % 255, 255, 255);
+    this->led[0] = (this->status & NOTFICATION_LOCKED) ? CRGB::DarkBlue : (CRGB)CHSV(this->kfp, 255, 255);
 
     if (this->status & NOTFICATION_CLIPBOARD_BUSY)
     {
@@ -79,7 +79,7 @@ void NotificationController::loop()
 
     if (this->status & NOTFICATION_IDLE)
     {
-        this->led[0].fadeLightBy((millis()/12) % 255);
+        this->led[0].fadeLightBy((millis()/12));
     }
 
     FastLED.show();

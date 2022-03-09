@@ -6,7 +6,9 @@
 #include <Keyboard.h>
 #include "hardware.h"
 #include <EEPROM.h>
+#ifndef HW_BUTTON
 #include <ADCTouch.h>
+#endif
 
 #define BAKCUP_ADDRESSES_PER_LINE 16
 #define BACKUP_LINES_PER_LOOP 4
